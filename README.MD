@@ -40,6 +40,8 @@ classDiagram
         +String contraseña
         +String tipo
         +byte[] imagenPerfil
+        +iniciarSesion()
+        +registrarUsuario()
     }
 
     class Ruta {
@@ -49,6 +51,9 @@ classDiagram
         +byte[] imagen
         +double precio
         +String dificultad
+        +listarRutas()
+        +agregarRuta()
+        +eliminarRuta()
     }
 
     class Reserva {
@@ -56,6 +61,8 @@ classDiagram
         +int idUsuario
         +int idRuta
         +Date fecha
+        +reservarRuta()
+        +cancelarReserva()
     }
 
     class Valoracion {
@@ -64,6 +71,8 @@ classDiagram
         +int idRuta
         +int puntuacion
         +String comentario
+        +valorarRuta()
+        +obtenerValoraciones()
     }
 
     class Restaurante {
@@ -72,6 +81,8 @@ classDiagram
         +String ubicacion
         +float valoracion
         +byte[] imagen
+        +listarRestaurantes()
+        +agregarRestaurante()
     }
 
     class Historial {
@@ -79,6 +90,7 @@ classDiagram
         +int idUsuario
         +String accion
         +Date fecha
+        +registrarAccion()
     }
 
     class Mensaje {
@@ -87,7 +99,11 @@ classDiagram
         +String mensaje
         +String respuesta
         +Date fecha
+        +enviarMensaje()
+        +obtenerMensajes()
     }
+
+    %% Relaciones entre clases
 
     Usuario "1" -- "0..*" Reserva : realiza
     Usuario "1" -- "0..*" Valoracion : deja
@@ -97,6 +113,12 @@ classDiagram
 
     Ruta "1" -- "0..*" Reserva : es reservada en
     Ruta "1" -- "0..*" Valoracion : es valorada en
+
+    %% Agregación de Historial a Usuario
+    Usuario "1" o-- "0..*" Historial : tiene
+
+    %% Agregación de Restaurante a Usuario
+    Usuario "1" o-- "0..*" Restaurante : visita
 ```
 ---
 # 🛠️ **Instalación y Configuración**
