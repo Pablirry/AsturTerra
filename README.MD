@@ -97,7 +97,7 @@ classDiagram
 
     Ruta "1" -- "0..*" Reserva : es reservada en
     Ruta "1" -- "0..*" Valoracion : es valorada en
-
+```
 ---
 # 🛠️ **Instalación y Configuración**
 
