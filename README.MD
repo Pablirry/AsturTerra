@@ -4,7 +4,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 ---
 
-## 📌 **Características Principales**
+# 📌 **Características Principales**
 ✅ Registro e inicio de sesión de usuarios (Clientes / Administradores).  
 ✅ CRUD de **Rutas** con imágenes, precios y niveles de dificultad.  
 ✅ CRUD de **Actividades y Restaurantes** con valoraciones.  
@@ -17,7 +17,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 ---
 
-## 📂 **Estructura del Proyecto**
+# 📂 **Estructura del Proyecto**
 📁 TurismoAsturias  
 ├── 📂 src  
 │ ├── 📂 config → Conexión a la base de datos  
@@ -29,8 +29,77 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ├── 📜 README.md → Documentación del proyecto  
 ├── 📜 TurismoAsturias.sql → Base de datos MySQL  
 
+# 📜 **Diagrama de Clases**
+
+```mermaid
+classDiagram
+    class Usuario {
+        +int id
+        +String nombre
+        +String correo
+        +String contraseña
+        +String tipo
+        +byte[] imagenPerfil
+    }
+
+    class Ruta {
+        +int id
+        +String nombre
+        +String descripcion
+        +byte[] imagen
+        +double precio
+        +String dificultad
+    }
+
+    class Reserva {
+        +int id
+        +int idUsuario
+        +int idRuta
+        +Date fecha
+    }
+
+    class Valoracion {
+        +int id
+        +int idUsuario
+        +int idRuta
+        +int puntuacion
+        +String comentario
+    }
+
+    class Restaurante {
+        +int id
+        +String nombre
+        +String ubicacion
+        +float valoracion
+        +byte[] imagen
+    }
+
+    class Historial {
+        +int id
+        +int idUsuario
+        +String accion
+        +Date fecha
+    }
+
+    class Mensaje {
+        +int id
+        +int idUsuario
+        +String mensaje
+        +String respuesta
+        +Date fecha
+    }
+
+    Usuario "1" -- "0..*" Reserva : realiza
+    Usuario "1" -- "0..*" Valoracion : deja
+    Usuario "1" -- "0..*" Mensaje : envía
+    Usuario "1" -- "0..*" Historial : genera
+    Usuario "1" -- "0..*" Restaurante : recomienda
+
+    Ruta "1" -- "0..*" Reserva : es reservada en
+    Ruta "1" -- "0..*" Valoracion : es valorada en
+
 ---
-## 🛠️ **Instalación y Configuración**
+# 🛠️ **Instalación y Configuración**
 
 ## 📌 **1. Clonar el repositorio**
 ```bash
@@ -39,14 +108,14 @@ git clone https://github.com/Pablirry/TurismoAsturias.git
 ```
 ## 📌 **2. Configurar la base de datos**
 
-# 1. Importar el archivo TurismoAsturias.sql en MySQL:
+### 1. Importar el archivo TurismoAsturias.sql en MySQL:
 ```bash
 CREATE DATABASE turismo_asturias;
 USE turismo_asturias;
 SOURCE TurismoAsturias.sql;
 ```
 
-# 2. Configurar la conexión en src/config/ConexionBD.java:
+### 2. Configurar la conexión en src/config/ConexionBD.java:
 ```bash
 private static final String URL = "jdbc:mysql://localhost:3306/turismo_asturias";
 private static final String USER = "root";
