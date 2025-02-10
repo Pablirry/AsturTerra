@@ -36,7 +36,7 @@ public class UsuarioDAO {
         return null;
     }
 
-    public void registrarUsuario(Usuario usuario) {
+    public boolean registrarUsuario(Usuario usuario) {
         try (Connection con = ConexionDB.getConection()) {
             String sql = "INSERT INTO usuario (nombre, correo, contrasena, tipo, imagenPerfil) VALUES (?, ?, ?, ?, ?)";
 
@@ -47,10 +47,11 @@ public class UsuarioDAO {
             ps.setString(4, usuario.getTipo());
             ps.setBytes(5, usuario.getImagenPerfil());
 
-            ps.executeUpdate();
+            return ps.executeUpdate() > 0;
 
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println("Error al registrar usuario");
+            return false;
         }
     }
 
