@@ -8,7 +8,7 @@ import config.ConexionDB;
 
 public class ValoracionDAO {
 
-    public void valorarRuta(int idUsuario, int idRuta, int puntuacion, String comentario) throws ClassNotFoundException {
+    public boolean valorarRuta(int idUsuario, int idRuta, int puntuacion, String comentario) throws ClassNotFoundException {
         Connection con = ConexionDB.getConection();
         String sql = "INSERT INTO valoraciones (id_usuario, id_ruta, puntuacion, comentario) VALUES (?, ?, ?, ?)";
 
@@ -18,9 +18,11 @@ public class ValoracionDAO {
             ps.setInt(2, idRuta);
             ps.setInt(3, puntuacion);
             ps.setString(4, comentario);
-            ps.executeUpdate();
+            
+            return ps.executeUpdate()>0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
     

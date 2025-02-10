@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import config.ConexionDB;
-import modelo.Restaurante;
+import model.Restaurante;
 
 public class RestauranteDAO {
 

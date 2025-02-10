@@ -1,18 +1,18 @@
-package modelo;
+package model;
 
 import java.util.Date;
 
-public class Reserva {
-
+public class Historial {
+    
     private int id;
     private int idUsuario;
-    private int idRuta;
+    private String accion;
     private Date fecha;
     
-    public Reserva(int id, int idUsuario, int idRuta, Date fecha) {
+    public Historial(int id, int idUsuario, String accion, Date fecha) {
         this.id = id;
         this.idUsuario = idUsuario;
-        this.idRuta = idRuta;
+        this.accion = accion;
         this.fecha = fecha;
     }
 
@@ -32,12 +32,12 @@ public class Reserva {
         this.idUsuario = idUsuario;
     }
 
-    public int getIdRuta() {
-        return idRuta;
+    public String getAccion() {
+        return accion;
     }
 
-    public void setIdRuta(int idRuta) {
-        this.idRuta = idRuta;
+    public void setAccion(String accion) {
+        this.accion = accion;
     }
 
     public Date getFecha() {
@@ -50,7 +50,7 @@ public class Reserva {
 
     @Override
     public String toString() {
-        return "Reserva [id=" + id + ", idUsuario=" + idUsuario + ", idRuta=" + idRuta + ", fecha=" + fecha + "]";
+        return "Historial [id=" + id + ", idUsuario=" + idUsuario + ", accion=" + accion + ", fecha=" + fecha + "]";
     }
     
 }

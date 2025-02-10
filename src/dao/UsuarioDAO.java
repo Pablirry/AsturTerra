@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import config.ConexionDB;
-import modelo.Usuario;
+import model.Usuario;
 
 public class UsuarioDAO {
 

@@ -7,8 +7,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import modelo.Reserva;
+
 import config.ConexionDB;
+import model.Reserva;
 
 public class ReservarDAO {
 

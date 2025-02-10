@@ -1,7 +1,8 @@
 package dao;
 
 import config.ConexionDB;
-import modelo.Mensaje;
+import model.Mensaje;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
