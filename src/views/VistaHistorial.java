@@ -1,42 +1,28 @@
 package views;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
 public class VistaHistorial extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private JList<String> listaHistorial;
+    private JButton btnCerrar;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaHistorial frame = new VistaHistorial();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public VistaHistorial() {
+        setTitle("Historial de Actividades");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	/**
-	 * Create the frame.
-	 */
-	public VistaHistorial() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        listaHistorial = new JList<>();
+        btnCerrar = new JButton("Cerrar");
 
-		setContentPane(contentPane);
-	}
+        add(new JScrollPane(listaHistorial));
+        add(btnCerrar);
+
+        setVisible(true);
+    }
+
+    public JList<String> getListaHistorial() { return listaHistorial; }
+    public JButton getBtnCerrar() { return btnCerrar; }
 
 }

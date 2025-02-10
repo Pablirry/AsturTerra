@@ -10,7 +10,7 @@ public class MensajeController {
     private MensajeDAO mensajeDAO;
     private VistaChat vistaChat;
 
-    public MensajeController(VistaChat vistaChat) {
+    public MensajeController(VistaChat vistaChat) throws ClassNotFoundException {
         this.mensajeDAO = new MensajeDAO();
         this.vistaChat = vistaChat;
         cargarMensajes();
@@ -18,11 +18,18 @@ public class MensajeController {
     }
 
     private void agregarEventos() {
-        vistaChat.getBtnEnviar().addActionListener(e -> enviarMensaje());
+        vistaChat.getBtnEnviar().addActionListener(e -> {
+			try {
+				enviarMensaje();
+			} catch (ClassNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
     }
 
-    private void enviarMensaje() {
-        int idUsuario = 1; // Usuario de ejemplo
+    private void enviarMensaje() throws ClassNotFoundException {
+        int idUsuario = 1;
         String mensaje = vistaChat.getTxtMensaje().getText();
 
         if (!mensaje.isEmpty()) {
@@ -38,7 +45,7 @@ public class MensajeController {
         }
     }
 
-    private void cargarMensajes() {
+    private void cargarMensajes() throws ClassNotFoundException {
         int idUsuario = 1;
         List<Mensaje> mensajes = mensajeDAO.obtenerMensajes(idUsuario);
         for (Mensaje mensaje : mensajes) {

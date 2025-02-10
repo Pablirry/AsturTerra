@@ -1,42 +1,47 @@
 package views;
 
-import java.awt.EventQueue;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
 public class VistaValoraciones extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private JList<String> listaRutas;
+    private JTextArea txtComentario;
+    private JSpinner spinnerPuntuacion;
+    private JButton btnEnviarValoracion;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaValoraciones frame = new VistaValoraciones();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public VistaValoraciones() {
+        setTitle("Valoración de Rutas");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	/**
-	 * Create the frame.
-	 */
-	public VistaValoraciones() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        listaRutas = new JList<>();
+        txtComentario = new JTextArea(3, 20);
+        spinnerPuntuacion = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
+        btnEnviarValoracion = new JButton("Enviar Valoración");
 
-		setContentPane(contentPane);
-	}
+        add(new JScrollPane(listaRutas));
+        add(new JLabel("Puntuación (1-5):"));
+        add(spinnerPuntuacion);
+        add(new JLabel("Comentario:"));
+        add(new JScrollPane(txtComentario));
+        add(btnEnviarValoracion);
+
+        setVisible(true);
+    }
+
+    public JList<String> getListaRutas() { return listaRutas; }
+    public JTextArea getTxtComentario() { return txtComentario; }
+    public JButton getBtnEnviarValoracion() { return btnEnviarValoracion; }
+
+    public int getRutaSeleccionada() {
+        int selectedIndex = listaRutas.getSelectedIndex();
+        return (selectedIndex != -1) ? selectedIndex : -1; // Retorna el índice seleccionado o -1 si no hay selección
+    }
+
+    public int getPuntuacionSeleccionada() {
+        return (int) spinnerPuntuacion.getValue(); // Obtiene el valor del spinner de puntuación
+    }
 
 }

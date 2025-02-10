@@ -1,42 +1,35 @@
 package views;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
 public class VistaReservas extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private JList<String> listaReservas;
+    private JButton btnReservar, btnCancelar;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaReservas frame = new VistaReservas();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public VistaReservas() {
+        setTitle("Gestión de Reservas");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	/**
-	 * Create the frame.
-	 */
-	public VistaReservas() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        listaReservas = new JList<>();
+        btnReservar = new JButton("Reservar");
+        btnCancelar = new JButton("Cancelar");
 
-		setContentPane(contentPane);
-	}
+        add(new JScrollPane(listaReservas));
+        add(btnReservar);
+        add(btnCancelar);
 
+        setVisible(true);
+    }
+
+    public JList<String> getListaReservas() { return listaReservas; }
+    public JButton getBtnReservar() { return btnReservar; }
+    public JButton getBtnCancelar() { return btnCancelar; }
+
+    public int getRutaSeleccionada() {
+        int selectedIndex = listaReservas.getSelectedIndex();
+        return (selectedIndex != -1) ? selectedIndex : -1; // Retorna el índice seleccionado o -1 si no hay selección
+    }
 }

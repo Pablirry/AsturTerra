@@ -1,42 +1,39 @@
 package views;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
+import java.awt.*;
 
 public class VistaChat extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private JTextArea txtMensajes;
+    private JTextField txtMensaje;
+    private JButton btnEnviar;
+    
+    public VistaChat() {
+        setTitle("Chat con Soporte");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BorderLayout());
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaChat frame = new VistaChat();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+        txtMensajes = new JTextArea();
+        txtMensajes.setEditable(false);
+        JScrollPane scrollMensajes = new JScrollPane(txtMensajes);
 
-	/**
-	 * Create the frame.
-	 */
-	public VistaChat() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        txtMensaje = new JTextField();
+        btnEnviar = new JButton("Enviar");
 
-		setContentPane(contentPane);
-	}
+        JPanel panelInferior = new JPanel(new BorderLayout());
+        panelInferior.add(txtMensaje, BorderLayout.CENTER);
+        panelInferior.add(btnEnviar, BorderLayout.EAST);
+
+        add(scrollMensajes, BorderLayout.CENTER);
+        add(panelInferior, BorderLayout.SOUTH);
+
+        setVisible(true);
+    }
+
+    public JTextField getTxtMensaje() { return txtMensaje; }
+    public JTextArea getTxtMensajes() { return txtMensajes; }
+    public JButton getBtnEnviar() { return btnEnviar; }
 
 }

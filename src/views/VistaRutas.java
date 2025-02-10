@@ -1,42 +1,34 @@
 package views;
 
-import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
+import javax.swing.*;
 
 public class VistaRutas extends JFrame {
 
-	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
+	private JList<String> listaRutas;
+    private JButton btnAgregar, btnEliminar, btnVerDetalles;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					VistaRutas frame = new VistaRutas();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+    public VistaRutas() {
+        setTitle("Listado de Rutas");
+        setSize(400, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-	/**
-	 * Create the frame.
-	 */
-	public VistaRutas() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        listaRutas = new JList<>();
+        btnAgregar = new JButton("Agregar Ruta");
+        btnEliminar = new JButton("Eliminar Ruta");
+        btnVerDetalles = new JButton("Ver Detalles");
 
-		setContentPane(contentPane);
-	}
+        add(new JScrollPane(listaRutas));
+        add(btnAgregar);
+        add(btnEliminar);
+        add(btnVerDetalles);
+
+        setVisible(true);
+    }
+
+    public JList<String> getListaRutas() { return listaRutas; }
+    public JButton getBtnAgregar() { return btnAgregar; }
+    public JButton getBtnEliminar() { return btnEliminar; }
+    public JButton getBtnVerDetalles() { return btnVerDetalles; }
 
 }

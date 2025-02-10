@@ -5,6 +5,7 @@ import dao.HistorialDAO;
 import model.Usuario;
 import views.Login;
 import views.MenuPrincipal;
+import views.Registro;
 
 import javax.swing.*;
 
@@ -35,7 +36,7 @@ public class UsuarioController {
                 historialDAO.registrarAccion(usuario.getId(), "Inicio de sesión");
                 JOptionPane.showMessageDialog(loginVista, "Inicio de sesión exitoso.");
                 loginVista.dispose();
-                new MenuPrincipal(usuario).setVisible(true);
+                new MenuPrincipal().setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(loginVista, "Credenciales incorrectas.");
             }
@@ -45,6 +46,6 @@ public class UsuarioController {
     }
 
     private void registrarUsuario() {
-        JOptionPane.showMessageDialog(loginVista, "Funcionalidad de registro aún no implementada.");
+    	new Registro();
     }
 }
