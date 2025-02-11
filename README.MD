@@ -31,7 +31,8 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 # 📜 **Diagrama de Clases**
 
-```mermaid
+````mermaid
+
 classDiagram
     class Usuario {
         +int id
@@ -40,73 +41,74 @@ classDiagram
         +String contrasena
         +String tipo
         +byte[] imagenPerfil
-        +iniciarSesion()
-        +registrarUsuario()
     }
 
-    class Ruta {
-        +int id
-        +String nombre
-        +String descripcion
-        +byte[] imagen
-        +double precio
-        +String dificultad
-        +listarRutas()
-        +agregarRuta()
-        +eliminarRuta()
+    class UsuarioDAO {
+        +Usuario iniciarSesion(String correo, String contrasena)
+        +boolean registrarUsuario(Usuario usuario)
     }
 
-    class Reserva {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +Date fecha
-        +reservarRuta()
-        +cancelarReserva()
+    class HistorialDAO {
+        +void registrarAccion(int idUsuario, String accion)
     }
 
-    class Valoracion {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +int puntuacion
-        +String comentario
-        +valorarRuta()
-        +obtenerValoraciones()
+    class UsuarioController {
+        -UsuarioDAO usuarioDAO
+        -HistorialDAO historialDAO
+        -Login loginVista
+        +UsuarioController()
+        +UsuarioController(Login loginVista)
+        +void iniciarSesion()
+        +void abrirRegistro()
+        +boolean registrarUsuario(Usuario usuario)
     }
 
-    class Restaurante {
-        +int id
-        +String nombre
-        +String ubicacion
-        +float valoracion
-        +byte[] imagen
-        +listarRestaurantes()
-        +agregarRestaurante()
+    class Login {
+        -JTextField txtCorreo
+        -JPasswordField txtContraseña
+        -JButton btnLogin
+        -JButton btnRegistro
+        -JLabel lblTitulo, lblCorreo, lblContraseña
+        -JPanel panelFondo
+        -UsuarioController usuarioController
+        +Login()
+        +JTextField getTxtCorreo()
+        +JPasswordField getTxtContraseña()
+        +JButton getBtnLogin()
+        +JButton getBtnRegistro()
     }
 
-    class Historial {
-        +int id
-        +int idUsuario
-        +String accion
-        +Date fecha
-        +registrarAccion()
+    class Registro {
+        -JTextField txtNombre, txtCorreo
+        -JPasswordField txtContraseña
+        -JButton btnRegistrar, btnSeleccionarImagen
+        -JLabel lblFondo
+        -JCheckBox chkAdmin
+        -File imagenPerfil
+        +Registro()
+        +void registrarUsuario()
     }
 
-    class Mensaje {
-        +int id
-        +int idUsuario
-        +String mensaje
-        +String respuesta
-        +Date fecha
-        +enviarMensaje()
-        +obtenerMensajes()
+    class MenuPrincipal {
+        +MenuPrincipal()
     }
 
+    class ConexionDB {
+        +static Connection getConection()
+    }
+
+    UsuarioController --> UsuarioDAO : usa
+    UsuarioController --> HistorialDAO : usa
+    UsuarioController --> Login : controla
+    UsuarioController --> Registro : controla
+    Login --> UsuarioController : usa
+    Registro --> UsuarioController : usa
+    UsuarioDAO --> ConexionDB : usa
+    HistorialDAO --> ConexionDB : usa
+    Usuario "1" -- "0..*" Historial : genera
     Usuario "1" -- "0..*" Reserva : realiza
     Usuario "1" -- "0..*" Valoracion : deja
     Usuario "1" -- "0..*" Mensaje : envía
-    Usuario "1" -- "0..*" Historial : genera
     Usuario "1" -- "0..*" Restaurante : recomienda
     Ruta "1" -- "0..*" Reserva : es reservada en
     Ruta "1" -- "0..*" Valoracion : es valorada en
