@@ -31,8 +31,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 # 📜 **Diagrama de Clases**
 
-````mermaid
-
+```mermaid
 classDiagram
     class Usuario {
         +int id
@@ -114,7 +113,9 @@ classDiagram
     Ruta "1" -- "0..*" Valoracion : es valorada en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
-```
+
+````
+
 ---
 # 🛠️ **Instalación y Configuración**
 
