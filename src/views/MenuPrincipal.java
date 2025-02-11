@@ -7,11 +7,13 @@ import java.awt.event.MouseEvent;
 
 public class MenuPrincipal extends JFrame {
 
-	private JPanel panelFondo;
+    private static MenuPrincipal instance;
+
+    private JPanel panelFondo;
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
     private JLabel lblTitulo;
 
-    public MenuPrincipal() {
+    private MenuPrincipal() {
         setTitle("Menú Principal - Turismo Asturias");
         setSize(705, 567);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -57,6 +59,13 @@ public class MenuPrincipal extends JFrame {
 
         getContentPane().add(panelFondo);
         setVisible(true);
+    }
+
+    public static MenuPrincipal getInstance() {
+        if (instance == null) {
+            instance = new MenuPrincipal();
+        }
+        return instance;
     }
 
     private JPanel crearPanel(int x, int y, String texto, String rutaImagen) {
@@ -131,5 +140,4 @@ public class MenuPrincipal extends JFrame {
             }
         });
     }
-
 }

@@ -26,7 +26,7 @@ public class VistaChat extends JFrame {
         add(btnVolver);
 
         btnVolver.addActionListener(e -> {
-            new MenuPrincipal();
+            MenuPrincipal.getInstance().setVisible(true);
             dispose();
         });
 

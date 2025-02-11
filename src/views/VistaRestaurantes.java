@@ -25,7 +25,7 @@ public class VistaRestaurantes extends JFrame {
         add(btnCerrar);
 
         btnVolver.addActionListener(e -> {
-            new MenuPrincipal();
+            MenuPrincipal.getInstance().setVisible(true);
             dispose();
         });
 

@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class VistaHistorial extends JFrame {
 
-	private JList<String> listaHistorial;
+    private JList<String> listaHistorial;
     private JButton btnCerrar, btnVolver;
 
     public VistaHistorial() {
@@ -22,7 +22,7 @@ public class VistaHistorial extends JFrame {
         add(btnCerrar);
 
         btnVolver.addActionListener(e -> {
-            new MenuPrincipal();
+            MenuPrincipal.getInstance().setVisible(true);
             dispose();
         });
 

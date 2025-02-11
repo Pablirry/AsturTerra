@@ -119,7 +119,7 @@ public class Registro extends JFrame {
             }
 
             Usuario usuario = new Usuario(0, nombre, correo, contrasena, tipo, imagenBytes);
-            UsuarioController usuarioController = new UsuarioController();
+            UsuarioController usuarioController = new UsuarioController(new Login());
             boolean registrado = usuarioController.registrarUsuario(usuario);
 
             if (registrado) {

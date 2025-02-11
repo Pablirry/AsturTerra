@@ -28,12 +28,9 @@ public class VistaRutas extends JFrame {
         add(btnVerDetalles);
         add(btnVolver);
 
-        btnVolver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new MenuPrincipal();
-                dispose(); // Cierra la ventana actual
-            }
+        btnVolver.addActionListener(e -> {
+            MenuPrincipal.getInstance().setVisible(true);
+            dispose();
         });
 
         setVisible(true);

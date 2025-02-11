@@ -14,13 +14,9 @@ public class UsuarioController {
     private HistorialDAO historialDAO;
     private Login loginVista;
 
-    public UsuarioController() {
+    public UsuarioController(Login loginVista) {
         this.usuarioDAO = new UsuarioDAO();
         this.historialDAO = new HistorialDAO();
-    }
-
-    public UsuarioController(Login loginVista) {
-        this();
         this.loginVista = loginVista;
         agregarEventos();
     }
@@ -45,7 +41,7 @@ public class UsuarioController {
                 historialDAO.registrarAccion(usuario.getId(), "Inicio de sesión");
                 JOptionPane.showMessageDialog(loginVista, "Inicio de sesión exitoso.");
                 loginVista.dispose();
-                new MenuPrincipal().setVisible(true);
+                MenuPrincipal.getInstance().setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(loginVista, "Credenciales incorrectas.");
             }

@@ -17,8 +17,6 @@ public class Login extends JFrame {
     private UsuarioController usuarioController;
 
     public Login() {
-        usuarioController = new UsuarioController();
-
         setTitle("Inicio de Sesión");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,6 +65,9 @@ public class Login extends JFrame {
 
         add(panelFondo);
 
+        // Inicializar el controlador después de crear la interfaz gráfica
+        usuarioController = new UsuarioController(this);
+
         // Evento para iniciar sesión
         btnLogin.addActionListener(new ActionListener() {
             @Override
@@ -91,9 +92,5 @@ public class Login extends JFrame {
     public JPasswordField getTxtContraseña() { return txtContraseña; }
     public JButton getBtnLogin() { return btnLogin; }
     public JButton getBtnRegistro() { return btnRegistro; }
-
-    public static void main(String[] args) {
-        new Login();
-    }
 
 }

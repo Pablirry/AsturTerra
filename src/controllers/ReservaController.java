@@ -27,7 +27,7 @@ public class ReservaController {
     private void reservarRuta() {
         try {
             int idUsuario = 1;
-            int idRuta = vistaReservas.getRutaSeleccionada();
+            int idRuta = 1;
             Date fecha = new Date();
 
             boolean exito = reservaDAO.reservarRuta(idUsuario, idRuta, fecha);

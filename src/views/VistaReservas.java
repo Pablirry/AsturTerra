@@ -4,7 +4,7 @@ import javax.swing.*;
 
 public class VistaReservas extends JFrame {
 
-	private JList<String> listaReservas;
+    private JList<String> listaReservas;
     private JButton btnReservar, btnCancelar, btnVolver;
 
     public VistaReservas() {
@@ -24,7 +24,7 @@ public class VistaReservas extends JFrame {
         add(btnVolver);
 
         btnVolver.addActionListener(e -> {
-            new MenuPrincipal();
+            MenuPrincipal.getInstance().setVisible(true);
             dispose();
         });
 
@@ -36,8 +36,4 @@ public class VistaReservas extends JFrame {
     public JButton getBtnCancelar() { return btnCancelar; }
     public JButton getBtnVolver() { return btnVolver; }
 
-    public int getRutaSeleccionada() {
-        int selectedIndex = listaReservas.getSelectedIndex();
-        return (selectedIndex != -1) ? selectedIndex : -1; // Retorna el índice seleccionado o -1 si no hay selección
-    }
 }
