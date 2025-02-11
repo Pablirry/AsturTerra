@@ -42,6 +42,53 @@ classDiagram
         +byte[] imagenPerfil
     }
 
+    class Ruta {
+        +int id
+        +String nombre
+        +String descripcion
+        +byte[] imagen
+        +double precio
+        +String dificultad
+    }
+
+    class Reserva {
+        +int id
+        +int idUsuario
+        +int idRuta
+        +Date fecha
+    }
+
+    class Valoracion {
+        +int id
+        +int idUsuario
+        +int idRuta
+        +int puntuacion
+        +String comentario
+    }
+
+    class Restaurante {
+        +int id
+        +String nombre
+        +String ubicacion
+        +float valoracion
+        +byte[] imagen
+    }
+
+    class Historial {
+        +int id
+        +int idUsuario
+        +String accion
+        +Date fecha
+    }
+
+    class Mensaje {
+        +int id
+        +int idUsuario
+        +String mensaje
+        +String respuesta
+        +Date fecha
+    }
+
     class UsuarioDAO {
         +Usuario iniciarSesion(String correo, String contrasena)
         +boolean registrarUsuario(Usuario usuario)
@@ -113,9 +160,8 @@ classDiagram
     Ruta "1" -- "0..*" Valoracion : es valorada en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
-
-````
-
+    
+```
 ---
 # 🛠️ **Instalación y Configuración**
 
