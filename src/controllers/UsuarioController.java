@@ -14,22 +14,31 @@ public class UsuarioController {
     private HistorialDAO historialDAO;
     private Login loginVista;
 
-    public UsuarioController(Login loginVista) {
+    public UsuarioController() {
         this.usuarioDAO = new UsuarioDAO();
         this.historialDAO = new HistorialDAO();
+    }
+
+    public UsuarioController(Login loginVista) {
+        this();
         this.loginVista = loginVista;
         agregarEventos();
     }
 
     private void agregarEventos() {
         loginVista.getBtnLogin().addActionListener(e -> iniciarSesion());
-        loginVista.getBtnRegistro().addActionListener(e -> registrarUsuario());
+        loginVista.getBtnRegistro().addActionListener(e -> abrirRegistro());
     }
 
-    private void iniciarSesion() {
+    public void iniciarSesion() {
         try {
             String correo = loginVista.getTxtCorreo().getText();
             String contraseña = new String(loginVista.getTxtContraseña().getPassword());
+
+            if (correo.isEmpty() || contraseña.isEmpty()) {
+                JOptionPane.showMessageDialog(loginVista, "Los campos no pueden estar vacíos.");
+                return;
+            }
 
             Usuario usuario = usuarioDAO.iniciarSesion(correo, contraseña);
             if (usuario != null) {
@@ -45,7 +54,11 @@ public class UsuarioController {
         }
     }
 
-    private void registrarUsuario() {
-    	new Registro();
+    private void abrirRegistro() {
+        new Registro().setVisible(true);
+    }
+
+    public boolean registrarUsuario(Usuario usuario) {
+        return usuarioDAO.registrarUsuario(usuario);
     }
 }

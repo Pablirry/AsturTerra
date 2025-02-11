@@ -7,31 +7,33 @@ public class VistaChat extends JFrame {
 
 	private JTextArea txtMensajes;
     private JTextField txtMensaje;
-    private JButton btnEnviar;
-    
+    private JButton btnEnviar, btnVolver;
+
     public VistaChat() {
-        setTitle("Chat con Soporte");
-        setSize(500, 400);
+        setTitle("Chat de Soporte");
+        setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
-        txtMensajes = new JTextArea();
-        txtMensajes.setEditable(false);
-        JScrollPane scrollMensajes = new JScrollPane(txtMensajes);
-
+        txtMensajes = new JTextArea(10, 30);
         txtMensaje = new JTextField();
         btnEnviar = new JButton("Enviar");
+        btnVolver = new JButton("Volver al Menú");
 
-        JPanel panelInferior = new JPanel(new BorderLayout());
-        panelInferior.add(txtMensaje, BorderLayout.CENTER);
-        panelInferior.add(btnEnviar, BorderLayout.EAST);
+        add(new JScrollPane(txtMensajes));
+        add(txtMensaje);
+        add(btnEnviar);
+        add(btnVolver);
 
-        add(scrollMensajes, BorderLayout.CENTER);
-        add(panelInferior, BorderLayout.SOUTH);
+        btnVolver.addActionListener(e -> {
+            new MenuPrincipal();
+            dispose();
+        });
 
         setVisible(true);
     }
 
+    public JButton getBtnVolver() { return btnVolver; }
     public JTextField getTxtMensaje() { return txtMensaje; }
     public JTextArea getTxtMensajes() { return txtMensajes; }
     public JButton getBtnEnviar() { return btnEnviar; }

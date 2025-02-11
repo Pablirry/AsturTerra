@@ -37,7 +37,7 @@ classDiagram
         +int id
         +String nombre
         +String correo
-        +String contraseña
+        +String contrasena
         +String tipo
         +byte[] imagenPerfil
         +iniciarSesion()
@@ -103,21 +103,14 @@ classDiagram
         +obtenerMensajes()
     }
 
-    %% Relaciones entre clases
-
     Usuario "1" -- "0..*" Reserva : realiza
     Usuario "1" -- "0..*" Valoracion : deja
     Usuario "1" -- "0..*" Mensaje : envía
     Usuario "1" -- "0..*" Historial : genera
     Usuario "1" -- "0..*" Restaurante : recomienda
-
     Ruta "1" -- "0..*" Reserva : es reservada en
     Ruta "1" -- "0..*" Valoracion : es valorada en
-
-    %% Agregación de Historial a Usuario
     Usuario "1" o-- "0..*" Historial : tiene
-
-    %% Agregación de Restaurante a Usuario
     Usuario "1" o-- "0..*" Restaurante : visita
 ```
 ---

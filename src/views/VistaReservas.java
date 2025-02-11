@@ -5,7 +5,7 @@ import javax.swing.*;
 public class VistaReservas extends JFrame {
 
 	private JList<String> listaReservas;
-    private JButton btnReservar, btnCancelar;
+    private JButton btnReservar, btnCancelar, btnVolver;
 
     public VistaReservas() {
         setTitle("Gestión de Reservas");
@@ -16,10 +16,17 @@ public class VistaReservas extends JFrame {
         listaReservas = new JList<>();
         btnReservar = new JButton("Reservar");
         btnCancelar = new JButton("Cancelar");
+        btnVolver = new JButton("Volver al Menú");
 
         add(new JScrollPane(listaReservas));
         add(btnReservar);
         add(btnCancelar);
+        add(btnVolver);
+
+        btnVolver.addActionListener(e -> {
+            new MenuPrincipal();
+            dispose();
+        });
 
         setVisible(true);
     }
@@ -27,6 +34,7 @@ public class VistaReservas extends JFrame {
     public JList<String> getListaReservas() { return listaReservas; }
     public JButton getBtnReservar() { return btnReservar; }
     public JButton getBtnCancelar() { return btnCancelar; }
+    public JButton getBtnVolver() { return btnVolver; }
 
     public int getRutaSeleccionada() {
         int selectedIndex = listaReservas.getSelectedIndex();

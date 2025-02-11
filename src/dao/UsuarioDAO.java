@@ -12,7 +12,7 @@ public class UsuarioDAO {
 
     public Usuario iniciarSesion(String correo, String contrasena) {
         try (Connection con = ConexionDB.getConection()) {
-            String sql = "SELECT * FROM usuario WHERE correo = ? AND contrasena = ?";
+            String sql = "SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?";
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, correo);
@@ -26,19 +26,23 @@ public class UsuarioDAO {
                         rs.getString("correo"),
                         rs.getString("contrasena"),
                         rs.getString("tipo"),
-                        rs.getBytes("imagenPerfil"));
+                        rs.getBytes("imagen_perfil"));
                 return usuario;
             }
 
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Error al iniciar sesión");
+            System.out.println("Error al iniciar sesión: " + e.getMessage());
         }
         return null;
     }
 
     public boolean registrarUsuario(Usuario usuario) {
+        if (usuario.getNombre().isEmpty() || usuario.getCorreo().isEmpty() || usuario.getContrasena().isEmpty()) {
+            return false;
+        }
+
         try (Connection con = ConexionDB.getConection()) {
-            String sql = "INSERT INTO usuario (nombre, correo, contrasena, tipo, imagenPerfil) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO usuarios (nombre, correo, contrasena, tipo, imagen_perfil) VALUES (?, ?, ?, ?, ?)";
 
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, usuario.getNombre());
@@ -50,9 +54,8 @@ public class UsuarioDAO {
             return ps.executeUpdate() > 0;
 
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("Error al registrar usuario");
+            System.out.println("Error al registrar usuario: " + e.getMessage());
             return false;
         }
     }
-
 }

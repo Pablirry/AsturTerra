@@ -6,16 +6,16 @@ import java.sql.SQLException;
 
 public class ConexionDB {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/turismo_asturias";
-    private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String URL = "jdbc:mysql://usrshnydk2vnkzsm:jrbyBVqDOaUSMx0BXjMq@be6i3twqn0pieiochkud-mysql.services.clever-cloud.com:3306/be6i3twqn0pieiochkud";
+    private static final String USER = "usrshnydk2vnkzsm";
+    private static final String PASSWORD = "jrbyBVqDOaUSMx0BXjMq";
 
     public static Connection getConection() throws ClassNotFoundException {
         Connection con = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            DriverManager.getConnection(URL, USER, PASSWORD);
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
         } catch (SQLException e) {
             System.out.println("Error al conectar a la base de datos");
             e.printStackTrace();
