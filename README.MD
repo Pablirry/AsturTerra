@@ -1,4 +1,4 @@
-# 🏔️ Turismo Asturias - Sistema de Gestión de Turismo
+# 🏔️ AsturTerra - Sistema de Gestión de Turismo en Asturias
 
 Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con MySQL** para gestionar rutas turísticas, reservas, valoraciones, restaurantes y comunicación con soporte.
 
