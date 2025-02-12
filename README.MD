@@ -240,7 +240,7 @@ graph TD
     UC16 --> UC5
     UC17 --> UC9
 ```
-# 📜 **Diagrama casos de uso**
+# 📜 **Diagrama ER**
 ```mermaid
 
 erDiagram
