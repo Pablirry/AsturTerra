@@ -162,6 +162,7 @@ classDiagram
     Usuario "1" o-- "0..*" Restaurante : visita
     
 ```
+# 📜 **Diagrama casos de uso**
 
 ```mermaid
 graph TD
@@ -238,6 +239,78 @@ graph TD
     UC15 --> UC1
     UC16 --> UC5
     UC17 --> UC9
+```
+# 📜 **Diagrama casos de uso**
+```mermaid
+
+erDiagram
+    %% Definición de entidades
+    USUARIO {
+        int id PK
+        String nombre
+        String correo
+        String contrasena
+        String tipo
+        byte[] imagenPerfil
+    }
+    
+    RUTA {
+        int id PK
+        String nombre
+        String descripcion
+        byte[] imagen
+        double precio
+        String dificultad
+    }
+    
+    RESERVA {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        Date fecha
+    }
+    
+    VALORACION {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        int puntuacion
+        String comentario
+    }
+    
+    RESTAURANTE {
+        int id PK
+        String nombre
+        String ubicacion
+        float valoracion
+        byte[] imagen
+    }
+    
+    HISTORIAL {
+        int id PK
+        int idUsuario FK
+        String accion
+        Date fecha
+    }
+    
+    MENSAJE {
+        int id PK
+        int idUsuario FK
+        String mensaje
+        String respuesta
+        Date fecha
+    }
+    
+    %% Relaciones
+    USUARIO ||--o{ HISTORIAL : genera
+    USUARIO ||--o{ RESERVA : realiza
+    USUARIO ||--o{ VALORACION : deja
+    USUARIO ||--o{ MENSAJE : envia
+    USUARIO ||--o{ RESTAURANTE : recomienda
+
+    RUTA ||--o{ RESERVA : esReservadaEn
+    RUTA ||--o{ VALORACION : esValoradaEn
+
 ```
 
 ---
