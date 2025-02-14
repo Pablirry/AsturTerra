@@ -13,7 +13,7 @@ public class MenuPrincipal extends JFrame {
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
     private JLabel lblTitulo;
 
-    private MenuPrincipal() {
+    public MenuPrincipal() {
         setTitle("Menú Principal - Turismo Asturias");
         setSize(705, 567);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
