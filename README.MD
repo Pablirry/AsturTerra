@@ -1,4 +1,4 @@
-# 🏔️ Turismo Asturias - Sistema de Gestión de Turismo
+# 🏔️ AsturTerra - Sistema de Gestión de Turismo en Asturias
 
 Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con MySQL** para gestionar rutas turísticas, reservas, valoraciones, restaurantes y comunicación con soporte.
 
@@ -162,6 +162,153 @@ classDiagram
     Usuario "1" o-- "0..*" Restaurante : visita
     
 ```
+# 📜 **Diagrama casos de uso**
+
+```mermaid
+graph TD;
+    Usuario["🧑 Usuario"];
+    Administrador["🔧 Administrador"];
+    Sistema["💾 Sistema"];
+
+    subgraph "Gestión de Usuarios"
+        UC1["🔑 Iniciar sesión"];
+        UC2["📝 Registrarse"];
+        UC3["👤 Ver perfil"];
+        UC4["✏️ Modificar perfil"];
+    end
+
+    subgraph "Gestión de Rutas Turísticas"
+        UC5["📍 Explorar rutas"];
+        UC6["🗺️ Reservar ruta"];
+        UC7["❌ Cancelar reserva"];
+        UC8["⭐ Valorar ruta"];
+    end
+
+    subgraph "Gestión de Restaurantes"
+        UC9["🍽️ Explorar restaurantes"];
+        UC10["👍 Recomendar restaurante"];
+        UC11["⭐ Valorar restaurante"];
+    end
+
+    subgraph "Interacción con el Sistema"
+        UC12["📩 Enviar mensaje"];
+        UC13["📨 Recibir respuesta"];
+        UC14["📜 Historial de acciones"];
+    end
+
+    subgraph "Gestión de Administración"
+        UC15["🛠️ Administrar usuarios"];
+        UC16["🗺️ Administrar rutas"];
+        UC17["🏨 Administrar restaurantes"];
+        UC18["📊 Consultar estadísticas"];
+    end
+
+    Usuario -->|Usa| UC1;
+    Usuario -->|Usa| UC2;
+    Usuario -->|Usa| UC3;
+    Usuario -->|Usa| UC4;
+    Usuario -->|Usa| UC5;
+    Usuario -->|Usa| UC6;
+    Usuario -->|Usa| UC7;
+    Usuario -->|Usa| UC8;
+    Usuario -->|Usa| UC9;
+    Usuario -->|Usa| UC10;
+    Usuario -->|Usa| UC11;
+    Usuario -->|Usa| UC12;
+    Usuario -->|Usa| UC13;
+    Usuario -->|Consulta| UC14;
+
+    Administrador -->|Gestiona| UC15;
+    Administrador -->|Gestiona| UC16;
+    Administrador -->|Gestiona| UC17;
+    Administrador -->|Consulta| UC18;
+
+    Sistema -->|Registra acciones| UC14;
+
+    UC2 --> UC1;
+    UC6 --> UC5;
+    UC7 -.-> UC6;
+    UC8 --> UC6;
+    UC10 --> UC9;
+    UC11 --> UC9;
+    UC13 --> UC12;
+    UC15 --> UC1;
+    UC16 --> UC5;
+    UC17 --> UC9;
+```
+# 📜 **Diagrama ER**
+```mermaid
+
+erDiagram
+    %% Definición de entidades
+    USUARIO {
+        int id PK
+        String nombre
+        String correo
+        String contrasena
+        String tipo
+        byte[] imagenPerfil
+    }
+    
+    RUTA {
+        int id PK
+        String nombre
+        String descripcion
+        byte[] imagen
+        double precio
+        String dificultad
+    }
+    
+    RESERVA {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        Date fecha
+    }
+    
+    VALORACION {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        int puntuacion
+        String comentario
+    }
+    
+    RESTAURANTE {
+        int id PK
+        String nombre
+        String ubicacion
+        float valoracion
+        byte[] imagen
+    }
+    
+    HISTORIAL {
+        int id PK
+        int idUsuario FK
+        String accion
+        Date fecha
+    }
+    
+    MENSAJE {
+        int id PK
+        int idUsuario FK
+        String mensaje
+        String respuesta
+        Date fecha
+    }
+    
+    %% Relaciones
+    USUARIO ||--o{ HISTORIAL : genera
+    USUARIO ||--o{ RESERVA : realiza
+    USUARIO ||--o{ VALORACION : deja
+    USUARIO ||--o{ MENSAJE : envia
+    USUARIO ||--o{ RESTAURANTE : recomienda
+
+    RUTA ||--o{ RESERVA : esReservadaEn
+    RUTA ||--o{ VALORACION : esValoradaEn
+
+```
+
 ---
 # 🛠️ **Instalación y Configuración**
 
