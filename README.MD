@@ -165,36 +165,76 @@ classDiagram
 # 📜 **Diagrama casos de uso**
 
 ```mermaid
-zenuml
-title Diagrama de Casos de Uso
+graph TD;
+    Usuario["🧑 Usuario"];
+    Administrador["🔧 Administrador"];
+    Sistema["💾 Sistema"];
 
-participant Usuario
-participant Administrador
-participant Sistema
+    subgraph "Gestión de Usuarios"
+        UC1["🔑 Iniciar sesión"];
+        UC2["📝 Registrarse"];
+        UC3["👤 Ver perfil"];
+        UC4["✏️ Modificar perfil"];
+    end
 
-Usuario -> Usuario: Iniciar sesión
-Usuario -> Usuario: Registrarse
-Usuario -> Usuario: Ver perfil
-Usuario -> Usuario: Modificar perfil
-Usuario -> Sistema: Explorar rutas
-Usuario -> Sistema: Reservar ruta
-Usuario -> Sistema: Cancelar reserva
-Usuario -> Sistema: Valorar ruta
-Usuario -> Sistema: Explorar restaurantes
-Usuario -> Sistema: Recomendar restaurante
-Usuario -> Sistema: Valorar restaurante
-Usuario -> Sistema: Enviar mensaje
-Sistema -> Usuario: Recibir respuesta
-Usuario -> Sistema: Historial de acciones
+    subgraph "Gestión de Rutas Turísticas"
+        UC5["📍 Explorar rutas"];
+        UC6["🗺️ Reservar ruta"];
+        UC7["❌ Cancelar reserva"];
+        UC8["⭐ Valorar ruta"];
+    end
 
-Administrador -> Sistema: Administrar usuarios
-Administrador -> Sistema: Administrar rutas
-Administrador -> Sistema: Administrar restaurantes
-Administrador -> Sistema: Consultar estadísticas
+    subgraph "Gestión de Restaurantes"
+        UC9["🍽️ Explorar restaurantes"];
+        UC10["👍 Recomendar restaurante"];
+        UC11["⭐ Valorar restaurante"];
+    end
 
-Sistema -> Sistema: Registrar historial de acciones
+    subgraph "Interacción con el Sistema"
+        UC12["📩 Enviar mensaje"];
+        UC13["📨 Recibir respuesta"];
+        UC14["📜 Historial de acciones"];
+    end
 
-@enduml
+    subgraph "Gestión de Administración"
+        UC15["🛠️ Administrar usuarios"];
+        UC16["🗺️ Administrar rutas"];
+        UC17["🏨 Administrar restaurantes"];
+        UC18["📊 Consultar estadísticas"];
+    end
+
+    Usuario -->|Usa| UC1;
+    Usuario -->|Usa| UC2;
+    Usuario -->|Usa| UC3;
+    Usuario -->|Usa| UC4;
+    Usuario -->|Usa| UC5;
+    Usuario -->|Usa| UC6;
+    Usuario -->|Usa| UC7;
+    Usuario -->|Usa| UC8;
+    Usuario -->|Usa| UC9;
+    Usuario -->|Usa| UC10;
+    Usuario -->|Usa| UC11;
+    Usuario -->|Usa| UC12;
+    Usuario -->|Usa| UC13;
+    Usuario -->|Consulta| UC14;
+
+    Administrador -->|Gestiona| UC15;
+    Administrador -->|Gestiona| UC16;
+    Administrador -->|Gestiona| UC17;
+    Administrador -->|Consulta| UC18;
+
+    Sistema -->|Registra acciones| UC14;
+
+    UC2 --> UC1;
+    UC6 --> UC5;
+    UC7 -.-> UC6;
+    UC8 --> UC6;
+    UC10 --> UC9;
+    UC11 --> UC9;
+    UC13 --> UC12;
+    UC15 --> UC1;
+    UC16 --> UC5;
+    UC17 --> UC9;
 ```
 # 📜 **Diagrama ER**
 ```mermaid
