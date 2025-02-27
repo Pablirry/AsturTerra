@@ -1,7 +1,7 @@
 package controllers;
 
 import dao.ValoracionDAO;
-import model.Valoracion;
+import model.ValoracionRestaurante;
 import views.VistaValoraciones;
 import javax.swing.*;
 

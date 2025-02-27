@@ -124,14 +124,14 @@ public class MenuPrincipal extends JFrame {
         panelRutas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new VistaRutas();
+                new VistaRutas( usuario);
             }
         });
 
         panelReservas.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new VistaReservas();
+                new VistaReservas(usuario);
             }
         });
 

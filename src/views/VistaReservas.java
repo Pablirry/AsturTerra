@@ -2,8 +2,6 @@ package views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import controllers.ReservaController;
 import model.Usuario;
 
@@ -13,8 +11,22 @@ public class VistaReservas extends JFrame {
     private JButton btnReservar, btnCancelar, btnVolver;
     private ReservaController reservaController;
     private Usuario usuario;
+    private String rutaSeleccionada;
 
-    public VistaReservas( Usuario usuario ) {
+    public VistaReservas(Usuario usuario) {
+        this.usuario = usuario;
+        inicializarComponentes();
+        reservaController = new ReservaController(this);
+    }
+
+    public VistaReservas(Usuario usuario, String rutaSeleccionada) {
+        this.usuario = usuario;
+        this.rutaSeleccionada = rutaSeleccionada;
+        inicializarComponentes();
+        reservaController = new ReservaController(this);
+    }
+
+    private void inicializarComponentes() {
         setTitle("Gestión de Reservas");
         setSize(500, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -60,9 +72,6 @@ public class VistaReservas extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Inicializar el controlador después de crear la interfaz gráfica
-        reservaController = new ReservaController(this);
-
         // Eventos
         btnReservar.addActionListener(e -> reservaController.reservarRuta());
         btnCancelar.addActionListener(e -> reservaController.cancelarReserva());
@@ -78,5 +87,5 @@ public class VistaReservas extends JFrame {
     public JButton getBtnReservar() { return btnReservar; }
     public JButton getBtnCancelar() { return btnCancelar; }
     public JButton getBtnVolver() { return btnVolver; }
-
+    public String getRutaSeleccionada() { return rutaSeleccionada; }
 }

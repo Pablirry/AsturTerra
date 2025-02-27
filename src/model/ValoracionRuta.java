@@ -1,17 +1,17 @@
 package model;
 
-public class Valoracion {
+public class ValoracionRuta {
 
     private int id;
     private int idUsuario;
-    private int idRestaurante;
+    private int idRuta;
     private int puntuacion;
     private String comentario;
 
-    public Valoracion(int id, int idUsuario, int idRestaurante, int puntuacion, String comentario) {
+    public ValoracionRuta(int id, int idUsuario, int idRuta, int puntuacion, String comentario) {
         this.id = id;
         this.idUsuario = idUsuario;
-        this.idRestaurante = idRestaurante;
+        this.idRuta = idRuta;
         this.puntuacion = puntuacion;
         this.comentario = comentario;
     }
@@ -32,12 +32,12 @@ public class Valoracion {
         this.idUsuario = idUsuario;
     }
 
-    public int getIdRestaurante() {
-        return idRestaurante;
+    public int getIdRuta() {
+        return idRuta;
     }
 
-    public void setIdRestaurante(int idRestaurante) {
-        this.idRestaurante = idRestaurante;
+    public void setIdRuta(int idRuta) {
+        this.idRuta = idRuta;
     }
 
     public int getPuntuacion() {
@@ -58,6 +58,6 @@ public class Valoracion {
 
     @Override
     public String toString() {
-        return "ValoracionRestaurante [id=" + id + ", idUsuario=" + idUsuario + ", idRestaurante=" + idRestaurante + ", puntuacion=" + puntuacion + ", comentario=" + comentario + "]";
+        return "ValoracionRuta [id=" + id + ", idUsuario=" + idUsuario + ", idRuta=" + idRuta + ", puntuacion=" + puntuacion + ", comentario=" + comentario + "]";
     }
 }

@@ -2,8 +2,6 @@ package views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import controllers.RutaController;
 import model.Usuario;
 
@@ -14,7 +12,13 @@ public class VistaRutas extends JFrame {
     private RutaController rutaController;
     private Usuario usuario;
 
-    public VistaRutas() {
+    public VistaRutas(Usuario usuario) {
+        this.usuario = usuario;
+        inicializarComponentes();
+        rutaController = new RutaController(this);
+    }
+
+    private void inicializarComponentes() {
         setTitle("Gestión de Rutas");
         setSize(600, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -102,4 +106,5 @@ public class VistaRutas extends JFrame {
     public JButton getBtnValorar() { return btnValorar; }
     public JButton getBtnReservar() { return btnReservar; }
     public JButton getBtnVolver() { return btnVolver; }
+    public Usuario getUsuario() { return usuario; }
 }

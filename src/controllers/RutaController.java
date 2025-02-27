@@ -30,7 +30,7 @@ public class RutaController {
             DefaultListModel<String> modeloLista = new DefaultListModel<>();
 
             for (Ruta ruta : rutas) {
-                modeloLista.addElement(ruta.getNombre() + " - " + ruta.getPrecio() + "€");
+                modeloLista.addElement(ruta.getId() + " - " + ruta.getNombre() + " - " + ruta.getPrecio() + "€");
             }
 
             vistaRutas.getListaRutas().setModel(modeloLista);
@@ -128,6 +128,6 @@ public class RutaController {
         }
 
         String rutaSeleccionada = vistaRutas.getListaRutas().getSelectedValue();
-        new VistaReservas(rutaSeleccionada);
+        new VistaReservas(vistaRutas.getUsuario(), rutaSeleccionada).setVisible(true);
     }
 }

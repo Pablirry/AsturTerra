@@ -1,7 +1,7 @@
 package controllers;
 
 import dao.ValoracionDAO;
-import model.Valoracion;
+import model.ValoracionRuta;
 import views.ValorarRuta;
 
 import javax.swing.*;
@@ -27,8 +27,8 @@ public class ValorarRutaController {
                 return;
             }
 
-            Valoracion valoracion = new Valoracion(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y de la ruta
-            boolean exito = valoracionDAO.registrarValoracion(valoracion);
+            ValoracionRuta valoracion = new ValoracionRuta(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y de la ruta
+            boolean exito = valoracionDAO.registrarValoracionRuta(valoracion);
 
             if (exito) {
                 JOptionPane.showMessageDialog(valorarRutaVista, "Valoración enviada con éxito.");

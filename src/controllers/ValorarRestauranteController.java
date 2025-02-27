@@ -1,7 +1,7 @@
 package controllers;
 
 import dao.ValoracionDAO;
-import model.Valoracion;
+import model.ValoracionRestaurante;
 import views.ValorarRestaurantes;
 
 import javax.swing.*;
@@ -27,8 +27,8 @@ public class ValorarRestauranteController {
                 return;
             }
 
-            Valoracion valoracion = new Valoracion(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y del restaurante
-            boolean exito = valoracionDAO.registrarValoracion(valoracion);
+            ValoracionRestaurante valoracion = new ValoracionRestaurante(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y del restaurante
+            boolean exito = valoracionDAO.registrarValoracionRestaurante(valoracion);
 
             if (exito) {
                 JOptionPane.showMessageDialog(valorarRestauranteVista, "Valoración enviada con éxito.");
