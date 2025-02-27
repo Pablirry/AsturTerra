@@ -41,7 +41,7 @@ public class UsuarioController {
                 historialDAO.registrarAccion(usuario.getId(), "Inicio de sesión");
                 JOptionPane.showMessageDialog(loginVista, "Inicio de sesión exitoso.");
                 loginVista.dispose();
-                MenuPrincipal.getInstance().setVisible(true);
+                MenuPrincipal.getInstance(usuario).setVisible(true);
             } else {
                 JOptionPane.showMessageDialog(loginVista, "Credenciales incorrectas.");
             }

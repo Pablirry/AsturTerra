@@ -4,6 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import model.Usuario;
 
 public class MenuPrincipal extends JFrame {
 
@@ -11,9 +16,13 @@ public class MenuPrincipal extends JFrame {
 
     private JPanel panelFondo;
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
-    private JLabel lblTitulo;
+    private JLabel lblTitulo, lblImagenPerfil;
 
-    public MenuPrincipal() {
+    private Usuario usuario;
+
+    public MenuPrincipal(Usuario usuario) {
+        this.usuario = usuario;
+
         setTitle("Menú Principal - Turismo Asturias");
         setSize(705, 567);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -40,6 +49,13 @@ public class MenuPrincipal extends JFrame {
         lblTitulo.setBounds(150, 30, 400, 40);
         panelFondo.add(lblTitulo);
 
+        // Imagen de perfil
+        lblImagenPerfil = new JLabel();
+        lblImagenPerfil.setBounds(600, 10, 80, 80);
+        lblImagenPerfil.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        cargarImagenPerfil();
+        panelFondo.add(lblImagenPerfil);
+
         // Creación de paneles con imágenes
         panelRutas = crearPanel(50, 100, "Rutas", "assets/rutas.png");
         panelReservas = crearPanel(370, 100, "Reservas", "assets/reserva.png");
@@ -61,9 +77,9 @@ public class MenuPrincipal extends JFrame {
         setVisible(true);
     }
 
-    public static MenuPrincipal getInstance() {
+    public static MenuPrincipal getInstance(Usuario usuario) {
         if (instance == null) {
-            instance = new MenuPrincipal();
+            instance = new MenuPrincipal(usuario);
         }
         return instance;
     }
@@ -139,5 +155,18 @@ public class MenuPrincipal extends JFrame {
                 new VistaChat();
             }
         });
+    }
+
+    private void cargarImagenPerfil() {
+        if (usuario.getImagenPerfil() != null) {
+            try {
+                ByteArrayInputStream bais = new ByteArrayInputStream(usuario.getImagenPerfil());
+                BufferedImage bufferedImage = ImageIO.read(bais);
+                ImageIcon icon = new ImageIcon(bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH));
+                lblImagenPerfil.setIcon(icon);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

@@ -1,6 +1,9 @@
 package views;
 
 import javax.swing.*;
+
+import model.Usuario;
+
 import java.awt.*;
 
 public class VistaChat extends JFrame {
@@ -8,6 +11,7 @@ public class VistaChat extends JFrame {
 	private JTextArea txtMensajes;
     private JTextField txtMensaje;
     private JButton btnEnviar, btnVolver;
+    private Usuario usuario;
 
     public VistaChat() {
         setTitle("Chat de Soporte");
@@ -26,7 +30,7 @@ public class VistaChat extends JFrame {
         add(btnVolver);
 
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance().setVisible(true);
+            MenuPrincipal.getInstance(usuario).setVisible(true);
             dispose();
         });
 

@@ -2,10 +2,13 @@ package views;
 
 import javax.swing.*;
 
+import model.Usuario;
+
 public class VistaHistorial extends JFrame {
 
     private JList<String> listaHistorial;
     private JButton btnCerrar, btnVolver;
+    private Usuario usuario;
 
     public VistaHistorial() {
         setTitle("Historial de Actividades");
@@ -22,7 +25,7 @@ public class VistaHistorial extends JFrame {
         add(btnCerrar);
 
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance().setVisible(true);
+            MenuPrincipal.getInstance(usuario).setVisible(true);
             dispose();
         });
 

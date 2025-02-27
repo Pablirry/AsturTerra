@@ -51,4 +51,30 @@ public class RestauranteDAO {
         }
     }
 
+    public Restaurante obtenerRestaurantePorNombre(String nombre) throws ClassNotFoundException {
+        Restaurante restaurante = null;
+        String sql = "SELECT * FROM restaurantes WHERE nombre = ?";
+
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                restaurante = new Restaurante(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("ubicacion"),
+                        rs.getFloat("valoracion"),
+                        rs.getBytes("imagen")
+                );
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerRestaurantePorNombre: " + e.getMessage());
+        }
+
+        return restaurante;
+    }
 }

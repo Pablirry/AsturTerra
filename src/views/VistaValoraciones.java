@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 import controllers.ValoracionController;
+import model.Usuario;
 
 public class VistaValoraciones extends JFrame {
 
@@ -15,6 +16,7 @@ public class VistaValoraciones extends JFrame {
     private JSpinner spinnerPuntuacion;
     private JButton btnEnviarValoracion, btnVolver;
     private ValoracionController valoracionController;
+    private Usuario usuario;
 
     public VistaValoraciones() {
         setTitle("Valoración de Rutas");
@@ -37,7 +39,7 @@ public class VistaValoraciones extends JFrame {
         add(btnVolver);
 
         btnVolver.addActionListener(e -> {
-            new MenuPrincipal();
+            new MenuPrincipal(usuario);
             dispose();
         });
 

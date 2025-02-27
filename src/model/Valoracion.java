@@ -4,14 +4,14 @@ public class Valoracion {
 
     private int id;
     private int idUsuario;
-    private int idRuta;
+    private int idRestaurante;
     private int puntuacion;
     private String comentario;
-    
-    public Valoracion(int id, int idUsuario, int idRuta, int puntuacion, String comentario) {
+
+    public Valoracion(int id, int idUsuario, int idRestaurante, int puntuacion, String comentario) {
         this.id = id;
         this.idUsuario = idUsuario;
-        this.idRuta = idRuta;
+        this.idRestaurante = idRestaurante;
         this.puntuacion = puntuacion;
         this.comentario = comentario;
     }
@@ -32,12 +32,12 @@ public class Valoracion {
         this.idUsuario = idUsuario;
     }
 
-    public int getIdRuta() {
-        return idRuta;
+    public int getIdRestaurante() {
+        return idRestaurante;
     }
 
-    public void setIdRuta(int idRuta) {
-        this.idRuta = idRuta;
+    public void setIdRestaurante(int idRestaurante) {
+        this.idRestaurante = idRestaurante;
     }
 
     public int getPuntuacion() {
@@ -58,8 +58,6 @@ public class Valoracion {
 
     @Override
     public String toString() {
-        return "Valoracion [id=" + id + ", idUsuario=" + idUsuario + ", idRuta=" + idRuta + ", puntuacion=" + puntuacion
-                + ", comentario=" + comentario + "]";
+        return "ValoracionRestaurante [id=" + id + ", idUsuario=" + idUsuario + ", idRestaurante=" + idRestaurante + ", puntuacion=" + puntuacion + ", comentario=" + comentario + "]";
     }
-    
 }
