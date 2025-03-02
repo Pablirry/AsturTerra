@@ -2,42 +2,49 @@ package controllers;
 
 import dao.ValoracionDAO;
 import model.ValoracionRuta;
-import views.ValorarRuta;
+import views.VistaValoraciones;
 
 import javax.swing.*;
 
 public class ValorarRutaController {
-    private ValorarRuta valorarRutaVista;
+    private VistaValoraciones vistaValoraciones;
     private String ruta;
     private ValoracionDAO valoracionDAO;
 
-    public ValorarRutaController(ValorarRuta valorarRutaVista, String ruta) {
-        this.valorarRutaVista = valorarRutaVista;
+    public ValorarRutaController(VistaValoraciones vistaValoraciones, String ruta) {
+        this.vistaValoraciones = vistaValoraciones;
         this.ruta = ruta;
         this.valoracionDAO = new ValoracionDAO();
+        agregarEventos();
+    }
+
+    private void agregarEventos() {
+        vistaValoraciones.getBtnEnviar().addActionListener(e -> enviarValoracion());
     }
 
     public void enviarValoracion() {
         try {
-            int puntuacion = (int) valorarRutaVista.getCmbPuntuacion().getSelectedItem();
-            String comentario = valorarRutaVista.getTxtComentario().getText();
+            int idUsuario = 1; 
+            int idRuta = vistaValoraciones.getRutaSeleccionada();
+            int puntuacion = vistaValoraciones.getPuntuacionSeleccionada();
+            String comentario = vistaValoraciones.getTxtComentario().getText();
 
             if (comentario.isEmpty()) {
-                JOptionPane.showMessageDialog(valorarRutaVista, "El comentario no puede estar vacío.");
+                JOptionPane.showMessageDialog(vistaValoraciones, "El comentario no puede estar vacío.");
                 return;
             }
 
-            ValoracionRuta valoracion = new ValoracionRuta(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y de la ruta
+            ValoracionRuta valoracion = new ValoracionRuta(0, idUsuario, idRuta, puntuacion, comentario);
             boolean exito = valoracionDAO.registrarValoracionRuta(valoracion);
 
             if (exito) {
-                JOptionPane.showMessageDialog(valorarRutaVista, "Valoración enviada con éxito.");
-                valorarRutaVista.dispose();
+                JOptionPane.showMessageDialog(vistaValoraciones, "Valoración enviada con éxito.");
+                vistaValoraciones.dispose();
             } else {
-                JOptionPane.showMessageDialog(valorarRutaVista, "Error al enviar la valoración.");
+                JOptionPane.showMessageDialog(vistaValoraciones, "Error al enviar la valoración.");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(valorarRutaVista, "Error al enviar la valoración: " + e.getMessage());
+            JOptionPane.showMessageDialog(vistaValoraciones, "Error al enviar la valoración: " + e.getMessage());
         }
     }
 }

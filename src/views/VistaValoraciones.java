@@ -1,77 +1,90 @@
 package views;
 
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.*;
-
-import controllers.ValoracionController;
-import model.Usuario;
+import java.awt.*;
+import controllers.ValorarRutaController;
 
 public class VistaValoraciones extends JFrame {
 
-	private JList<String> listaRutas;
+    private JLabel lblTitulo;
+    private JLabel lblPuntuacion;
+    private JLabel lblComentario;
+    private JComboBox<Integer> cmbPuntuacion;
     private JTextArea txtComentario;
-    private JSpinner spinnerPuntuacion;
-    private JButton btnEnviarValoracion, btnVolver;
-    private ValoracionController valoracionController;
-    private Usuario usuario;
+    private JButton btnEnviar;
+    private JButton btnCancelar;
+    private int idRuta;
 
-    public VistaValoraciones() {
-        setTitle("Valoración de Rutas");
-        setSize(400, 500);
+    public VistaValoraciones(int idRuta, String nombreRuta) {
+        this.idRuta = idRuta;
+
+        setTitle("Valorar Ruta");
+        setSize(400, 300);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
-        listaRutas = new JList<>();
-        txtComentario = new JTextArea(3, 20);
-        spinnerPuntuacion = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
-        btnEnviarValoracion = new JButton("Enviar Valoración");
-        btnVolver = new JButton("Volver al Menú");
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setBackground(new Color(44, 62, 80));
+        lblTitulo = new JLabel("Valorar " + nombreRuta);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
+        lblTitulo.setForeground(Color.WHITE);
+        panelTitulo.add(lblTitulo);
+        add(panelTitulo, BorderLayout.NORTH);
 
-        add(new JScrollPane(listaRutas));
-        add(new JLabel("Puntuación (1-5):"));
-        add(spinnerPuntuacion);
-        add(new JLabel("Comentario:"));
-        add(new JScrollPane(txtComentario));
-        add(btnEnviarValoracion);
-        add(btnVolver);
+        JPanel panelContenido = new JPanel();
+        panelContenido.setLayout(new GridLayout(3, 2, 10, 10));
+        panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        btnVolver.addActionListener(e -> {
-            new MenuPrincipal(usuario);
-            dispose();
-        });
+        lblPuntuacion = new JLabel("Puntuación:");
+        cmbPuntuacion = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
+        lblComentario = new JLabel("Comentario:");
+        txtComentario = new JTextArea(5, 20);
+        JScrollPane scrollComentario = new JScrollPane(txtComentario);
 
-        btnEnviarValoracion.addActionListener((ActionListener) new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int puntuacion = (int) spinnerPuntuacion.getValue();
-                String comentario = txtComentario.getText();
+        panelContenido.add(lblPuntuacion);
+        panelContenido.add(cmbPuntuacion);
+        panelContenido.add(lblComentario);
+        panelContenido.add(scrollComentario);
 
-                if (comentario.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "El comentario no puede estar vacío.");
-                    return;
-                }
+        add(panelContenido, BorderLayout.CENTER);
 
-                JOptionPane.showMessageDialog(null, "Valoración enviada correctamente.");
-            }
-        });
+        JPanel panelBotones = new JPanel();
+        panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        panelBotones.setBackground(new Color(236, 240, 241));
+
+        btnEnviar = new JButton("Enviar");
+        btnEnviar.setBackground(new Color(46, 204, 113));
+        btnEnviar.setForeground(Color.WHITE);
+        btnEnviar.setFont(new Font("Arial", Font.BOLD, 14));
+        panelBotones.add(btnEnviar);
+
+        btnCancelar = new JButton("Cancelar");
+        btnCancelar.setBackground(new Color(231, 76, 60));
+        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setFont(new Font("Arial", Font.BOLD, 14));
+        panelBotones.add(btnCancelar);
+
+        add(panelBotones, BorderLayout.SOUTH);
+
+        ValorarRutaController valorarRutaController = new ValorarRutaController(this, nombreRuta);
+
+        btnEnviar.addActionListener(e -> valorarRutaController.enviarValoracion());
+        btnCancelar.addActionListener(e -> dispose());
 
         setVisible(true);
     }
 
-    public JList<String> getListaRutas() { return listaRutas; }
+    public JComboBox<Integer> getCmbPuntuacion() { return cmbPuntuacion; }
     public JTextArea getTxtComentario() { return txtComentario; }
-    public JButton getBtnEnviarValoracion() { return btnEnviarValoracion; }
-    public JButton getBtnVolver() { return btnVolver; }
+    public JButton getBtnEnviar() { return btnEnviar; }
+    public JButton getBtnCancelar() { return btnCancelar; }
 
     public int getRutaSeleccionada() {
-        return listaRutas.getSelectedIndex();
+        return idRuta;
     }
 
     public int getPuntuacionSeleccionada() {
-        return (int) spinnerPuntuacion.getValue();
+        return (Integer) cmbPuntuacion.getSelectedItem();
     }
-
 }

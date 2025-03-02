@@ -24,7 +24,6 @@ public class ValorarRestaurantes extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         lblTitulo = new JLabel("Valorar " + restaurante);
@@ -33,7 +32,6 @@ public class ValorarRestaurantes extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        // Panel de contenido
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(new GridLayout(3, 2, 10, 10));
         panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -51,7 +49,6 @@ public class ValorarRestaurantes extends JFrame {
 
         add(panelContenido, BorderLayout.CENTER);
 
-        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -70,10 +67,8 @@ public class ValorarRestaurantes extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Inicializar el controlador después de crear la interfaz gráfica
         ValorarRestauranteController valorarRestauranteController = new ValorarRestauranteController(this, restaurante);
 
-        // Eventos
         btnEnviar.addActionListener(e -> valorarRestauranteController.enviarValoracion());
         btnCancelar.addActionListener(e -> dispose());
 

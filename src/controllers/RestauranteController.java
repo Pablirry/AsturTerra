@@ -63,7 +63,7 @@ public class RestauranteController {
         try {
             String nombre = agregarRestauranteVista.getTxtNombre().getText();
             String ubicacion = agregarRestauranteVista.getTxtUbicacion().getText();
-            int valoracion = (int) agregarRestauranteVista.getSpnValoracion().getValue();
+            float valoracion = (float) agregarRestauranteVista.getSpnValoracion().getValue();
             File imagenPerfil = agregarRestauranteVista.getImagenPerfil();
             byte[] imagenBytes = null;
 
@@ -99,8 +99,13 @@ public class RestauranteController {
 
             if (restaurante != null && restaurante.getImagen() != null) {
                 ImageIcon imagenIcon = new ImageIcon(restaurante.getImagen());
-                Image imagen = imagenIcon.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                vistaRestaurantes.getLblImagen().setIcon(new ImageIcon(imagen));
+                Image imagen = imagenIcon.getImage();
+                if (imagen != null) {
+                    Image imagenEscalada = imagen.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                    vistaRestaurantes.getLblImagen().setIcon(new ImageIcon(imagenEscalada));
+                } else {
+                    vistaRestaurantes.getLblImagen().setIcon(null);
+                }
             } else {
                 vistaRestaurantes.getLblImagen().setIcon(null);
             }
@@ -109,4 +114,3 @@ public class RestauranteController {
         }
     }
 }
-

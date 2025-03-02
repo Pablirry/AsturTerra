@@ -100,7 +100,6 @@ public class Registro extends JFrame {
 
         getContentPane().add(panelCampos);
 
-        // Imagen de fondo
         lblFondo = new JLabel();
         lblFondo.setBounds(0, 0, 500, 600);
         getContentPane().add(lblFondo);

@@ -65,10 +65,8 @@ public class Login extends JFrame {
 
         add(panelFondo);
 
-        // Inicializar el controlador después de crear la interfaz gráfica
         usuarioController = new UsuarioController(this);
 
-        // Evento para iniciar sesión
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,12 +74,11 @@ public class Login extends JFrame {
             }
         });
 
-        // Evento para abrir la ventana de registro
         btnRegistro.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 new Registro().setVisible(true);
-                dispose(); // Cierra la ventana actual
+                dispose();
             }
         });
 

@@ -14,7 +14,7 @@ public class RestauranteDAO {
 
     public List<Restaurante> listarRestaurantes() throws ClassNotFoundException {
         List<Restaurante> restaurantes = new ArrayList<>();
-        String sql = "SELECT * FROM restaurantes ORDER BY valoracion DESC";
+        String sql = "SELECT * FROM restaurantes ORDER BY nombre";
 
         try (Connection con = ConexionDB.getConection();
                 PreparedStatement ps = con.prepareStatement(sql);
@@ -67,8 +67,7 @@ public class RestauranteDAO {
                         rs.getString("nombre"),
                         rs.getString("ubicacion"),
                         rs.getFloat("valoracion"),
-                        rs.getBytes("imagen")
-                );
+                        rs.getBytes("imagen"));
             }
 
         } catch (SQLException e) {

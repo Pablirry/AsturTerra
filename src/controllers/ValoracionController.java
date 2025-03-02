@@ -1,7 +1,6 @@
 package controllers;
 
 import dao.ValoracionDAO;
-import model.ValoracionRestaurante;
 import views.VistaValoraciones;
 import javax.swing.*;
 
@@ -16,12 +15,12 @@ public class ValoracionController {
     }
 
     private void agregarEventos() {
-        vistaValoraciones.getBtnEnviarValoracion().addActionListener(e -> valorarRuta());
+        vistaValoraciones.getBtnEnviar().addActionListener(e -> valorarRuta());
     }
 
     private void valorarRuta() {
         try {
-            int idUsuario = 1; // Usuario de prueba
+            int idUsuario = 1;
             int idRuta = vistaValoraciones.getRutaSeleccionada();
             int puntuacion = vistaValoraciones.getPuntuacionSeleccionada();
             String comentario = vistaValoraciones.getTxtComentario().getText();

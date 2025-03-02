@@ -4,7 +4,7 @@ import dao.RutaDAO;
 import model.Ruta;
 import views.VistaRutas;
 import views.AgregarRuta;
-import views.ValorarRuta;
+import views.VistaValoraciones;
 import views.VistaReservas;
 
 import javax.swing.*;
@@ -117,7 +117,9 @@ public class RutaController {
         }
 
         String rutaSeleccionada = vistaRutas.getListaRutas().getSelectedValue();
-        new ValorarRuta(rutaSeleccionada);
+        int idRuta = Integer.parseInt(rutaSeleccionada.split(" - ")[0]);
+        String nombreRuta = rutaSeleccionada.split(" - ")[1];
+        new VistaValoraciones(idRuta, nombreRuta);
     }
 
     public void reservarRuta() {

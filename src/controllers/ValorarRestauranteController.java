@@ -27,7 +27,7 @@ public class ValorarRestauranteController {
                 return;
             }
 
-            ValoracionRestaurante valoracion = new ValoracionRestaurante(0, 1, 1, puntuacion, comentario); // Cambiar por el ID del usuario y del restaurante
+            ValoracionRestaurante valoracion = new ValoracionRestaurante(0, 1, 1, puntuacion, comentario); 
             boolean exito = valoracionDAO.registrarValoracionRestaurante(valoracion);
 
             if (exito) {

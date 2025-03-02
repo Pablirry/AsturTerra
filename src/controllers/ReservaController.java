@@ -24,7 +24,7 @@ public class ReservaController {
 
     private void cargarReservas() {
         try {
-            List<Reserva> reservas = reservaDAO.obtenerReservasUsuario(1); // Cambiar por el ID del usuario actual
+            List<Reserva> reservas = reservaDAO.obtenerReservasUsuario(1); 
             DefaultListModel<String> modeloLista = new DefaultListModel<>();
             for (Reserva reserva : reservas) {
                 modeloLista.addElement(reserva.toString());
@@ -42,8 +42,8 @@ public class ReservaController {
 
     public void reservarRuta() {
         try {
-            int idUsuario = 1; // Cambiar por el ID del usuario actual
-            int idRuta = 1; // Cambiar por el ID de la ruta seleccionada
+            int idUsuario = 1;
+            int idRuta = 1;
             Date fecha = new Date();
 
             boolean exito = reservaDAO.reservarRuta(idUsuario, idRuta, fecha);

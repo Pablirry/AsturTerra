@@ -1,19 +1,29 @@
 package views;
 
 import javax.swing.*;
-
-import model.Usuario;
-
 import java.awt.*;
+import controllers.MensajeController;
+import model.Usuario;
 
 public class VistaChat extends JFrame {
 
-	private JTextArea txtMensajes;
+    private JTextArea txtMensajes;
     private JTextField txtMensaje;
     private JButton btnEnviar, btnVolver;
     private Usuario usuario;
+    private MensajeController mensajeController;
 
-    public VistaChat() {
+    public VistaChat(Usuario usuario) {
+        this.usuario = usuario;
+        inicializarComponentes();
+        try {
+            mensajeController = new MensajeController(this);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void inicializarComponentes() {
         setTitle("Chat de Soporte");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -41,5 +51,4 @@ public class VistaChat extends JFrame {
     public JTextField getTxtMensaje() { return txtMensaje; }
     public JTextArea getTxtMensajes() { return txtMensajes; }
     public JButton getBtnEnviar() { return btnEnviar; }
-
 }
