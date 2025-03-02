@@ -169,4 +169,176 @@ classDiagram
     Ruta "1" -- "0..*" ValoracionRuta : es valorada en
     Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
     Usuario "1" o-- "0..*" Historial : tiene
-    Usuario "1" o-- "0..*" Restaurante : visita    
+    Usuario "1" o-- "0..*" Restaurante : visita
+graph TD;
+    Usuario["🧑 Usuario"];
+    Administrador["🔧 Administrador"];
+    Sistema["💾 Sistema"];
+
+    subgraph "Gestión de Usuarios"
+        UC1["🔑 Iniciar sesión"];
+        UC2["📝 Registrarse"];
+        UC3["👤 Ver perfil"];
+        UC4["✏️ Modificar perfil"];
+    end
+
+    subgraph "Gestión de Rutas Turísticas"
+        UC5["📍 Explorar rutas"];
+        UC6["🗺️ Reservar ruta"];
+        UC7["❌ Cancelar reserva"];
+        UC8["⭐ Valorar ruta"];
+    end
+
+    subgraph "Gestión de Restaurantes"
+        UC9["🍽️ Explorar restaurantes"];
+        UC10["👍 Recomendar restaurante"];
+        UC11["⭐ Valorar restaurante"];
+    end
+
+    subgraph "Interacción con el Sistema"
+        UC12["📩 Enviar mensaje"];
+        UC13["📨 Recibir respuesta"];
+        UC14["📜 Historial de acciones"];
+    end
+
+    subgraph "Gestión de Administración"
+        UC15["🛠️ Administrar usuarios"];
+        UC16["🗺️ Administrar rutas"];
+        UC17["🏨 Administrar restaurantes"];
+        UC18["📊 Consultar estadísticas"];
+    end
+
+    Usuario -->|Usa| UC1;
+    Usuario -->|Usa| UC2;
+    Usuario -->|Usa| UC3;
+    Usuario -->|Usa| UC4;
+    Usuario -->|Usa| UC5;
+    Usuario -->|Usa| UC6;
+    Usuario -->|Usa| UC7;
+    Usuario -->|Usa| UC8;
+    Usuario -->|Usa| UC9;
+    Usuario -->|Usa| UC10;
+    Usuario -->|Usa| UC11;
+    Usuario -->|Usa| UC12;
+    Usuario -->|Usa| UC13;
+    Usuario -->|Consulta| UC14;
+
+    Administrador -->|Gestiona| UC15;
+    Administrador -->|Gestiona| UC16;
+    Administrador -->|Gestiona| UC17;
+    Administrador -->|Consulta| UC18;
+
+    Sistema -->|Registra acciones| UC14;
+
+    UC2 --> UC1;
+    UC6 --> UC5;
+    UC7 -.-> UC6;
+    UC8 --> UC6;
+    UC10 --> UC9;
+    UC11 --> UC9;
+    UC13 --> UC12;
+    UC15 --> UC1;
+    UC16 --> UC5;
+    UC17 --> UC9;
+
+erDiagram
+    %% Definición de entidades
+    USUARIO {
+        int id PK
+        String nombre
+        String correo
+        String contrasena
+        String tipo
+        byte[] imagenPerfil
+    }
+    
+    RUTA {
+        int id PK
+        String nombre
+        String descripcion
+        byte[] imagen
+        double precio
+        String dificultad
+    }
+    
+    RESERVA {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        Date fecha
+    }
+    
+    VALORACION_RUTA {
+        int id PK
+        int idUsuario FK
+        int idRuta FK
+        int puntuacion
+        String comentario
+    }
+    
+    RESTAURANTE {
+        int id PK
+        String nombre
+        String ubicacion
+        float valoracion
+        byte[] imagen
+    }
+    
+    VALORACION_RESTAURANTE {
+        int id PK
+        int idUsuario FK
+        int idRestaurante FK
+        int puntuacion
+        String comentario
+    }
+    
+    HISTORIAL {
+        int id PK
+        int idUsuario FK
+        String accion
+        Date fecha
+    }
+    
+    MENSAJE {
+        int id PK
+        int idUsuario FK
+        String mensaje
+        String respuesta
+        Date fecha
+    }
+    
+    %% Relaciones
+    USUARIO ||--o{ HISTORIAL : genera
+    USUARIO ||--o{ RESERVA : realiza
+    USUARIO ||--o{ VALORACION_RUTA : deja
+    USUARIO ||--o{ VALORACION_RESTAURANTE : deja
+    USUARIO ||--o{ MENSAJE : envia
+    USUARIO ||--o{ RESTAURANTE : recomienda
+
+    RUTA ||--o{ RESERVA : esReservadaEn
+    RUTA ||--o{ VALORACION_RUTA : esValoradaEn
+    RESTAURANTE ||--o{ VALORACION_RESTAURANTE : esValoradaEn
+
+🛠️ Instalación y Configuración
+📌 1. Clonar el repositorio
+📌 2. Configurar la base de datos
+1. Importar el archivo TurismoAsturias.sql en MySQL:
+2. Configurar la conexión en src/config/ConexionBD.java:
+<vscode_annotation details='%5B%7B%22title%22%3A%22hardcoded-credentials%22%2C%22description%22%3A%22Embedding%20credentials%20in%20source%20code%20risks%20unauthorized%20access%22%7D%5D'>##</vscode_annotation> 📌 3. Compilar y ejecutar el proyecto Abrir el proyecto en Eclipse o NetBeans.
+Asegurar que los drivers JDBC para MySQL están configurados.
+Ejecutar la clase Main.java para iniciar la aplicación.
+
+📸 Capturas de Pantalla
+📍 Menú Principal
+📍 Gestión de Rutas
+📍 Reservas y Valoraciones
+📍 Modo Oscuro y Exportación de Datos
+
+(Se agregarán imágenes después de la implementación completa de las vistas)
+
+🧑‍💻 Tecnologías Utilizadas
+<table> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/226/226777.png" width="50px"><br>Java (Swing)</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/5968/5968313.png" width="50px"><br>MySQL</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/733/733553.png" width="50px"><br>GitHub</td> </tr> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/9167/9167862.png" width="50px"><br>JDBC</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/4325/4325937.png" width="50px"><br>Apache POI</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/732/732220.png" width="50px"><br>iText (PDF)</td> </tr> </table>
+📩 Contacto y Soporte
+Si tienes alguna pregunta o sugerencia, contacta a:
+📧 pablolopezruiz1@gmail.com
+🔗 GitHub: Pablirry
