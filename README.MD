@@ -170,6 +170,9 @@ classDiagram
     Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
+
+# 📜 **Diagrama de Casos de uso**
+
 graph TD;
     Usuario["🧑 Usuario"];
     Administrador["🔧 Administrador"];
@@ -240,6 +243,8 @@ graph TD;
     UC15 --> UC1;
     UC16 --> UC5;
     UC17 --> UC9;
+
+# 📜 **Diagrama ER**
 
 erDiagram
     %% Definición de entidades
@@ -319,9 +324,9 @@ erDiagram
     RUTA ||--o{ VALORACION_RUTA : esValoradaEn
     RESTAURANTE ||--o{ VALORACION_RESTAURANTE : esValoradaEn
 
-🛠️ Instalación y Configuración
-📌 1. Clonar el repositorio
-📌 2. Configurar la base de datos
+# 🛠️ **Instalación y Configuración**
+## 📌 1. Clonar el repositorio
+## 📌 2. Configurar la base de datos
 1. Importar el archivo TurismoAsturias.sql en MySQL:
 2. Configurar la conexión en src/config/ConexionBD.java:
 <vscode_annotation details='%5B%7B%22title%22%3A%22hardcoded-credentials%22%2C%22description%22%3A%22Embedding%20credentials%20in%20source%20code%20risks%20unauthorized%20access%22%7D%5D'>##</vscode_annotation> 📌 3. Compilar y ejecutar el proyecto Abrir el proyecto en Eclipse o NetBeans.
