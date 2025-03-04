@@ -58,7 +58,7 @@ classDiagram
         +Date fecha
     }
 
-    class Valoracion {
+    class ValoracionRuta {
         +int id
         +int idUsuario
         +int idRuta
@@ -72,6 +72,14 @@ classDiagram
         +String ubicacion
         +float valoracion
         +byte[] imagen
+    }
+
+    class ValoracionRestaurante {
+        +int id
+        +int idUsuario
+        +int idRestaurante
+        +int puntuacion
+        +String comentario
     }
 
     class Historial {
@@ -153,11 +161,13 @@ classDiagram
     HistorialDAO --> ConexionDB : usa
     Usuario "1" -- "0..*" Historial : genera
     Usuario "1" -- "0..*" Reserva : realiza
-    Usuario "1" -- "0..*" Valoracion : deja
+    Usuario "1" -- "0..*" ValoracionRuta : deja
+    Usuario "1" -- "0..*" ValoracionRestaurante : deja
     Usuario "1" -- "0..*" Mensaje : envía
     Usuario "1" -- "0..*" Restaurante : recomienda
     Ruta "1" -- "0..*" Reserva : es reservada en
-    Ruta "1" -- "0..*" Valoracion : es valorada en
+    Ruta "1" -- "0..*" ValoracionRuta : es valorada en
+    Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
     
@@ -266,7 +276,7 @@ erDiagram
         Date fecha
     }
     
-    VALORACION {
+    VALORACION_RUTA {
         int id PK
         int idUsuario FK
         int idRuta FK
@@ -280,6 +290,14 @@ erDiagram
         String ubicacion
         float valoracion
         byte[] imagen
+    }
+    
+    VALORACION_RESTAURANTE {
+        int id PK
+        int idUsuario FK
+        int idRestaurante FK
+        int puntuacion
+        String comentario
     }
     
     HISTORIAL {
@@ -300,12 +318,10 @@ erDiagram
     %% Relaciones
     USUARIO ||--o{ HISTORIAL : genera
     USUARIO ||--o{ RESERVA : realiza
-    USUARIO ||--o{ VALORACION : deja
+    USUARIO ||--o{ VALORACION_RUTA : deja
+    USUARIO ||--o{ VALORACION_RESTAURANTE : deja
     USUARIO ||--o{ MENSAJE : envia
-    USUARIO ||--o{ RESTAURANTE : recomienda
-
-    RUTA ||--o{ RESERVA : esReservadaEn
-    RUTA ||--o{ VALORACION : esValoradaEn
+    USUARIO ||--o{ RESTAURANTE
 
 ```
 
