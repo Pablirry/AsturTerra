@@ -321,7 +321,7 @@ erDiagram
     USUARIO ||--o{ VALORACION_RUTA : deja
     USUARIO ||--o{ VALORACION_RESTAURANTE : deja
     USUARIO ||--o{ MENSAJE : envia
-    USUARIO ||--o{ RESTAURANTE
+    USUARIO ||--o{ RESTAURANTE : valora
 
 ```
 
