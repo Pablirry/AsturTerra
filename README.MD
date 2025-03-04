@@ -170,9 +170,11 @@ classDiagram
     Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
+    
+```
+# 📜 **Diagrama casos de uso**
 
-# 📜 **Diagrama de Casos de uso**
-
+```mermaid
 graph TD;
     Usuario["🧑 Usuario"];
     Administrador["🔧 Administrador"];
@@ -243,8 +245,9 @@ graph TD;
     UC15 --> UC1;
     UC16 --> UC5;
     UC17 --> UC9;
-
+```
 # 📜 **Diagrama ER**
+```mermaid
 
 erDiagram
     %% Definición de entidades
@@ -318,32 +321,51 @@ erDiagram
     USUARIO ||--o{ VALORACION_RUTA : deja
     USUARIO ||--o{ VALORACION_RESTAURANTE : deja
     USUARIO ||--o{ MENSAJE : envia
-    USUARIO ||--o{ RESTAURANTE : recomienda
+    USUARIO ||--o{ RESTAURANTE : valora
 
-    RUTA ||--o{ RESERVA : esReservadaEn
-    RUTA ||--o{ VALORACION_RUTA : esValoradaEn
-    RESTAURANTE ||--o{ VALORACION_RESTAURANTE : esValoradaEn
+```
 
+---
 # 🛠️ **Instalación y Configuración**
-## 📌 1. Clonar el repositorio
-## 📌 2. Configurar la base de datos
-1. Importar el archivo TurismoAsturias.sql en MySQL:
-2. Configurar la conexión en src/config/ConexionBD.java:
-<vscode_annotation details='%5B%7B%22title%22%3A%22hardcoded-credentials%22%2C%22description%22%3A%22Embedding%20credentials%20in%20source%20code%20risks%20unauthorized%20access%22%7D%5D'>##</vscode_annotation> 📌 3. Compilar y ejecutar el proyecto Abrir el proyecto en Eclipse o NetBeans.
-Asegurar que los drivers JDBC para MySQL están configurados.
+
+## 📌 **1. Clonar el repositorio**
+```bash
+git clone https://github.com/Pablirry/TurismoAsturias.git
+
+```
+## 📌 **2. Configurar la base de datos**
+
+### 1. Importar el archivo TurismoAsturias.sql en MySQL:
+```bash
+CREATE DATABASE turismo_asturias;
+USE turismo_asturias;
+SOURCE TurismoAsturias.sql;
+```
+
+### 2. Configurar la conexión en src/config/ConexionBD.java:
+```bash
+private static final String URL = "jdbc:mysql://localhost:3306/turismo_asturias";
+private static final String USER = "root";
+private static final String PASSWORD = "tu_contraseña";
+```
+
+## 📌 **3. Compilar y ejecutar el proyecto**
+Abrir el proyecto en Eclipse o NetBeans.  
+Asegurar que los drivers JDBC para MySQL están configurados.  
 Ejecutar la clase Main.java para iniciar la aplicación.
 
-📸 Capturas de Pantalla
-📍 Menú Principal
-📍 Gestión de Rutas
-📍 Reservas y Valoraciones
-📍 Modo Oscuro y Exportación de Datos
+### 📸 Capturas de Pantalla
+📍 Menú Principal  
+📍 Gestión de Rutas  
+📍 Reservas y Valoraciones  
+📍 Modo Oscuro y Exportación de Datos  
 
-(Se agregarán imágenes después de la implementación completa de las vistas)
+(Se agregarán imágenes después de la implementación completa de las vistas)  
 
-🧑‍💻 Tecnologías Utilizadas
-<table> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/226/226777.png" width="50px"><br>Java (Swing)</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/5968/5968313.png" width="50px"><br>MySQL</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/733/733553.png" width="50px"><br>GitHub</td> </tr> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/9167/9167862.png" width="50px"><br>JDBC</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/4325/4325937.png" width="50px"><br>Apache POI</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/732/732220.png" width="50px"><br>iText (PDF)</td> </tr> </table>
-📩 Contacto y Soporte
-Si tienes alguna pregunta o sugerencia, contacta a:
-📧 pablolopezruiz1@gmail.com
+### 🧑‍💻 Tecnologías Utilizadas
+<table> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/226/226777.png" width="50px"><br>Java (Swing)</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/5968/5968313.png" width="50px"><br>MySQL</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/733/733553.png" width="50px"><br>GitHub</td> </tr> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/9167/9167862.png" width="50px"><br>JDBC</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/4325/4325937.png" width="50px"><br>Apache POI</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/732/732220.png" width="50px"><br>iText (PDF)</td> </tr> </table> 
+
+### 📩 Contacto y Soporte
+Si tienes alguna pregunta o sugerencia, contacta a:  
+📧 pablolopezruiz1@gmail.com  
 🔗 GitHub: Pablirry
