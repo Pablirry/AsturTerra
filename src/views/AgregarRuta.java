@@ -2,11 +2,8 @@ package views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import controllers.RutaController;
 
 public class AgregarRuta extends JFrame {
@@ -27,6 +24,7 @@ public class AgregarRuta extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Agregar Ruta");
@@ -35,6 +33,7 @@ public class AgregarRuta extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
+        // Panel de contenido
         JPanel panelContenido = new JPanel();
         panelContenido.setLayout(new GridLayout(6, 2, 10, 10));
         panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -63,6 +62,7 @@ public class AgregarRuta extends JFrame {
 
         add(panelContenido, BorderLayout.CENTER);
 
+        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -81,6 +81,7 @@ public class AgregarRuta extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
+        // Eventos
         btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
         btnAgregar.addActionListener(e -> rutaController.agregarRuta());
         btnCancelar.addActionListener(e -> dispose());

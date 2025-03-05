@@ -33,6 +33,7 @@ public class VistaReservas extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Gestión de Reservas");
@@ -41,10 +42,12 @@ public class VistaReservas extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
+        // Panel de lista de reservas
         listaReservas = new JList<>();
         JScrollPane scrollPane = new JScrollPane(listaReservas);
         add(scrollPane, BorderLayout.CENTER);
 
+        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -69,6 +72,7 @@ public class VistaReservas extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
+        // Eventos
         btnReservar.addActionListener(e -> reservaController.reservarRuta());
         btnCancelar.addActionListener(e -> reservaController.cancelarReserva());
         btnVolver.addActionListener(e -> {

@@ -25,6 +25,7 @@ public class VistaRutas extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Gestión de Rutas");
@@ -33,10 +34,12 @@ public class VistaRutas extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
+        // Panel de lista de rutas
         listaRutas = new JList<>();
         JScrollPane scrollPane = new JScrollPane(listaRutas);
         add(scrollPane, BorderLayout.CENTER);
 
+        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -79,8 +82,10 @@ public class VistaRutas extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
+        // Inicializar el controlador después de crear la interfaz gráfica
         rutaController = new RutaController(this);
 
+        // Eventos
         btnAgregar.addActionListener(e -> rutaController.abrirAgregarRuta());
         btnEliminar.addActionListener(e -> rutaController.eliminarRuta());
         btnVerDetalles.addActionListener(e -> rutaController.verDetallesRuta());

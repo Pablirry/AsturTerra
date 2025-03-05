@@ -132,4 +132,8 @@ public class RutaController {
         String rutaSeleccionada = vistaRutas.getListaRutas().getSelectedValue();
         new VistaReservas(vistaRutas.getUsuario(), rutaSeleccionada).setVisible(true);
     }
+
+    public Ruta obtenerRutaPorId(int idRuta) throws ClassNotFoundException {
+        return rutaDAO.obtenerRutaPorId(idRuta);
+    }
 }

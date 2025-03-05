@@ -26,6 +26,7 @@ public class VistaRestaurantes extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Gestión de Restaurantes");
@@ -34,14 +35,17 @@ public class VistaRestaurantes extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
+        // Panel de lista de restaurantes
         listaRestaurantes = new JList<>();
         JScrollPane scrollPane = new JScrollPane(listaRestaurantes);
         add(scrollPane, BorderLayout.CENTER);
 
+        // Panel de imagen
         lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(JLabel.CENTER);
         add(lblImagen, BorderLayout.EAST);
 
+        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -72,8 +76,10 @@ public class VistaRestaurantes extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
+        // Inicializar el controlador después de crear la interfaz gráfica
         restauranteController = new RestauranteController(this);
 
+        // Eventos
         btnValorar.addActionListener(e -> restauranteController.valorarRestaurante());
         btnAgregar.addActionListener(e -> restauranteController.abrirAgregarRestaurante());
         btnCerrar.addActionListener(e -> dispose());

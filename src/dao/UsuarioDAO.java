@@ -21,13 +21,14 @@ public class UsuarioDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                Usuario usuario = new Usuario(rs.getInt("id"),
+                return new Usuario(
+                        rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("correo"),
                         rs.getString("contrasena"),
                         rs.getString("tipo"),
-                        rs.getBytes("imagen_perfil"));
-                return usuario;
+                        rs.getBytes("imagen_perfil")
+                );
             }
 
         } catch (ClassNotFoundException | SQLException e) {

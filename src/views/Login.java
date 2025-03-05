@@ -2,8 +2,6 @@ package views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import controllers.UsuarioController;
 
 public class Login extends JFrame {
@@ -65,21 +63,16 @@ public class Login extends JFrame {
 
         add(panelFondo);
 
+        // Inicializar el controlador después de crear la interfaz gráfica
         usuarioController = new UsuarioController(this);
 
-        btnLogin.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                usuarioController.iniciarSesion();
-            }
-        });
+        // Evento para iniciar sesión
+        btnLogin.addActionListener(e -> usuarioController.iniciarSesion());
 
-        btnRegistro.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new Registro().setVisible(true);
-                dispose();
-            }
+        // Evento para abrir la ventana de registro
+        btnRegistro.addActionListener(e -> {
+            new Registro().setVisible(true);
+            dispose(); // Cierra la ventana actual
         });
 
         setVisible(true);
@@ -89,5 +82,4 @@ public class Login extends JFrame {
     public JPasswordField getTxtContraseña() { return txtContraseña; }
     public JButton getBtnLogin() { return btnLogin; }
     public JButton getBtnRegistro() { return btnRegistro; }
-
 }

@@ -66,4 +66,27 @@ public class RutaDAO {
             return false;
         }
     }
+
+    public Ruta obtenerRutaPorId(int idRuta) throws ClassNotFoundException {
+        String sql = "SELECT * FROM rutas WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idRuta);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Ruta(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("descripcion"),
+                            rs.getBytes("imagen"),
+                            rs.getDouble("precio"),
+                            rs.getString("dificultad"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerRutaPorId: " + e.getMessage());
+        }
+        return null;
+    }
 }
