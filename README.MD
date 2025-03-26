@@ -32,7 +32,10 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 # 📜 **Diagrama de Clases**
 
 ```mermaid
-classDiagram
+@startuml
+
+title Classes - Class Diagram
+
     class Usuario {
         +int id
         +String nombre
@@ -170,6 +173,10 @@ classDiagram
     Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
     Usuario "1" o-- "0..*" Historial : tiene
     Usuario "1" o-- "0..*" Restaurante : visita
+    
+
+
+@enduml
     
 ```
 # 📜 **Diagrama casos de uso**
