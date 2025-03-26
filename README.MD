@@ -34,7 +34,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ```mermaid
 @startuml
 
-title Classes - Class Diagram
+Class Diagram
 
     class Usuario {
         +int id
