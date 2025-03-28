@@ -256,7 +256,7 @@ VistaRestaurantes --> TurismoService
 # 📜 **Diagrama casos de uso**
 
 ```mermaid
-![Diagrama de Casos de Uso](.\assets\diagramaCasosDeUso.png)
+![Diagrama de Casos de Uso](/assets/diagramaCasosDeUso.png)
 ```
 # 📜 **Diagrama ER**
 ```mermaid
