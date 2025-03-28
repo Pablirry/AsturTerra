@@ -54,14 +54,22 @@ public class RutaDAO {
     }
 
     public boolean eliminarRuta(int idRuta) throws ClassNotFoundException {
-        String sql = "DELETE FROM rutas WHERE id = ?";
-        try (Connection con = ConexionDB.getConection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = ConexionDB.getConection()) {
+            // Eliminar primero valoraciones asociadas
+            String deleteValoraciones = "DELETE FROM valoraciones_rutas WHERE id_ruta = ?";
+            try (PreparedStatement ps1 = con.prepareStatement(deleteValoraciones)) {
+                ps1.setInt(1, idRuta);
+                ps1.executeUpdate();
+            }
 
-            ps.setInt(1, idRuta);
-            return ps.executeUpdate() > 0;
+            // Luego eliminar la ruta
+            String deleteRuta = "DELETE FROM rutas WHERE id = ?";
+            try (PreparedStatement ps2 = con.prepareStatement(deleteRuta)) {
+                ps2.setInt(1, idRuta);
+                return ps2.executeUpdate() > 0;
+            }
         } catch (SQLException e) {
-            System.err.println("Error eliminarRuta: " + e.getMessage());
+            System.err.println("Error en eliminarRuta: " + e.getMessage());
             return false;
         }
     }

@@ -9,17 +9,29 @@ import java.util.List;
 import java.awt.*;
 
 public class VistaValoraciones extends JFrame {
+	
+	private static VistaValoraciones instance;
     private JTable tablaValoraciones;
     private DefaultTableModel modeloTabla;
     private JComboBox<Integer> cmbPuntuacion;
     private JTextArea txtComentario;
     private JButton btnEnviar, btnCancelar;
     private int idRuta;
+    private String nombreRuta;
     private Usuario usuario;
 
-    public VistaValoraciones(int idRuta, String nombreRuta, Usuario usuario) {
+    
+    public static VistaValoraciones getInstance(int idRuta, String nombreRuta) {
+        if (instance == null || !instance.isVisible()) {
+            instance = new VistaValoraciones(idRuta, nombreRuta);
+        }
+        instance.toFront();
+        return instance;
+    }
+
+    public VistaValoraciones(int idRuta, String nombreRuta) {
         this.idRuta = idRuta;
-        this.usuario = usuario;
+        this.nombreRuta = nombreRuta;
 
         setTitle("Valorar Ruta: " + nombreRuta);
         setSize(600, 500);

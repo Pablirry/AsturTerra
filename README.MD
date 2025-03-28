@@ -33,143 +33,230 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 ```mermaid
 classDiagram
-    class Usuario {
-        +int id
-        +String nombre
-        +String correo
-        +String contrasena
-        +String tipo
-        +byte[] imagenPerfil
-    }
 
-    class Ruta {
-        +int id
-        +String nombre
-        +String descripcion
-        +byte[] imagen
-        +double precio
-        +String dificultad
-    }
+%% ========== MODELOS ==========
+class Usuario {
+  +int id
+  +String nombre
+  +String correo
+  +String contrasena
+  +String tipo
+  +byte[] imagenPerfil
+}
 
-    class Reserva {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +Date fecha
-    }
+class Ruta {
+  +int id
+  +String nombre
+  +String descripcion
+  +byte[] imagen
+  +double precio
+  +String dificultad
+}
 
-    class ValoracionRuta {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +int puntuacion
-        +String comentario
-    }
+class Restaurante {
+  +int id
+  +String nombre
+  +String ubicacion
+  +float valoracion
+  +byte[] imagen
+}
 
-    class Restaurante {
-        +int id
-        +String nombre
-        +String ubicacion
-        +float valoracion
-        +byte[] imagen
-    }
+class Reserva {
+  +int id
+  +int idUsuario
+  +int idRuta
+  +Date fecha
+}
 
-    class ValoracionRestaurante {
-        +int id
-        +int idUsuario
-        +int idRestaurante
-        +int puntuacion
-        +String comentario
-    }
+class Historial {
+  +int id
+  +int idUsuario
+  +String accion
+  +Date fecha
+}
 
-    class Historial {
-        +int id
-        +int idUsuario
-        +String accion
-        +Date fecha
-    }
+class Mensaje {
+  +int id
+  +int idUsuario
+  +String mensaje
+  +String respuesta
+  +Date fecha
+}
 
-    class Mensaje {
-        +int id
-        +int idUsuario
-        +String mensaje
-        +String respuesta
-        +Date fecha
-    }
+class ValoracionRuta {
+  +int id
+  +int idUsuario
+  +int idRuta
+  +int puntuacion
+  +String comentario
+}
 
-    class UsuarioDAO {
-        +Usuario iniciarSesion(String correo, String contrasena)
-        +boolean registrarUsuario(Usuario usuario)
-    }
+class ValoracionRestaurante {
+  +int id
+  +int idUsuario
+  +int idRestaurante
+  +int puntuacion
+  +String comentario
+}
 
-    class HistorialDAO {
-        +void registrarAccion(int idUsuario, String accion)
-    }
+%% ========== DAO ==========
+class UsuarioDAO
+class RutaDAO
+class RestauranteDAO
+class ReservarDAO
+class HistorialDAO
+class MensajeDAO
+class ValoracionDAO
 
-    class UsuarioController {
-        -UsuarioDAO usuarioDAO
-        -HistorialDAO historialDAO
-        -Login loginVista
-        +UsuarioController()
-        +UsuarioController(Login loginVista)
-        +void iniciarSesion()
-        +void abrirRegistro()
-        +boolean registrarUsuario(Usuario usuario)
-    }
+%% ========== SERVICE ==========
+class TurismoService
 
-    class Login {
-        -JTextField txtCorreo
-        -JPasswordField txtContraseña
-        -JButton btnLogin
-        -JButton btnRegistro
-        -JLabel lblTitulo, lblCorreo, lblContraseña
-        -JPanel panelFondo
-        -UsuarioController usuarioController
-        +Login()
-        +JTextField getTxtCorreo()
-        +JPasswordField getTxtContraseña()
-        +JButton getBtnLogin()
-        +JButton getBtnRegistro()
-    }
+%% ========== VISTAS ==========
+class Login {
+  -JTextField txtCorreo
+  -JPasswordField txtContraseña
+  -JButton btnLogin
+  -JButton btnRegistro
+  -JLabel lblTitulo
+  -JPanel panelFondo
+}
 
-    class Registro {
-        -JTextField txtNombre, txtCorreo
-        -JPasswordField txtContraseña
-        -JButton btnRegistrar, btnSeleccionarImagen
-        -JLabel lblFondo
-        -JCheckBox chkAdmin
-        -File imagenPerfil
-        +Registro()
-        +void registrarUsuario()
-    }
+class Registro {
+  -JTextField txtNombre
+  -JTextField txtCorreo
+  -JPasswordField txtContraseña
+  -JCheckBox chkAdmin
+  -JButton btnRegistrar
+  -JButton btnSeleccionarImagen
+  -File imagenPerfil
+}
 
-    class MenuPrincipal {
-        +MenuPrincipal()
-    }
+class MenuPrincipal {
+  -Usuario usuario
+  -JPanel panelRutas
+  -JPanel panelReservas
+  -JPanel panelRestaurantes
+  -JPanel panelHistorial
+  -JPanel panelChat
+}
 
-    class ConexionDB {
-        +static Connection getConection()
-    }
+class VistaRutas {
+  -Usuario usuario
+  -JTable tablaRutas
+  -DefaultTableModel modeloTabla
+  -JButton btnAgregar
+  -JButton btnEliminar
+  -JButton btnVerDetalles
+  -JButton btnValorar
+  -JButton btnReservar
+  -JButton btnVolver
+}
 
-    UsuarioController --> UsuarioDAO : usa
-    UsuarioController --> HistorialDAO : usa
-    UsuarioController --> Login : controla
-    UsuarioController --> Registro : controla
-    Login --> UsuarioController : usa
-    Registro --> UsuarioController : usa
-    UsuarioDAO --> ConexionDB : usa
-    HistorialDAO --> ConexionDB : usa
-    Usuario "1" -- "0..*" Historial : genera
-    Usuario "1" -- "0..*" Reserva : realiza
-    Usuario "1" -- "0..*" ValoracionRuta : deja
-    Usuario "1" -- "0..*" ValoracionRestaurante : deja
-    Usuario "1" -- "0..*" Mensaje : envía
-    Usuario "1" -- "0..*" Restaurante : recomienda
-    Ruta "1" -- "0..*" Reserva : es reservada en
-    Ruta "1" -- "0..*" ValoracionRuta : es valorada en
-    Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
-    Usuario "1" o-- "0..*" Historial : tiene
-    Usuario "1" o-- "0..*" Restaurante : visita
+class VistaRestaurantes {
+  -Usuario usuario
+  -JList listaRestaurantes
+  -JLabel lblImagen
+  -JButton btnValorar
+  -JButton btnAgregar
+  -JButton btnCerrar
+  -JButton btnVolver
+}
+
+class VistaReservas {
+  -Usuario usuario
+  -String rutaSeleccionada
+  -JList listaReservas
+  -JButton btnReservar
+  -JButton btnCancelar
+  -JButton btnVolver
+}
+
+class VistaHistorial {
+  -Usuario usuario
+  -JList listaHistorial
+  -JButton btnCerrar
+  -JButton btnVolver
+}
+
+class VistaChat {
+  -Usuario usuario
+  -JTextArea txtMensajes
+  -JTextField txtMensaje
+  -JButton btnEnviar
+  -JButton btnVolver
+}
+
+class VistaValoraciones {
+  -int idRuta
+  -JComboBox cmbPuntuacion
+  -JTextArea txtComentario
+  -JButton btnEnviar
+  -JButton btnCancelar
+  -JTable tablaValoraciones
+  -DefaultTableModel modeloTabla
+}
+
+class ValorarRestaurantes {
+  -int idRestaurante
+  -Usuario usuario
+  -JComboBox cmbPuntuacion
+  -JTextArea txtComentario
+  -JButton btnEnviar
+  -JButton btnCancelar
+}
+
+class AgregarRuta {
+  -JTextField txtNombre
+  -JTextField txtDescripcion
+  -JTextField txtPrecio
+  -JComboBox cmbDificultad
+  -JButton btnSeleccionarImagen
+  -JButton btnAgregar
+  -JButton btnCancelar
+  -File imagenRuta
+}
+
+class AgregarRestaurante {
+  -JTextField txtNombre
+  -JTextField txtUbicacion
+  -JSpinner spnValoracion
+  -JButton btnSeleccionarImagen
+  -JButton btnAgregar
+  -JButton btnCancelar
+  -File imagenPerfil
+}
+
+%% ========== RELACIONES ==========
+TurismoService --> UsuarioDAO
+TurismoService --> RutaDAO
+TurismoService --> RestauranteDAO
+TurismoService --> ReservarDAO
+TurismoService --> HistorialDAO
+TurismoService --> MensajeDAO
+TurismoService --> ValoracionDAO
+
+UsuarioDAO --> Usuario
+RutaDAO --> Ruta
+RestauranteDAO --> Restaurante
+ReservarDAO --> Reserva
+HistorialDAO --> Historial
+MensajeDAO --> Mensaje
+ValoracionDAO --> ValoracionRuta
+ValoracionDAO --> ValoracionRestaurante
+
+VistaRutas --> Usuario
+VistaRestaurantes --> Usuario
+VistaReservas --> Usuario
+VistaHistorial --> Usuario
+VistaChat --> Usuario
+VistaValoraciones --> Usuario
+ValorarRestaurantes --> Usuario
+AgregarRuta --> Ruta
+AgregarRestaurante --> Restaurante
+Registro --> Usuario
+Login --> Usuario
+MenuPrincipal --> Usuario
+
     
 ```
 # 📜 **Diagrama casos de uso**
