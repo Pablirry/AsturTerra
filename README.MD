@@ -109,7 +109,17 @@ class MensajeDAO
 class ValoracionDAO
 
 %% ========== SERVICE ==========
-class TurismoService
+class TurismoService {
+  +Usuario iniciarSesion()
+  +boolean registrarUsuario()
+  +List<Ruta> obtenerRutas()
+  +boolean reservarRuta()
+  +List<Historial> obtenerHistorialUsuario()
+  +Restaurante obtenerRestaurantePorNombre()
+  +boolean valorarRuta()
+  +boolean valorarRestaurante()
+  +List<Mensaje> obtenerMensajesUsuario()
+}
 
 %% ========== VISTAS ==========
 class Login {
@@ -117,8 +127,6 @@ class Login {
   -JPasswordField txtContraseña
   -JButton btnLogin
   -JButton btnRegistro
-  -JLabel lblTitulo
-  -JPanel panelFondo
 }
 
 class Registro {
@@ -127,7 +135,6 @@ class Registro {
   -JPasswordField txtContraseña
   -JCheckBox chkAdmin
   -JButton btnRegistrar
-  -JButton btnSeleccionarImagen
   -File imagenPerfil
 }
 
@@ -144,65 +151,40 @@ class VistaRutas {
   -Usuario usuario
   -JTable tablaRutas
   -DefaultTableModel modeloTabla
-  -JButton btnAgregar
-  -JButton btnEliminar
-  -JButton btnVerDetalles
-  -JButton btnValorar
-  -JButton btnReservar
-  -JButton btnVolver
 }
 
 class VistaRestaurantes {
   -Usuario usuario
   -JList listaRestaurantes
   -JLabel lblImagen
-  -JButton btnValorar
-  -JButton btnAgregar
-  -JButton btnCerrar
-  -JButton btnVolver
 }
 
 class VistaReservas {
   -Usuario usuario
   -String rutaSeleccionada
   -JList listaReservas
-  -JButton btnReservar
-  -JButton btnCancelar
-  -JButton btnVolver
 }
 
 class VistaHistorial {
   -Usuario usuario
   -JList listaHistorial
-  -JButton btnCerrar
-  -JButton btnVolver
 }
 
 class VistaChat {
   -Usuario usuario
   -JTextArea txtMensajes
-  -JTextField txtMensaje
-  -JButton btnEnviar
-  -JButton btnVolver
 }
 
 class VistaValoraciones {
   -int idRuta
   -JComboBox cmbPuntuacion
   -JTextArea txtComentario
-  -JButton btnEnviar
-  -JButton btnCancelar
-  -JTable tablaValoraciones
-  -DefaultTableModel modeloTabla
 }
 
 class ValorarRestaurantes {
   -int idRestaurante
   -Usuario usuario
   -JComboBox cmbPuntuacion
-  -JTextArea txtComentario
-  -JButton btnEnviar
-  -JButton btnCancelar
 }
 
 class AgregarRuta {
@@ -210,23 +192,16 @@ class AgregarRuta {
   -JTextField txtDescripcion
   -JTextField txtPrecio
   -JComboBox cmbDificultad
-  -JButton btnSeleccionarImagen
-  -JButton btnAgregar
-  -JButton btnCancelar
-  -File imagenRuta
 }
 
 class AgregarRestaurante {
   -JTextField txtNombre
   -JTextField txtUbicacion
   -JSpinner spnValoracion
-  -JButton btnSeleccionarImagen
-  -JButton btnAgregar
-  -JButton btnCancelar
   -File imagenPerfil
 }
 
-%% ========== RELACIONES ==========
+%% ========== RELACIONES DE SERVICIO ==========
 TurismoService --> UsuarioDAO
 TurismoService --> RutaDAO
 TurismoService --> RestauranteDAO
@@ -235,6 +210,7 @@ TurismoService --> HistorialDAO
 TurismoService --> MensajeDAO
 TurismoService --> ValoracionDAO
 
+%% ========== DAO - MODELO ==========
 UsuarioDAO --> Usuario
 RutaDAO --> Ruta
 RestauranteDAO --> Restaurante
@@ -244,18 +220,37 @@ MensajeDAO --> Mensaje
 ValoracionDAO --> ValoracionRuta
 ValoracionDAO --> ValoracionRestaurante
 
+%% ========== VISTAS - MODELOS ==========
+Login --> Usuario
+Registro --> Usuario
+MenuPrincipal --> Usuario
+VistaRutas --> Ruta
 VistaRutas --> Usuario
+VistaRestaurantes --> Restaurante
 VistaRestaurantes --> Usuario
+VistaReservas --> Reserva
 VistaReservas --> Usuario
+VistaHistorial --> Historial
 VistaHistorial --> Usuario
+VistaChat --> Mensaje
 VistaChat --> Usuario
+VistaValoraciones --> ValoracionRuta
 VistaValoraciones --> Usuario
+ValorarRestaurantes --> ValoracionRestaurante
 ValorarRestaurantes --> Usuario
 AgregarRuta --> Ruta
 AgregarRestaurante --> Restaurante
-Registro --> Usuario
-Login --> Usuario
-MenuPrincipal --> Usuario
+
+%% ========== VISTAS - TURISMOSERVICE ==========
+Login --> TurismoService
+Registro --> TurismoService
+VistaRutas --> TurismoService
+VistaReservas --> TurismoService
+VistaHistorial --> TurismoService
+VistaChat --> TurismoService
+VistaValoraciones --> TurismoService
+ValorarRestaurantes --> TurismoService
+VistaRestaurantes --> TurismoService
     
 ```
 # 📜 **Diagrama casos de uso**
