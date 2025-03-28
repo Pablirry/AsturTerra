@@ -39,7 +39,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 # 📜 **Diagrama ER**
 
-![Diagrama de Entidad-Relacion](/assets/DiagramaER.png.png)
+![Diagrama de Entidad-Relacion](/assets/DiagramaER.png)
 
 ---
 # 🛠️ **Instalación y Configuración**
