@@ -24,7 +24,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 │ ├── 📂 dao → Acceso a la base de datos (CRUD)  
 │ ├── 📂 modelo → Clases de datos (Usuario, Ruta, Reserva, etc.)  
 │ ├── 📂 vista → Interfaces gráficas (Swing)  
-│ ├── 📂 services → Lógica                                               
+│ ├── 📂 services → Lógica  
 ├── 📂 assets → Imágenes de prueba  
 ├── 📜 README.md → Documentación del proyecto  
 ├── 📜 TurismoAsturias.sql → Base de datos MySQL  
