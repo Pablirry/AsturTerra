@@ -33,143 +33,146 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 ```mermaid
 classDiagram
-    class Usuario {
-        +int id
-        +String nombre
-        +String correo
-        +String contrasena
-        +String tipo
-        +byte[] imagenPerfil
-    }
 
-    class Ruta {
-        +int id
-        +String nombre
-        +String descripcion
-        +byte[] imagen
-        +double precio
-        +String dificultad
-    }
+class Usuario {
+    +int id
+    +String nombre
+    +String correo
+    +String contrasena
+    +String tipo
+    +byte[] imagenPerfil
+}
 
-    class Reserva {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +Date fecha
-    }
+class Ruta {
+    +int id
+    +String nombre
+    +String descripcion
+    +byte[] imagen
+    +double precio
+    +String dificultad
+}
 
-    class ValoracionRuta {
-        +int id
-        +int idUsuario
-        +int idRuta
-        +int puntuacion
-        +String comentario
-    }
+class Reserva {
+    +int id
+    +int idUsuario
+    +int idRuta
+    +Date fecha
+}
 
-    class Restaurante {
-        +int id
-        +String nombre
-        +String ubicacion
-        +float valoracion
-        +byte[] imagen
-    }
+class ValoracionRuta {
+    +int id
+    +int idUsuario
+    +int idRuta
+    +int puntuacion
+    +String comentario
+}
 
-    class ValoracionRestaurante {
-        +int id
-        +int idUsuario
-        +int idRestaurante
-        +int puntuacion
-        +String comentario
-    }
+class Restaurante {
+    +int id
+    +String nombre
+    +String ubicacion
+    +float valoracion
+    +byte[] imagen
+}
 
-    class Historial {
-        +int id
-        +int idUsuario
-        +String accion
-        +Date fecha
-    }
+class ValoracionRestaurante {
+    +int id
+    +int idUsuario
+    +int idRestaurante
+    +int puntuacion
+    +String comentario
+}
 
-    class Mensaje {
-        +int id
-        +int idUsuario
-        +String mensaje
-        +String respuesta
-        +Date fecha
-    }
+class Historial {
+    +int id
+    +int idUsuario
+    +String accion
+    +Date fecha
+}
 
-    class UsuarioDAO {
-        +Usuario iniciarSesion(String correo, String contrasena)
-        +boolean registrarUsuario(Usuario usuario)
-    }
+class Mensaje {
+    +int id
+    +int idUsuario
+    +String mensaje
+    +String respuesta
+    +Date fecha
+}
 
-    class HistorialDAO {
-        +void registrarAccion(int idUsuario, String accion)
-    }
+class UsuarioDAO {
+    +Usuario iniciarSesion(String correo, String contrasena)
+    +boolean registrarUsuario(Usuario usuario)
+}
 
-    class UsuarioController {
-        -UsuarioDAO usuarioDAO
-        -HistorialDAO historialDAO
-        -Login loginVista
-        +UsuarioController()
-        +UsuarioController(Login loginVista)
-        +void iniciarSesion()
-        +void abrirRegistro()
-        +boolean registrarUsuario(Usuario usuario)
-    }
+class HistorialDAO {
+    +void registrarAccion(int idUsuario, String accion)
+}
 
-    class Login {
-        -JTextField txtCorreo
-        -JPasswordField txtContraseña
-        -JButton btnLogin
-        -JButton btnRegistro
-        -JLabel lblTitulo, lblCorreo, lblContraseña
-        -JPanel panelFondo
-        -UsuarioController usuarioController
-        +Login()
-        +JTextField getTxtCorreo()
-        +JPasswordField getTxtContraseña()
-        +JButton getBtnLogin()
-        +JButton getBtnRegistro()
-    }
+class UsuarioController {
+    -UsuarioDAO usuarioDAO
+    -HistorialDAO historialDAO
+    -Login loginVista
+    +UsuarioController()
+    +UsuarioController(Login loginVista)
+    +void iniciarSesion()
+    +void abrirRegistro()
+    +boolean registrarUsuario(Usuario usuario)
+}
 
-    class Registro {
-        -JTextField txtNombre, txtCorreo
-        -JPasswordField txtContraseña
-        -JButton btnRegistrar, btnSeleccionarImagen
-        -JLabel lblFondo
-        -JCheckBox chkAdmin
-        -File imagenPerfil
-        +Registro()
-        +void registrarUsuario()
-    }
+class Login {
+    -JTextField txtCorreo
+    -JPasswordField txtContraseña
+    -JButton btnLogin
+    -JButton btnRegistro
+    -JLabel lblTitulo, lblCorreo, lblContraseña
+    -JPanel panelFondo
+    -UsuarioController usuarioController
+    +Login()
+    +JTextField getTxtCorreo()
+    +JPasswordField getTxtContraseña()
+    +JButton getBtnLogin()
+    +JButton getBtnRegistro()
+}
 
-    class MenuPrincipal {
-        +MenuPrincipal()
-    }
+class Registro {
+    -JTextField txtNombre, txtCorreo
+    -JPasswordField txtContraseña
+    -JButton btnRegistrar, btnSeleccionarImagen
+    -JLabel lblFondo
+    -JCheckBox chkAdmin
+    -File imagenPerfil
+    +Registro()
+    +void registrarUsuario()
+}
 
-    class ConexionDB {
-        +static Connection getConection()
-    }
+class MenuPrincipal {
+    +MenuPrincipal()
+}
 
-    UsuarioController --> UsuarioDAO : usa
-    UsuarioController --> HistorialDAO : usa
-    UsuarioController --> Login : controla
-    UsuarioController --> Registro : controla
-    Login --> UsuarioController : usa
-    Registro --> UsuarioController : usa
-    UsuarioDAO --> ConexionDB : usa
-    HistorialDAO --> ConexionDB : usa
-    Usuario "1" -- "0..*" Historial : genera
-    Usuario "1" -- "0..*" Reserva : realiza
-    Usuario "1" -- "0..*" ValoracionRuta : deja
-    Usuario "1" -- "0..*" ValoracionRestaurante : deja
-    Usuario "1" -- "0..*" Mensaje : envía
-    Usuario "1" -- "0..*" Restaurante : recomienda
-    Ruta "1" -- "0..*" Reserva : es reservada en
-    Ruta "1" -- "0..*" ValoracionRuta : es valorada en
-    Restaurante "1" -- "0..*" ValoracionRestaurante : es valorado en
-    Usuario "1" o-- "0..*" Historial : tiene
-    Usuario "1" o-- "0..*" Restaurante : visita
+class ConexionDB {
+    +static Connection getConection()
+}
+
+UsuarioController --> UsuarioDAO : usa
+UsuarioController --> HistorialDAO : usa
+UsuarioController --> Login : controla
+UsuarioController --> Registro : controla
+Login --> UsuarioController : usa
+Registro --> UsuarioController : usa
+UsuarioDAO --> ConexionDB : usa
+HistorialDAO --> ConexionDB : usa
+
+Usuario "1" --> "0..*" Historial : genera
+Usuario "1" --> "0..*" Reserva : realiza
+Usuario "1" --> "0..*" ValoracionRuta : deja
+Usuario "1" --> "0..*" ValoracionRestaurante : deja
+Usuario "1" --> "0..*" Mensaje : envía
+Usuario "1" --> "0..*" Restaurante : recomienda
+Usuario "1" o-- "0..*" Historial : tiene
+Usuario "1" o-- "0..*" Restaurante : visita
+
+Ruta "1" --> "0..*" Reserva : es reservada en
+Ruta "1" --> "0..*" ValoracionRuta : es valorada en
+Restaurante "1" --> "0..*" ValoracionRestaurante : es valorado en
     
 ```
 # 📜 **Diagrama casos de uso**
