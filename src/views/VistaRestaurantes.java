@@ -1,22 +1,53 @@
 package views;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+
+import dao.ReservarDAO;
+import dao.RutaDAO;
+import java.util.List;
 import java.awt.*;
-import controllers.RestauranteController;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+
+import model.Reserva;
+import model.Restaurante;
+import model.Ruta;
 import model.Usuario;
+import services.TurismoService;
 
 public class VistaRestaurantes extends JFrame {
+
+    private static VistaRestaurantes instance;
 
     private JList<String> listaRestaurantes;
     private JLabel lblImagen;
     private JButton btnValorar, btnCerrar, btnVolver, btnAgregar;
-    private RestauranteController restauranteController;
     private Usuario usuario;
+    private DefaultListModel<String> modeloLista;
+    private List<Restaurante> lista;
+
+    public static VistaRestaurantes getInstance(Usuario usuario) {
+        if (instance == null || !instance.isVisible()) {
+            instance = new VistaRestaurantes(usuario);
+        }
+        instance.toFront();
+        return instance;
+    }
 
     public VistaRestaurantes(Usuario usuario) {
         this.usuario = usuario;
         inicializarComponentes();
-        restauranteController = new RestauranteController(this);
+        cargarRestaurantes();
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                instance = null;
+            }
+        });
     }
 
     private void inicializarComponentes() {
@@ -26,7 +57,6 @@ public class VistaRestaurantes extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Panel de título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Gestión de Restaurantes");
@@ -35,17 +65,16 @@ public class VistaRestaurantes extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        // Panel de lista de restaurantes
-        listaRestaurantes = new JList<>();
+        modeloLista = new DefaultListModel<>();
+        listaRestaurantes = new JList<>(modeloLista);
         JScrollPane scrollPane = new JScrollPane(listaRestaurantes);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Panel de imagen
         lblImagen = new JLabel();
         lblImagen.setHorizontalAlignment(JLabel.CENTER);
+        lblImagen.setPreferredSize(new Dimension(200, 200));
         add(lblImagen, BorderLayout.EAST);
 
-        // Panel de botones
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
@@ -76,31 +105,71 @@ public class VistaRestaurantes extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Inicializar el controlador después de crear la interfaz gráfica
-        restauranteController = new RestauranteController(this);
+        listaRestaurantes.addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                mostrarImagenRestaurante();
+            }
+        });
 
-        // Eventos
-        btnValorar.addActionListener(e -> restauranteController.valorarRestaurante());
-        btnAgregar.addActionListener(e -> restauranteController.abrirAgregarRestaurante());
+        btnValorar.addActionListener(e -> {
+            String seleccionado = listaRestaurantes.getSelectedValue();
+            if (seleccionado != null) {
+                try {
+                    Restaurante restaurante = TurismoService.getInstance().obtenerRestaurantePorNombre(seleccionado);
+                    if (restaurante != null) {
+                        new ValorarRestaurantes(seleccionado, usuario).setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No se encontró el restaurante.");
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al buscar el restaurante: " + ex.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Seleccione un restaurante primero.");
+            }
+        });
+
+        btnAgregar.addActionListener(e -> new AgregarRestaurante().setVisible(true));
         btnCerrar.addActionListener(e -> dispose());
+
         btnVolver.addActionListener(e -> {
             MenuPrincipal.getInstance(usuario).setVisible(true);
             dispose();
         });
 
-        listaRestaurantes.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                restauranteController.mostrarImagenRestaurante();
-            }
-        });
-
         setVisible(true);
     }
 
-    public JList<String> getListaRestaurantes() { return listaRestaurantes; }
-    public JLabel getLblImagen() { return lblImagen; }
-    public JButton getBtnValorar() { return btnValorar; }
-    public JButton getBtnCerrar() { return btnCerrar; }
-    public JButton getBtnVolver() { return btnVolver; }
-    public JButton getBtnAgregar() { return btnAgregar; }
+    private void cargarRestaurantes() {
+        try {
+            lista = TurismoService.getInstance().obtenerRestaurantes();
+            modeloLista.clear();
+            for (Restaurante r : lista) {
+                modeloLista.addElement(r.getNombre());
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar restaurantes: " + e.getMessage());
+        }
+    }
+
+    private void mostrarImagenRestaurante() {
+        int index = listaRestaurantes.getSelectedIndex();
+        if (index != -1 && lista != null && index < lista.size()) {
+            Restaurante restaurante = lista.get(index);
+            byte[] imagenBytes = restaurante.getImagen();
+            if (imagenBytes != null) {
+                try {
+                    ByteArrayInputStream bis = new ByteArrayInputStream(imagenBytes);
+                    BufferedImage img = ImageIO.read(bis);
+                    ImageIcon icon = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+                    lblImagen.setIcon(icon);
+                } catch (Exception e) {
+                    lblImagen.setIcon(null);
+                    System.err.println("No se pudo cargar la imagen: " + e.getMessage());
+                }
+            } else {
+                lblImagen.setIcon(null);
+            }
+        }
+    }
 }

@@ -1,6 +1,9 @@
 package views;
 
 import javax.swing.*;
+
+import dao.UsuarioDAO;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +11,6 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import controllers.UsuarioController;
 import model.Usuario;
 
 public class Registro extends JFrame {
@@ -16,22 +18,24 @@ public class Registro extends JFrame {
     private JTextField txtNombre, txtCorreo;
     private JPasswordField txtContraseña;
     private JButton btnRegistrar, btnSeleccionarImagen;
-    private JLabel lblFondo;
     private JCheckBox chkAdmin;
     private File imagenPerfil;
 
+    private UsuarioDAO usuarioDAO;
+
     public Registro() {
+        usuarioDAO = new UsuarioDAO();
+
         setTitle("Registro de Usuario");
         setSize(500, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
 
-        // Panel transparente para los campos
         JPanel panelCampos = new JPanel();
         panelCampos.setLayout(null);
         panelCampos.setBounds(50, 100, 400, 350);
-        panelCampos.setBackground(new Color(255, 255, 255, 180)); // Transparencia
+        panelCampos.setBackground(new Color(255, 255, 255, 180));
 
         JLabel lblTitulo = new JLabel("Crea tu cuenta");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
@@ -74,42 +78,32 @@ public class Registro extends JFrame {
         btnSeleccionarImagen.setBounds(50, 220, 300, 40);
         btnSeleccionarImagen.setBackground(new Color(52, 152, 219));
         btnSeleccionarImagen.setForeground(Color.WHITE);
-        btnSeleccionarImagen.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser();
-                int result = fileChooser.showOpenDialog(null);
-                if (result == JFileChooser.APPROVE_OPTION) {
-                    imagenPerfil = fileChooser.getSelectedFile();
-                }
-            }
-        });
+        btnSeleccionarImagen.addActionListener(this::seleccionarImagen);
         panelCampos.add(btnSeleccionarImagen);
 
         btnRegistrar = new JButton("Registrarse");
         btnRegistrar.setBounds(50, 280, 300, 40);
         btnRegistrar.setBackground(new Color(46, 204, 113));
         btnRegistrar.setForeground(Color.WHITE);
-        btnRegistrar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                registrarUsuario();
-            }
-        });
+        btnRegistrar.addActionListener(this::registrarUsuario);
         panelCampos.add(btnRegistrar);
 
         getContentPane().add(panelCampos);
-
-        lblFondo = new JLabel();
-        lblFondo.setBounds(0, 0, 500, 600);
-        getContentPane().add(lblFondo);
     }
 
-    private void registrarUsuario() {
+    private void seleccionarImagen(ActionEvent e) {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(null);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            imagenPerfil = fileChooser.getSelectedFile();
+        }
+    }
+
+    private void registrarUsuario(ActionEvent e) {
         try {
-            String nombre = txtNombre.getText();
-            String correo = txtCorreo.getText();
-            String contrasena = new String(txtContraseña.getPassword());
+            String nombre = txtNombre.getText().trim();
+            String correo = txtCorreo.getText().trim();
+            String contrasena = new String(txtContraseña.getPassword()).trim();
             String tipo = chkAdmin.isSelected() ? "admin" : "cliente";
             byte[] imagenBytes = null;
 
@@ -117,17 +111,17 @@ public class Registro extends JFrame {
                 imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));
             }
 
-            Usuario usuario = new Usuario(0, nombre, correo, contrasena, tipo, imagenBytes);
-            UsuarioController usuarioController = new UsuarioController(new Login());
-            boolean registrado = usuarioController.registrarUsuario(usuario);
+            Usuario nuevoUsuario = new Usuario(0, nombre, correo, contrasena, tipo, imagenBytes);
+            boolean registrado = usuarioDAO.registrarUsuario(nuevoUsuario);
 
             if (registrado) {
                 JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
                 dispose();
                 new Login().setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar usuario. Verifique los datos ingresados.");
+                JOptionPane.showMessageDialog(this, "Error al registrar usuario. Verifique los datos.");
             }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }

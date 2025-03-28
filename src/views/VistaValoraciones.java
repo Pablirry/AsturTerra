@@ -1,56 +1,80 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import dao.ValoracionDAO;
+import model.Usuario;
+import model.ValoracionRuta;
+import java.util.List;
 import java.awt.*;
-import controllers.ValorarRutaController;
 
 public class VistaValoraciones extends JFrame {
-
-    private JLabel lblTitulo;
-    private JLabel lblPuntuacion;
-    private JLabel lblComentario;
+    private JTable tablaValoraciones;
+    private DefaultTableModel modeloTabla;
     private JComboBox<Integer> cmbPuntuacion;
     private JTextArea txtComentario;
-    private JButton btnEnviar;
-    private JButton btnCancelar;
+    private JButton btnEnviar, btnCancelar;
     private int idRuta;
+    private Usuario usuario;
 
-    public VistaValoraciones(int idRuta, String nombreRuta) {
+    public VistaValoraciones(int idRuta, String nombreRuta, Usuario usuario) {
         this.idRuta = idRuta;
+        this.usuario = usuario;
 
-        setTitle("Valorar Ruta");
-        setSize(400, 300);
+        setTitle("Valorar Ruta: " + nombreRuta);
+        setSize(600, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Panel título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
-        lblTitulo = new JLabel("Valorar " + nombreRuta);
+        JLabel lblTitulo = new JLabel("Valorar " + nombreRuta);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 20));
         lblTitulo.setForeground(Color.WHITE);
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        JPanel panelContenido = new JPanel();
-        panelContenido.setLayout(new GridLayout(3, 2, 10, 10));
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        // Panel central con tabla y formulario
+        JPanel panelCentral = new JPanel(new GridLayout(2, 1, 10, 10));
 
-        lblPuntuacion = new JLabel("Puntuación:");
+        // Tabla de valoraciones
+        JPanel panelTabla = new JPanel(new BorderLayout());
+        panelTabla.setBorder(BorderFactory.createTitledBorder("Valoraciones existentes"));
+
+        modeloTabla = new DefaultTableModel(new String[]{"Usuario", "Puntuación", "Comentario"}, 0) {
+            public boolean isCellEditable(int row, int col) {
+                return false;
+            }
+        };
+
+        tablaValoraciones = new JTable(modeloTabla);
+        tablaValoraciones.getTableHeader().setReorderingAllowed(false);
+        panelTabla.add(new JScrollPane(tablaValoraciones), BorderLayout.CENTER);
+
+        panelCentral.add(panelTabla);
+
+        // Formulario
+        JPanel panelFormulario = new JPanel(new GridLayout(3, 2, 10, 10));
+        panelFormulario.setBorder(BorderFactory.createTitledBorder("Nueva valoración"));
+
+        JLabel lblPuntuacion = new JLabel("Puntuación:");
         cmbPuntuacion = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
-        lblComentario = new JLabel("Comentario:");
-        txtComentario = new JTextArea(5, 20);
+        JLabel lblComentario = new JLabel("Comentario:");
+        txtComentario = new JTextArea(3, 20);
         JScrollPane scrollComentario = new JScrollPane(txtComentario);
 
-        panelContenido.add(lblPuntuacion);
-        panelContenido.add(cmbPuntuacion);
-        panelContenido.add(lblComentario);
-        panelContenido.add(scrollComentario);
+        panelFormulario.add(lblPuntuacion);
+        panelFormulario.add(cmbPuntuacion);
+        panelFormulario.add(lblComentario);
+        panelFormulario.add(scrollComentario);
 
-        add(panelContenido, BorderLayout.CENTER);
+        panelCentral.add(panelFormulario);
+        add(panelCentral, BorderLayout.CENTER);
 
-        JPanel panelBotones = new JPanel();
-        panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        // Botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
         btnEnviar = new JButton("Enviar");
@@ -67,24 +91,58 @@ public class VistaValoraciones extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        ValorarRutaController valorarRutaController = new ValorarRutaController(this, nombreRuta);
-
-        btnEnviar.addActionListener(e -> valorarRutaController.enviarValoracion());
+        // Eventos
+        btnEnviar.addActionListener(e -> enviarValoracion());
         btnCancelar.addActionListener(e -> dispose());
+
+        cargarValoraciones();
 
         setVisible(true);
     }
 
-    public JComboBox<Integer> getCmbPuntuacion() { return cmbPuntuacion; }
-    public JTextArea getTxtComentario() { return txtComentario; }
-    public JButton getBtnEnviar() { return btnEnviar; }
-    public JButton getBtnCancelar() { return btnCancelar; }
+    private void cargarValoraciones() {
+        try {
+            ValoracionDAO dao = new ValoracionDAO();
+            List<ValoracionRuta> valoraciones = dao.obtenerValoracionesRuta(idRuta);
+            modeloTabla.setRowCount(0); // limpiar tabla
 
-    public int getRutaSeleccionada() {
-        return idRuta;
+            for (ValoracionRuta v : valoraciones) {
+                modeloTabla.addRow(new Object[]{
+                    "Usuario ID: " + v.getIdUsuario(),
+                    v.getPuntuacion(),
+                    v.getComentario()
+                });
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar valoraciones: " + e.getMessage());
+        }
     }
 
-    public int getPuntuacionSeleccionada() {
-        return (Integer) cmbPuntuacion.getSelectedItem();
+    private void enviarValoracion() {
+        try {
+            int puntuacion = (Integer) cmbPuntuacion.getSelectedItem();
+            String comentario = txtComentario.getText().trim();
+
+            ValoracionRuta valoracion = new ValoracionRuta(
+                0,
+                usuario.getId(),
+                idRuta,
+                puntuacion,
+                comentario
+            );
+
+            ValoracionDAO dao = new ValoracionDAO();
+            boolean registrada = dao.registrarValoracionRuta(valoracion);
+
+            if (registrada) {
+                JOptionPane.showMessageDialog(this, "¡Valoración enviada con éxito!");
+                cargarValoraciones();
+                txtComentario.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo registrar la valoración.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        }
     }
 }

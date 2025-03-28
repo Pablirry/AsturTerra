@@ -1,26 +1,23 @@
 package views;
 
 import javax.swing.*;
+
+import model.Restaurante;
+import services.TurismoService;
+
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import controllers.RestauranteController;
 
 public class AgregarRestaurante extends JFrame {
 
     private JTextField txtNombre, txtUbicacion;
     private JSpinner spnValoracion;
     private JButton btnSeleccionarImagen, btnAgregar, btnCancelar;
-    private JLabel lblImagen;
     private File imagenPerfil;
-    private RestauranteController restauranteController;
 
-    public AgregarRestaurante(RestauranteController restauranteController) {
-        this.restauranteController = restauranteController;
-
+    public AgregarRestaurante() {
         setTitle("Agregar Restaurante");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -45,7 +42,7 @@ public class AgregarRestaurante extends JFrame {
         txtUbicacion = new JTextField();
         JLabel lblValoracion = new JLabel("Valoración:");
         spnValoracion = new JSpinner(new SpinnerNumberModel(1, 1, 5, 1));
-        JLabel lblImagen = new JLabel("Imagen:");
+        JLabel lblImg = new JLabel("Imagen:");
         btnSeleccionarImagen = new JButton("Seleccionar Imagen");
 
         panelContenido.add(lblNombre);
@@ -54,13 +51,12 @@ public class AgregarRestaurante extends JFrame {
         panelContenido.add(txtUbicacion);
         panelContenido.add(lblValoracion);
         panelContenido.add(spnValoracion);
-        panelContenido.add(lblImagen);
+        panelContenido.add(lblImg);
         panelContenido.add(btnSeleccionarImagen);
 
         add(panelContenido, BorderLayout.CENTER);
 
-        JPanel panelBotones = new JPanel();
-        panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
         btnAgregar = new JButton("Agregar");
@@ -78,7 +74,7 @@ public class AgregarRestaurante extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
 
         btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
-        btnAgregar.addActionListener(e -> restauranteController.agregarRestaurante());
+        btnAgregar.addActionListener(e -> agregarRestaurante());
         btnCancelar.addActionListener(e -> dispose());
 
         setVisible(true);
@@ -92,11 +88,28 @@ public class AgregarRestaurante extends JFrame {
         }
     }
 
-    public JTextField getTxtNombre() { return txtNombre; }
-    public JTextField getTxtUbicacion() { return txtUbicacion; }
-    public JSpinner getSpnValoracion() { return spnValoracion; }
-    public JButton getBtnSeleccionarImagen() { return btnSeleccionarImagen; }
-    public JButton getBtnAgregar() { return btnAgregar; }
-    public JButton getBtnCancelar() { return btnCancelar; }
-    public File getImagenPerfil() { return imagenPerfil; }
+    private void agregarRestaurante() {
+        try {
+            String nombre = txtNombre.getText().trim();
+            String ubicacion = txtUbicacion.getText().trim();
+            float valoracion = ((Integer) spnValoracion.getValue()).floatValue();
+            byte[] imagenBytes = null;
+
+            if (imagenPerfil != null) {
+                imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));
+            }
+
+            Restaurante restaurante = new Restaurante(0, nombre, ubicacion, valoracion, imagenBytes);
+            boolean guardado = TurismoService.getInstance().agregarRestaurante(restaurante);
+
+            if (guardado) {
+                JOptionPane.showMessageDialog(this, "Restaurante agregado correctamente.");
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo agregar el restaurante.");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al agregar restaurante: " + e.getMessage());
+        }
+    }
 }

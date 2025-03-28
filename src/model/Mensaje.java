@@ -9,6 +9,9 @@ public class Mensaje {
     private String mensaje;
     private String respuesta;
     private Date fecha;
+
+    public Mensaje() {
+    }
     
     public Mensaje(int id, int idUsuario, String mensaje, String respuesta, Date fecha) {
         this.id = id;

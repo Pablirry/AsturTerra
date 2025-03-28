@@ -30,7 +30,7 @@ public class RutaDAO {
                         rs.getString("dificultad")));
             }
         } catch (SQLException e) {
-            System.err.println("Error en listarRutas: " + e.getMessage());
+            System.err.println("Error listarRutas: " + e.getMessage());
         }
         return rutas;
     }
@@ -48,7 +48,7 @@ public class RutaDAO {
 
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Error en agregarRuta: " + e.getMessage());
+            System.err.println("Error agregarRuta: " + e.getMessage());
             return false;
         }
     }
@@ -59,10 +59,9 @@ public class RutaDAO {
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idRuta);
-
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Error en eliminarRuta: " + e.getMessage());
+            System.err.println("Error eliminarRuta: " + e.getMessage());
             return false;
         }
     }
@@ -73,20 +72,45 @@ public class RutaDAO {
                 PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idRuta);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return new Ruta(
-                            rs.getInt("id"),
-                            rs.getString("nombre"),
-                            rs.getString("descripcion"),
-                            rs.getBytes("imagen"),
-                            rs.getDouble("precio"),
-                            rs.getString("dificultad"));
-                }
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Ruta(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getBytes("imagen"),
+                        rs.getDouble("precio"),
+                        rs.getString("dificultad"));
             }
         } catch (SQLException e) {
-            System.err.println("Error en obtenerRutaPorId: " + e.getMessage());
+            System.err.println("Error obtenerRutaPorId: " + e.getMessage());
         }
         return null;
     }
+
+    public Ruta obtenerRutaPorNombre(String nombre) throws ClassNotFoundException {
+        String sql = "SELECT * FROM rutas WHERE nombre = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, nombre);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Ruta(
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getBytes("imagen"),
+                        rs.getDouble("precio"),
+                        rs.getString("dificultad"));
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error en obtenerRutaPorNombre: " + e.getMessage());
+        }
+        return null;
+    }
+
 }

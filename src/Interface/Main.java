@@ -1,4 +1,4 @@
-package interfaz;
+package Interface;
 
 import javax.swing.SwingUtilities;
 import views.Login;
