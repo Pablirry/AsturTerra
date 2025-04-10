@@ -1,33 +1,23 @@
 package views;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-
-import dao.ReservarDAO;
-import dao.RutaDAO;
-import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
+import java.util.List;
 
-import model.Reserva;
 import model.Restaurante;
-import model.Ruta;
 import model.Usuario;
 import services.TurismoService;
 
 public class VistaRestaurantes extends JFrame {
-
     private static VistaRestaurantes instance;
 
-    private JList<String> listaRestaurantes;
-    private JLabel lblImagen;
-    private JButton btnValorar, btnCerrar, btnVolver, btnAgregar;
+    private JTable tablaRestaurantes;
+    private DefaultTableModel modeloTabla;
+    private JButton btnAgregar, btnEliminar, btnVerDetalles, btnValorar, btnVolver;
     private Usuario usuario;
-    private DefaultListModel<String> modeloLista;
-    private List<Restaurante> lista;
 
     public static VistaRestaurantes getInstance(Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
@@ -41,13 +31,6 @@ public class VistaRestaurantes extends JFrame {
         this.usuario = usuario;
         inicializarComponentes();
         cargarRestaurantes();
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                instance = null;
-            }
-        });
     }
 
     private void inicializarComponentes() {
@@ -63,113 +46,162 @@ public class VistaRestaurantes extends JFrame {
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
         panelTitulo.add(lblTitulo);
+
+        ImageIcon iconoAct = new ImageIcon("assets/carga.png");
+
+        JButton btnActualizar = new JButton(iconoAct);
+        btnActualizar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnActualizar.setBackground(new Color(52, 152, 219));
+        btnActualizar.setForeground(Color.WHITE);
+        btnActualizar.setFocusPainted(false);
+        btnActualizar.setPreferredSize(new Dimension(50,30));
+        btnActualizar.addActionListener(e -> cargarRestaurantes());
+        panelTitulo.add(btnActualizar, BorderLayout.EAST);
+
         add(panelTitulo, BorderLayout.NORTH);
 
-        modeloLista = new DefaultListModel<>();
-        listaRestaurantes = new JList<>(modeloLista);
-        JScrollPane scrollPane = new JScrollPane(listaRestaurantes);
-        add(scrollPane, BorderLayout.CENTER);
+        JPanel panelTabla = new JPanel(new BorderLayout());
+        panelTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        lblImagen = new JLabel();
-        lblImagen.setHorizontalAlignment(JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(200, 200));
-        add(lblImagen, BorderLayout.EAST);
+        String[] columnas = {"ID", "Nombre", "Ubicación", "Valoración"};
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-        JPanel panelBotones = new JPanel();
-        panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        tablaRestaurantes = new JTable(modeloTabla);
+        tablaRestaurantes.getTableHeader().setReorderingAllowed(false);
+        JScrollPane scrollTabla = new JScrollPane(tablaRestaurantes);
+        panelTabla.add(scrollTabla, BorderLayout.CENTER);
+        add(panelTabla, BorderLayout.CENTER);
+
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
-        btnValorar = new JButton("Valorar");
-        btnValorar.setBackground(new Color(46, 204, 113));
-        btnValorar.setForeground(Color.WHITE);
-        btnValorar.setFont(new Font("Arial", Font.BOLD, 14));
-        panelBotones.add(btnValorar);
+        btnAgregar = crearBoton("Agregar Restaurante", new Color(52, 152, 219));
+        btnEliminar = crearBoton("Eliminar Restaurante", new Color(231, 76, 60));
+        btnVerDetalles = crearBoton("Ver Detalles", new Color(46, 204, 113));
+        btnValorar = crearBoton("Valorar Restaurante", new Color(241, 196, 15));
+        btnVolver = crearBoton("Volver al Menú", new Color(52, 152, 219));
 
-        btnAgregar = new JButton("Agregar Restaurante");
-        btnAgregar.setBackground(new Color(52, 152, 219));
-        btnAgregar.setForeground(Color.WHITE);
-        btnAgregar.setFont(new Font("Arial", Font.BOLD, 14));
         panelBotones.add(btnAgregar);
-
-        btnCerrar = new JButton("Cerrar");
-        btnCerrar.setBackground(new Color(231, 76, 60));
-        btnCerrar.setForeground(Color.WHITE);
-        btnCerrar.setFont(new Font("Arial", Font.BOLD, 14));
-        panelBotones.add(btnCerrar);
-
-        btnVolver = new JButton("Volver al Menú");
-        btnVolver.setBackground(new Color(52, 152, 219));
-        btnVolver.setForeground(Color.WHITE);
-        btnVolver.setFont(new Font("Arial", Font.BOLD, 14));
+        panelBotones.add(btnEliminar);
+        panelBotones.add(btnVerDetalles);
+        panelBotones.add(btnValorar);
         panelBotones.add(btnVolver);
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        listaRestaurantes.addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                mostrarImagenRestaurante();
-            }
-        });
-
-        btnValorar.addActionListener(e -> {
-            String seleccionado = listaRestaurantes.getSelectedValue();
-            if (seleccionado != null) {
-                try {
-                    Restaurante restaurante = TurismoService.getInstance().obtenerRestaurantePorNombre(seleccionado);
-                    if (restaurante != null) {
-                        new ValorarRestaurantes(seleccionado, usuario).setVisible(true);
-                    } else {
-                        JOptionPane.showMessageDialog(this, "No se encontró el restaurante.");
-                    }
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al buscar el restaurante: " + ex.getMessage());
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "Seleccione un restaurante primero.");
-            }
-        });
-
+        // Acciones de botones
         btnAgregar.addActionListener(e -> new AgregarRestaurante().setVisible(true));
-        btnCerrar.addActionListener(e -> dispose());
-
+        btnEliminar.addActionListener(e -> eliminarRestaurante());
+        btnVerDetalles.addActionListener(e -> verDetallesRestaurante());
+        btnValorar.addActionListener(e -> valorarRestaurante());
         btnVolver.addActionListener(e -> {
             MenuPrincipal.getInstance(usuario).setVisible(true);
             dispose();
         });
 
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                instance = null;
+            }
+        });
+
         setVisible(true);
     }
 
+    private JButton crearBoton(String texto, Color color) {
+        JButton btn = new JButton(texto);
+        btn.setBackground(color);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Arial", Font.BOLD, 14));
+        return btn;
+    }
+
     private void cargarRestaurantes() {
+        modeloTabla.setRowCount(0);
         try {
-            lista = TurismoService.getInstance().obtenerRestaurantes();
-            modeloLista.clear();
-            for (Restaurante r : lista) {
-                modeloLista.addElement(r.getNombre());
+            List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
+            for (Restaurante r : restaurantes) {
+                modeloTabla.addRow(new Object[]{
+                        r.getId(), r.getNombre(), r.getUbicacion(), r.getValoracion()
+                });
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar restaurantes: " + e.getMessage());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar restaurantes: " + ex.getMessage());
         }
     }
 
-    private void mostrarImagenRestaurante() {
-        int index = listaRestaurantes.getSelectedIndex();
-        if (index != -1 && lista != null && index < lista.size()) {
-            Restaurante restaurante = lista.get(index);
-            byte[] imagenBytes = restaurante.getImagen();
-            if (imagenBytes != null) {
-                try {
-                    ByteArrayInputStream bis = new ByteArrayInputStream(imagenBytes);
-                    BufferedImage img = ImageIO.read(bis);
-                    ImageIcon icon = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
-                    lblImagen.setIcon(icon);
-                } catch (Exception e) {
-                    lblImagen.setIcon(null);
-                    System.err.println("No se pudo cargar la imagen: " + e.getMessage());
-                }
-            } else {
-                lblImagen.setIcon(null);
-            }
+    private void eliminarRestaurante() {
+        int fila = tablaRestaurantes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un restaurante para eliminar.");
+            return;
         }
+        int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
+        try {
+            boolean eliminado = TurismoService.getInstance().eliminarRestaurante(idRestaurante);
+            if (eliminado) {
+                modeloTabla.removeRow(fila);
+                TurismoService.getInstance().registrarActividad(usuario.getId(), "Eliminó el restaurante con ID: " + idRestaurante);
+                JOptionPane.showMessageDialog(this, "Restaurante eliminado.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo eliminar el restaurante.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+        }
+    }
+
+    private void verDetallesRestaurante() {
+        int fila = tablaRestaurantes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un restaurante.");
+            return;
+        }
+
+        String nombre = (String) modeloTabla.getValueAt(fila, 1);
+        String ubicacion = (String) modeloTabla.getValueAt(fila, 2);
+        float valoracion = (float) modeloTabla.getValueAt(fila, 3);
+
+        try {
+            int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
+            Restaurante restaurante = TurismoService.getInstance().obtenerRestaurantePorId(idRestaurante);
+
+            String detalles = "Nombre: " + nombre +
+                            "\nUbicación: " + ubicacion +
+                            "\nValoración: " + valoracion;
+
+            ImageIcon icono = null;
+            if (restaurante.getImagen() != null) {
+                Image img = Toolkit.getDefaultToolkit().createImage(restaurante.getImagen());
+                icono = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+            }
+
+            JLabel lblImagen = new JLabel(icono);
+            lblImagen.setHorizontalAlignment(JLabel.CENTER);
+
+            JOptionPane.showMessageDialog(this, detalles, "Detalles del Restaurante", JOptionPane.INFORMATION_MESSAGE);
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los detalles del restaurante: " + e.getMessage());
+        }
+
+        
+    }
+
+    private void valorarRestaurante() {
+        int fila = tablaRestaurantes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un restaurante para valorar.");
+            return;
+        }
+        int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
+        String nombreRestaurante = (String) modeloTabla.getValueAt(fila, 1);
+        new ValorarRestaurantes(nombreRestaurante, usuario).setVisible(true);
     }
 }

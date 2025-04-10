@@ -46,6 +46,18 @@ public class VistaRutas extends JFrame {
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
         panelTitulo.add(lblTitulo);
+
+        ImageIcon iconoAct = new ImageIcon("assets/carga.png");
+
+        JButton btnActualizar = new JButton(iconoAct);
+        btnActualizar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnActualizar.setBackground(new Color(52, 152, 219));
+        btnActualizar.setForeground(Color.WHITE);
+        btnActualizar.setFocusPainted(false);
+        btnActualizar.setPreferredSize(new Dimension(50,30));
+        btnActualizar.addActionListener(e -> cargarRutas());
+        panelTitulo.add(btnActualizar, BorderLayout.EAST);
+
         add(panelTitulo, BorderLayout.NORTH);
 
         JPanel panelTabla = new JPanel(new BorderLayout());
@@ -154,12 +166,33 @@ public class VistaRutas extends JFrame {
             return;
         }
 
-        String detalles = "Nombre: " + modeloTabla.getValueAt(fila, 1)
-                        + "\nDescripción: " + modeloTabla.getValueAt(fila, 2)
-                        + "\nPrecio: " + modeloTabla.getValueAt(fila, 3)
-                        + "\nDificultad: " + modeloTabla.getValueAt(fila, 4);
+        String nombre = (String) modeloTabla.getValueAt(fila, 1);
+        String descripcion = (String) modeloTabla.getValueAt(fila, 2);
+        double precio = (double) modeloTabla.getValueAt(fila, 3);
+        String dificultad = (String) modeloTabla.getValueAt(fila, 4);
 
-        JOptionPane.showMessageDialog(this, detalles, "Detalles de Ruta", JOptionPane.INFORMATION_MESSAGE);
+        try {
+            int idRuta = (int) modeloTabla.getValueAt(fila, 0);
+            Ruta ruta = TurismoService.getInstance().obtenerRutaPorId(idRuta);
+
+            String detalles = "Nombre: " + nombre +
+                    "\nDescripción: " + descripcion +
+                    "\nPrecio: " + precio +
+                    "\nDificultad: " + dificultad;
+
+            ImageIcon icono = null;
+
+            if(ruta.getImagen() != null) {
+                Image img = Toolkit.getDefaultToolkit().createImage(ruta.getImagen());
+                icono = new ImageIcon(img.getScaledInstance(200,200,Image.SCALE_SMOOTH));
+            }
+            JLabel lblImagen = new JLabel(icono);
+            lblImagen.setHorizontalAlignment(JLabel.CENTER);
+
+            JOptionPane.showMessageDialog(this, detalles, "Detalles de la Ruta", JOptionPane.INFORMATION_MESSAGE, icono);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error al cargar los detalles de la ruta: " + ex.getMessage());
+        }
     }
 
     private void valorarRuta() {
@@ -174,14 +207,34 @@ public class VistaRutas extends JFrame {
     }
 
     private void reservarRuta() {
-        int fila = tablaRutas.getSelectedRow();
-        if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Selecciona una ruta para reservar.");
-            return;
+        try {
+            if (rutaSeleccionada == null) {
+                JOptionPane.showMessageDialog(this, "No hay ruta seleccionada.");
+                return;
+            }
+    
+            RutaDAO rutaDAO = new RutaDAO();
+            Ruta ruta = rutaDAO.obtenerRutaPorNombre(rutaSeleccionada);
+    
+            if (ruta == null) {
+                JOptionPane.showMessageDialog(this, "Ruta no encontrada.");
+                return;
+            }
+    
+            ReservarDAO dao = new ReservarDAO();
+            boolean reservado = dao.reservarRuta(usuario.getId(), ruta.getId(), new Date());
+    
+            if (reservado) {
+                TurismoService.getInstance().registrarActividad(usuario.getId(), "Reservó la ruta: " + ruta.getNombre());
+                JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
+                cargarReservas();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo realizar la reserva.");
+            }
+    
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al reservar ruta: " + e.getMessage());
         }
-        String nombreRuta = (String) modeloTabla.getValueAt(fila, 1);
-        VistaReservas.getInstance(usuario, nombreRuta).setVisible(true);
-        dispose();
     }
 
     public Usuario getUsuario() {

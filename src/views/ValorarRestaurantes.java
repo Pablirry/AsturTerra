@@ -1,9 +1,6 @@
 package views;
 
 import javax.swing.*;
-
-import dao.RestauranteDAO;
-import dao.ValoracionDAO;
 import model.Restaurante;
 import model.Usuario;
 import model.ValoracionRestaurante;

@@ -2,9 +2,7 @@ package services;
 
 import dao.*;
 import model.*;
-import javax.swing.*;
 import java.util.*;
-import java.sql.*;
 import java.util.Date;
 
 public class TurismoService {
@@ -128,8 +126,14 @@ public class TurismoService {
     }
 
     // Historial
-    public boolean registrarActividad(Historial historial) throws ClassNotFoundException {
-        return historialDAO.registrarActividad(historial);
+    public boolean registrarActividad(int idUsuario, String accion) {
+        try {
+            Historial historial = new Historial(0, idUsuario, accion, new Date());
+            return HistorialDAO.getInstance().registrarActividad(historial);
+        } catch (Exception e) {
+            System.err.println("Error al registrar actividad: " + e.getMessage());
+            return false;
+        }
     }
 
     public List<Historial> obtenerHistorialUsuario(int idUsuario) throws ClassNotFoundException {
