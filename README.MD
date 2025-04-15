@@ -46,7 +46,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 ## 📌 **1. Clonar el repositorio**
 ```bash
-git clone https://github.com/Pablirry/TurismoAsturias.git
+git clone https://github.com/Pablirry/TurismoApp.git
 
 ```
 ## 📌 **2. Configurar la base de datos**
