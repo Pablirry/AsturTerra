@@ -1,15 +1,14 @@
 package views;
 
 import javax.swing.*;
-
 import javax.swing.table.DefaultTableModel;
-import java.util.Date;
-import dao.*;
-
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Date;
 import java.util.List;
+
+import dao.*;
 import model.Ruta;
 import model.Usuario;
 import services.TurismoService;
@@ -21,6 +20,9 @@ public class VistaRutas extends JFrame {
     private DefaultTableModel modeloTabla;
     private JButton btnAgregar, btnEliminar, btnVerDetalles, btnValorar, btnReservar, btnVolver;
     private Usuario usuario;
+    private JTextField txtBuscarNombre;
+    private JSlider sliderPrecioMax;
+    private JLabel lblPrecioMax;
 
     public static VistaRutas getInstance(Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
@@ -32,41 +34,95 @@ public class VistaRutas extends JFrame {
 
     public VistaRutas(Usuario usuario) {
         this.usuario = usuario;
-        inicializarComponentes();
-        cargarRutas();
-    }
-
-    private void inicializarComponentes() {
         setTitle("Gestión de Rutas");
         setSize(600, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        inicializarComponentes();
+        cargarRutas();
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                instance = null;
+            }
+        });
+    }
 
-        JPanel panelTitulo = new JPanel();
+    private void inicializarComponentes() {
+        JPanel panelCabecera = new JPanel();
+        panelCabecera.setLayout(new BorderLayout());
+        panelCabecera.setBackground(new Color(44, 62, 80));
+
+        // Panel de título centrado con icono de actualizar a la derecha
+        JPanel panelTitulo = new JPanel(new BorderLayout());
         panelTitulo.setBackground(new Color(44, 62, 80));
-        JLabel lblTitulo = new JLabel("Gestión de Rutas");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
+
+        JLabel lblTitulo = new JLabel("Gestión de Rutas", SwingConstants.CENTER);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
         lblTitulo.setForeground(Color.WHITE);
-        panelTitulo.add(lblTitulo);
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        panelTitulo.add(lblTitulo, BorderLayout.CENTER);
 
+        // Botón de actualizar al lado del título
         ImageIcon iconoAct = new ImageIcon("assets/carga.png");
-
         JButton btnActualizar = new JButton(iconoAct);
-        btnActualizar.setFont(new Font("Arial", Font.BOLD, 14));
         btnActualizar.setBackground(new Color(52, 152, 219));
         btnActualizar.setForeground(Color.WHITE);
         btnActualizar.setFocusPainted(false);
-        btnActualizar.setPreferredSize(new Dimension(50,30));
+        btnActualizar.setPreferredSize(new Dimension(40, 40));
         btnActualizar.addActionListener(e -> cargarRutas());
         panelTitulo.add(btnActualizar, BorderLayout.EAST);
 
-        add(panelTitulo, BorderLayout.NORTH);
+        panelCabecera.add(panelTitulo, BorderLayout.NORTH);
 
+        // Panel de filtros centrado
+        JPanel panelFiltros = new JPanel();
+        panelFiltros.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
+        panelFiltros.setBackground(new Color(236, 240, 241));
+
+        JLabel lblBuscar = new JLabel("Buscar nombre:");
+        lblBuscar.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelFiltros.add(lblBuscar);
+
+        txtBuscarNombre = new JTextField(12);
+        txtBuscarNombre.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelFiltros.add(txtBuscarNombre);
+
+        JLabel lblSlider = new JLabel("Precio máximo:");
+        lblSlider.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelFiltros.add(lblSlider);
+
+        sliderPrecioMax = new JSlider(0, 200, 100);
+        sliderPrecioMax.setMajorTickSpacing(200);
+        sliderPrecioMax.setMinorTickSpacing(50);
+        sliderPrecioMax.setPaintTicks(true);
+        sliderPrecioMax.setPaintLabels(true);
+        sliderPrecioMax.setPreferredSize(new Dimension(180, 45));
+        sliderPrecioMax.addChangeListener(e -> lblPrecioMax.setText("Máximo: $" + sliderPrecioMax.getValue()));
+        panelFiltros.add(sliderPrecioMax);
+
+        lblPrecioMax = new JLabel("Máximo: $500");
+        lblPrecioMax.setFont(new Font("Arial", Font.PLAIN, 14));
+        panelFiltros.add(lblPrecioMax);
+
+        JButton btnFiltrar = new JButton("Filtrar");
+        btnFiltrar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnFiltrar.setBackground(new Color(52, 152, 219));
+        btnFiltrar.setForeground(Color.WHITE);
+        btnFiltrar.setFocusPainted(false);
+        btnFiltrar.addActionListener(e -> cargarRutas());
+        panelFiltros.add(btnFiltrar);
+
+        panelCabecera.add(panelFiltros, BorderLayout.SOUTH);
+
+        // Añadir cabecera (título + filtros)
+        add(panelCabecera, BorderLayout.NORTH);
+
+        // Panel de tabla
         JPanel panelTabla = new JPanel(new BorderLayout());
         panelTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] columnas = {"ID", "Nombre", "Descripción", "Precio", "Dificultad"};
+        String[] columnas = { "ID", "Nombre", "Descripción", "Precio", "Dificultad" };
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -76,10 +132,13 @@ public class VistaRutas extends JFrame {
 
         tablaRutas = new JTable(modeloTabla);
         tablaRutas.getTableHeader().setReorderingAllowed(false);
+        tablaRutas.setFont(new Font("Arial", Font.PLAIN, 14));
+        tablaRutas.setRowHeight(22);
         JScrollPane scrollTabla = new JScrollPane(tablaRutas);
         panelTabla.add(scrollTabla, BorderLayout.CENTER);
         add(panelTabla, BorderLayout.CENTER);
 
+        // Panel de botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
@@ -131,11 +190,28 @@ public class VistaRutas extends JFrame {
     private void cargarRutas() {
         modeloTabla.setRowCount(0);
         try {
+            String filtroNombre = txtBuscarNombre.getText().trim().toLowerCase();
+            int precioMax = sliderPrecioMax.getValue();
+
             List<Ruta> rutas = TurismoService.getInstance().obtenerRutas();
             for (Ruta r : rutas) {
-                modeloTabla.addRow(new Object[]{
-                        r.getId(), r.getNombre(), r.getDescripcion(), r.getPrecio(), r.getDificultad()
-                });
+                boolean coincide = true;
+
+                // Filtrar por nombre
+                if (!filtroNombre.isEmpty() && !r.getNombre().toLowerCase().contains(filtroNombre)) {
+                    coincide = false;
+                }
+
+                // Filtrar por precio máximo
+                if (r.getPrecio() > precioMax) {
+                    coincide = false;
+                }
+
+                if (coincide) {
+                    modeloTabla.addRow(new Object[] {
+                            r.getId(), r.getNombre(), r.getDescripcion(), r.getPrecio(), r.getDificultad()
+                    });
+                }
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar rutas: " + ex.getMessage());
@@ -185,14 +261,15 @@ public class VistaRutas extends JFrame {
 
             ImageIcon icono = null;
 
-            if(ruta.getImagen() != null) {
+            if (ruta.getImagen() != null) {
                 Image img = Toolkit.getDefaultToolkit().createImage(ruta.getImagen());
-                icono = new ImageIcon(img.getScaledInstance(200,200,Image.SCALE_SMOOTH));
+                icono = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
             }
             JLabel lblImagen = new JLabel(icono);
             lblImagen.setHorizontalAlignment(JLabel.CENTER);
 
-            JOptionPane.showMessageDialog(this, detalles, "Detalles de la Ruta", JOptionPane.INFORMATION_MESSAGE, icono);
+            JOptionPane.showMessageDialog(this, detalles, "Detalles de la Ruta", JOptionPane.INFORMATION_MESSAGE,
+                    icono);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar los detalles de la ruta: " + ex.getMessage());
         }
@@ -231,9 +308,10 @@ public class VistaRutas extends JFrame {
             boolean reservado = dao.reservarRuta(usuario.getId(), ruta.getId(), new Date());
 
             if (reservado) {
-                TurismoService.getInstance().registrarActividad(usuario.getId(), "Reservó la ruta: " + ruta.getNombre());
+                TurismoService.getInstance().registrarActividad(usuario.getId(),
+                        "Reservó la ruta: " + ruta.getNombre());
                 JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
-                cargarRutas(); // Refresca la tabla de rutas
+                cargarRutas();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo realizar la reserva.");
             }
