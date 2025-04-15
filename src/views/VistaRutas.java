@@ -1,7 +1,10 @@
 package views;
 
 import javax.swing.*;
+
 import javax.swing.table.DefaultTableModel;
+import java.util.Date;
+import dao.*;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -208,30 +211,33 @@ public class VistaRutas extends JFrame {
 
     private void reservarRuta() {
         try {
-            if (rutaSeleccionada == null) {
-                JOptionPane.showMessageDialog(this, "No hay ruta seleccionada.");
+            int fila = tablaRutas.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona una ruta para reservar.");
                 return;
             }
-    
+
+            String nombreRuta = (String) modeloTabla.getValueAt(fila, 1);
+
             RutaDAO rutaDAO = new RutaDAO();
-            Ruta ruta = rutaDAO.obtenerRutaPorNombre(rutaSeleccionada);
-    
+            Ruta ruta = rutaDAO.obtenerRutaPorNombre(nombreRuta);
+
             if (ruta == null) {
                 JOptionPane.showMessageDialog(this, "Ruta no encontrada.");
                 return;
             }
-    
+
             ReservarDAO dao = new ReservarDAO();
             boolean reservado = dao.reservarRuta(usuario.getId(), ruta.getId(), new Date());
-    
+
             if (reservado) {
                 TurismoService.getInstance().registrarActividad(usuario.getId(), "Reservó la ruta: " + ruta.getNombre());
                 JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
-                cargarReservas();
+                cargarRutas(); // Refresca la tabla de rutas
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo realizar la reserva.");
             }
-    
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al reservar ruta: " + e.getMessage());
         }

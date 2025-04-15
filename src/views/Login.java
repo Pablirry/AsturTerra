@@ -2,6 +2,8 @@ package views;
 
 import javax.swing.*;
 
+
+import services.TurismoService;
 import dao.UsuarioDAO;
 import model.Usuario;
 
@@ -83,7 +85,7 @@ public class Login extends JFrame {
 
             Usuario usuario = usuarioDAO.iniciarSesion(correo, contrasena);
             if (usuario != null) {
-                TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion")
+                TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion");
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
                 MenuPrincipal.getInstance(usuario).setVisible(true);
                 dispose();

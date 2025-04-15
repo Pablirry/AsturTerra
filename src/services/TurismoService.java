@@ -3,7 +3,6 @@ package services;
 import dao.*;
 import model.*;
 import java.util.*;
-import java.util.Date;
 
 public class TurismoService {
     private static TurismoService instance;
@@ -129,7 +128,7 @@ public class TurismoService {
     public boolean registrarActividad(int idUsuario, String accion) {
         try {
             Historial historial = new Historial(0, idUsuario, accion, new Date());
-            return HistorialDAO.getInstance().registrarActividad(historial);
+            return historialDAO.registrarActividad(historial);
         } catch (Exception e) {
             System.err.println("Error al registrar actividad: " + e.getMessage());
             return false;
