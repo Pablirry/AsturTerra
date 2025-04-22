@@ -1,0 +1,194 @@
+package views;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.table.JTableHeader;
+import javax.swing.text.JTextComponent;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.AbstractBorder;
+import java.awt.geom.RoundRectangle2D;
+
+public class ThemeManager {
+    public enum Theme {
+        LIGHT, DARK
+    }
+
+    private static Theme currentTheme = Theme.LIGHT;
+
+    public static void setTheme(Theme theme, Window rootWindow) {
+        currentTheme = theme;
+        try {
+            if (theme == Theme.DARK) {
+                UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                UIManager.put("control", new Color(44, 62, 80));
+                UIManager.put("info", new Color(44, 62, 80));
+                UIManager.put("nimbusBase", new Color(44, 62, 80));
+                UIManager.put("nimbusBlueGrey", new Color(44, 62, 80));
+                UIManager.put("nimbusLightBackground", new Color(52, 73, 94));
+                UIManager.put("text", Color.WHITE);
+                UIManager.put("nimbusFocus", new Color(52, 152, 219));
+            } else {
+                UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+                UIManager.put("control", Color.WHITE);
+                UIManager.put("info", Color.WHITE);
+                UIManager.put("nimbusBase", new Color(52, 152, 219));
+                UIManager.put("nimbusBlueGrey", new Color(236, 240, 241));
+                UIManager.put("nimbusLightBackground", Color.WHITE);
+                UIManager.put("text", Color.BLACK);
+                UIManager.put("nimbusFocus", new Color(52, 152, 219));
+            }
+        } catch (Exception ignored) {
+        }
+
+        for (Window window : Window.getWindows()) {
+            setComponentTheme(window, theme);
+            SwingUtilities.updateComponentTreeUI(window);
+        }
+    }
+
+    // Borde redondeado personalizado
+    private static class RoundedBorder extends AbstractBorder {
+        private final Color color;
+        private final int thickness;
+        private final int radius;
+
+        public RoundedBorder(Color color, int thickness, int radius) {
+            this.color = color;
+            this.thickness = thickness;
+            this.radius = radius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(color);
+            g2.setStroke(new BasicStroke(thickness));
+            g2.drawRoundRect(x + thickness / 2, y + thickness / 2,
+                    width - thickness, height - thickness, radius, radius);
+            g2.dispose();
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c) {
+            return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+        }
+
+        @Override
+        public Insets getBorderInsets(Component c, Insets insets) {
+            insets.left = insets.right = insets.top = insets.bottom = radius / 2;
+            return insets;
+        }
+    }
+
+    private static void setComponentTheme(Component comp, Theme theme) {
+        // Paneles principales: solo aplicar borde si no hay uno especial
+        if (comp instanceof JPanel) {
+            JPanel panel = (JPanel) comp;
+            if (theme == Theme.DARK) {
+                panel.setBackground(new Color(52, 73, 94));
+            } else {
+                panel.setBackground(new Color(236, 240, 241));
+            }
+            Border current = panel.getBorder();
+            // No sobrescribir TitledBorder ni EmptyBorder
+            if (!(current instanceof javax.swing.border.TitledBorder) && !(current instanceof javax.swing.border.EmptyBorder)) {
+                Border rounded = new RoundedBorder(
+                        theme == Theme.DARK ? new Color(33, 47, 60) : new Color(44, 62, 80),
+                        2, 18);
+                panel.setBorder(rounded);
+            }
+        }
+        if (comp instanceof JLabel) {
+            Color bg = comp.getBackground();
+            if (theme == Theme.DARK) {
+                ((JLabel) comp).setForeground(Color.WHITE);
+            } else {
+                if (bg != null && (bg.equals(Color.WHITE) || bg.equals(new Color(236, 240, 241)))) {
+                    ((JLabel) comp).setForeground(new Color(44, 62, 80));
+                } else {
+                    ((JLabel) comp).setForeground(Color.BLACK);
+                }
+            }
+        }
+        if (comp instanceof JSlider) {
+            JSlider slider = (JSlider) comp;
+            if (theme == Theme.DARK) {
+                slider.setBackground(new Color(52, 73, 94));
+                slider.setForeground(Color.WHITE);
+                slider.setOpaque(true);
+                UIManager.put("Slider.trackColor", new Color(44, 62, 80));
+                UIManager.put("Slider.thumb", new Color(189, 195, 199));
+                UIManager.put("Slider.tickColor", Color.WHITE);
+            } else {
+                slider.setBackground(new Color(236, 240, 241));
+                slider.setForeground(new Color(44, 62, 80));
+                slider.setOpaque(true);
+                UIManager.put("Slider.trackColor", new Color(189, 195, 199));
+                UIManager.put("Slider.thumb", new Color(52, 152, 219));
+                UIManager.put("Slider.tickColor", new Color(44, 62, 80));
+            }
+            SwingUtilities.updateComponentTreeUI(slider);
+        }
+        if (comp instanceof JTable) {
+            JTable table = (JTable) comp;
+            if (theme == Theme.DARK) {
+                table.setBackground(new Color(52, 73, 94));
+                table.setForeground(Color.WHITE);
+                table.setSelectionBackground(new Color(33, 47, 60));
+                table.setSelectionForeground(Color.WHITE);
+                table.setGridColor(new Color(44, 62, 80));
+            } else {
+                table.setBackground(Color.WHITE);
+                table.setForeground(Color.BLACK);
+                table.setSelectionBackground(new Color(52, 152, 219));
+                table.setSelectionForeground(Color.WHITE);
+                table.setGridColor(new Color(236, 240, 241));
+            }
+            JTableHeader header = table.getTableHeader();
+            if (header != null) {
+                if (theme == Theme.DARK) {
+                    header.setBackground(new Color(44, 62, 80));
+                    header.setForeground(Color.WHITE);
+                } else {
+                    header.setBackground(new Color(236, 240, 241));
+                    header.setForeground(new Color(44, 62, 80));
+                }
+            }
+        }
+        if (comp instanceof JButton) {
+            JButton btn = (JButton) comp;
+            btn.setBackground(theme == Theme.DARK ? new Color(52, 152, 219) : new Color(52, 152, 219));
+            btn.setForeground(Color.WHITE);
+            btn.setFocusPainted(false);
+            btn.setBorder(new RoundedBorder(
+                    theme == Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80),
+                    2, 14));
+        }
+        if (comp instanceof JTextField || comp instanceof JTextArea || comp instanceof JPasswordField) {
+            comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
+            comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+            if (comp instanceof JTextComponent) {
+                ((JTextComponent) comp).setCaretColor(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+            }
+        }
+        if (comp instanceof JScrollPane) {
+            comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
+            comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+        }
+        // Recursividad para hijos
+        if (comp instanceof Container) {
+            for (Component child : ((Container) comp).getComponents()) {
+                setComponentTheme(child, theme);
+            }
+        }
+    }
+
+    public static Theme getCurrentTheme() {
+        return currentTheme;
+    }
+}
+

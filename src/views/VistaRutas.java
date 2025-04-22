@@ -46,6 +46,8 @@ public class VistaRutas extends JFrame {
                 instance = null;
             }
         });
+        ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
+        
     }
 
     private void inicializarComponentes() {
@@ -175,7 +177,6 @@ public class VistaRutas extends JFrame {
                 instance = null;
             }
         });
-
         setVisible(true);
     }
 

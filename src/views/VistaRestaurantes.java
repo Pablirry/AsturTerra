@@ -31,6 +31,7 @@ public class VistaRestaurantes extends JFrame {
         this.usuario = usuario;
         inicializarComponentes();
         cargarRestaurantes();
+        ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
     }
 
     private void inicializarComponentes() {
