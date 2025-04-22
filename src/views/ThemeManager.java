@@ -64,7 +64,6 @@ public class ThemeManager {
         @Override
         public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
             Graphics2D g2 = (Graphics2D) g.create();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setColor(color);
             g2.setStroke(new BasicStroke(thickness));
             g2.drawRoundRect(x + thickness / 2, y + thickness / 2,
@@ -74,33 +73,28 @@ public class ThemeManager {
 
         @Override
         public Insets getBorderInsets(Component c) {
-            return new Insets(radius / 2, radius / 2, radius / 2, radius / 2);
+            return new Insets(thickness, thickness, thickness, thickness);
         }
 
         @Override
         public Insets getBorderInsets(Component c, Insets insets) {
-            insets.left = insets.right = insets.top = insets.bottom = radius / 2;
+            insets.left = insets.right = insets.top = insets.bottom = thickness;
             return insets;
         }
     }
 
     private static void setComponentTheme(Component comp, Theme theme) {
-        // Paneles principales: solo aplicar borde si no hay uno especial
         if (comp instanceof JPanel) {
-            JPanel panel = (JPanel) comp;
             if (theme == Theme.DARK) {
-                panel.setBackground(new Color(52, 73, 94));
+                comp.setBackground(new Color(52, 73, 94));
             } else {
-                panel.setBackground(new Color(236, 240, 241));
+                comp.setBackground(new Color(236, 240, 241));
             }
-            Border current = panel.getBorder();
-            // No sobrescribir TitledBorder ni EmptyBorder
-            if (!(current instanceof javax.swing.border.TitledBorder) && !(current instanceof javax.swing.border.EmptyBorder)) {
-                Border rounded = new RoundedBorder(
-                        theme == Theme.DARK ? new Color(33, 47, 60) : new Color(44, 62, 80),
-                        2, 18);
-                panel.setBorder(rounded);
-            }
+            // Borde redondeado para ambos modos
+            Border rounded = new RoundedBorder(
+                    theme == Theme.DARK ? new Color(33, 47, 60) : new Color(44, 62, 80),
+                    3, 18);
+            ((JPanel) comp).setBorder(rounded);
         }
         if (comp instanceof JLabel) {
             Color bg = comp.getBackground();
@@ -160,13 +154,13 @@ public class ThemeManager {
             }
         }
         if (comp instanceof JButton) {
-            JButton btn = (JButton) comp;
-            btn.setBackground(theme == Theme.DARK ? new Color(52, 152, 219) : new Color(52, 152, 219));
-            btn.setForeground(Color.WHITE);
-            btn.setFocusPainted(false);
-            btn.setBorder(new RoundedBorder(
+            comp.setBackground(theme == Theme.DARK ? new Color(33, 47, 60) : new Color(52, 152, 219));
+            comp.setForeground(Color.WHITE);
+            // Borde redondeado para el botón
+            Border rounded = new RoundedBorder(
                     theme == Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80),
-                    2, 14));
+                    2, 14);
+            ((JButton) comp).setBorder(rounded);
         }
         if (comp instanceof JTextField || comp instanceof JTextArea || comp instanceof JPasswordField) {
             comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
@@ -179,7 +173,6 @@ public class ThemeManager {
             comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
             comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
         }
-        // Recursividad para hijos
         if (comp instanceof Container) {
             for (Component child : ((Container) comp).getComponents()) {
                 setComponentTheme(child, theme);

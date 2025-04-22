@@ -25,7 +25,7 @@ public class MenuPrincipal extends JFrame {
         this.usuario = usuario;
 
         setTitle("Menú Principal - Turismo Asturias");
-        setSize(705, 567);
+        setSize(705, 585);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         getContentPane().setLayout(null);
         setLocationRelativeTo(null);
