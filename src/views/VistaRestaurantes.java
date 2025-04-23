@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.util.List;
 
 import model.Restaurante;
@@ -55,7 +56,7 @@ public class VistaRestaurantes extends JFrame {
         btnActualizar.setBackground(new Color(52, 152, 219));
         btnActualizar.setForeground(Color.WHITE);
         btnActualizar.setFocusPainted(false);
-        btnActualizar.setPreferredSize(new Dimension(50,30));
+        btnActualizar.setPreferredSize(new Dimension(50, 30));
         btnActualizar.addActionListener(e -> cargarRestaurantes());
         panelTitulo.add(btnActualizar, BorderLayout.EAST);
 
@@ -64,7 +65,7 @@ public class VistaRestaurantes extends JFrame {
         JPanel panelTabla = new JPanel(new BorderLayout());
         panelTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        String[] columnas = {"ID", "Nombre", "Ubicación", "Valoración"};
+        String[] columnas = { "ID", "Nombre", "Ubicación", "Valoración" };
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -128,7 +129,7 @@ public class VistaRestaurantes extends JFrame {
         try {
             List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
             for (Restaurante r : restaurantes) {
-                modeloTabla.addRow(new Object[]{
+                modeloTabla.addRow(new Object[] {
                         r.getId(), r.getNombre(), r.getUbicacion(), r.getValoracion()
                 });
             }
@@ -148,7 +149,8 @@ public class VistaRestaurantes extends JFrame {
             boolean eliminado = TurismoService.getInstance().eliminarRestaurante(idRestaurante);
             if (eliminado) {
                 modeloTabla.removeRow(fila);
-                TurismoService.getInstance().registrarActividad(usuario.getId(), "Eliminó el restaurante con ID: " + idRestaurante);
+                TurismoService.getInstance().registrarActividad(usuario.getId(),
+                        "Eliminó el restaurante con ID: " + idRestaurante);
                 JOptionPane.showMessageDialog(this, "Restaurante eliminado.");
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo eliminar el restaurante.");
@@ -167,32 +169,83 @@ public class VistaRestaurantes extends JFrame {
 
         String nombre = (String) modeloTabla.getValueAt(fila, 1);
         String ubicacion = (String) modeloTabla.getValueAt(fila, 2);
-        float valoracion = (float) modeloTabla.getValueAt(fila, 3);
+        String valoracionStr = modeloTabla.getValueAt(fila, 3).toString();
 
         try {
             int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
             Restaurante restaurante = TurismoService.getInstance().obtenerRestaurantePorId(idRestaurante);
 
-            String detalles = "Nombre: " + nombre +
-                            "\nUbicación: " + ubicacion +
-                            "\nValoración: " + valoracion;
-
-            ImageIcon icono = null;
+            ImageIcon icono;
             if (restaurante.getImagen() != null) {
-                Image img = Toolkit.getDefaultToolkit().createImage(restaurante.getImagen());
-                icono = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
+                try {
+                    java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
+                    BufferedImage original = javax.imageio.ImageIO.read(bais);
+                    Image img = original.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
+                    // Crear imagen circular
+                    BufferedImage circleBuffer = new BufferedImage(120, 120, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g2 = circleBuffer.createGraphics();
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 120, 120));
+                    g2.drawImage(img, 0, 0, 120, 120, null);
+                    g2.setClip(null);
+                    g2.setStroke(new BasicStroke(3));
+                    g2.setColor(new Color(52, 152, 219));
+                    g2.drawOval(2, 2, 116, 116);
+                    g2.dispose();
+                    icono = new ImageIcon(circleBuffer);
+                } catch (Exception ex) {
+                    icono = new ImageIcon("assets/imagen.png");
+                }
+            } else {
+                icono = new ImageIcon("assets/imagen.png");
             }
 
             JLabel lblImagen = new JLabel(icono);
             lblImagen.setHorizontalAlignment(JLabel.CENTER);
 
-            JOptionPane.showMessageDialog(this, detalles, "Detalles del Restaurante", JOptionPane.INFORMATION_MESSAGE);
-            
+            boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
+            Color fondo = dark ? new Color(44, 62, 80) : Color.WHITE;
+            Color texto = dark ? Color.WHITE : new Color(44, 62, 80);
+
+            JPanel panelDatos = new JPanel();
+            panelDatos.setLayout(new BoxLayout(panelDatos, BoxLayout.Y_AXIS));
+            panelDatos.setBackground(fondo);
+            panelDatos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+
+            JLabel lblNombre = new JLabel(nombre);
+            lblNombre.setFont(new Font("Arial", Font.BOLD, 22));
+            lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+            lblNombre.setForeground(texto);
+
+            JLabel lblUbicacion = new JLabel("Ubicación: " + ubicacion);
+            lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
+            lblUbicacion.setAlignmentX(Component.CENTER_ALIGNMENT);
+            lblUbicacion.setForeground(texto);
+
+            JLabel lblValoracion = new JLabel("Valoración: " + valoracionStr + " ⭐");
+            lblValoracion.setFont(new Font("Segoe UI Emoji", Font.BOLD, 15));
+            lblValoracion.setForeground(new Color(241, 196, 15));
+            lblValoracion.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+
+            panelDatos.add(Box.createVerticalStrut(10));
+            panelDatos.add(lblNombre);
+            panelDatos.add(Box.createVerticalStrut(10));
+            panelDatos.add(lblUbicacion);
+            panelDatos.add(Box.createVerticalStrut(10));
+            panelDatos.add(lblValoracion);
+            panelDatos.add(Box.createVerticalStrut(10));
+
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.setBackground(fondo);
+            panel.add(lblImagen, BorderLayout.NORTH);
+            panel.add(panelDatos, BorderLayout.CENTER);
+
+            JOptionPane.showMessageDialog(this, panel, "Detalles del Restaurante", JOptionPane.PLAIN_MESSAGE);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los detalles del restaurante: " + e.getMessage());
         }
-
-        
     }
 
     private void valorarRestaurante() {
@@ -203,6 +256,21 @@ public class VistaRestaurantes extends JFrame {
         }
         int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
         String nombreRestaurante = (String) modeloTabla.getValueAt(fila, 1);
-        new ValorarRestaurantes(nombreRestaurante, usuario).setVisible(true);
+
+        ValorarRestaurantes ventana = new ValorarRestaurantes(nombreRestaurante, usuario);
+        ventana.setVisible(true);
+
+        ventana.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                try {
+                    double media = services.TurismoService.getInstance()
+                            .obtenerValoracionMediaRestaurante(idRestaurante);
+                    modeloTabla.setValueAt(String.format("%.1f", media), fila, 3);
+                } catch (Exception ex) {
+                    // Ignorar error de actualización de media
+                }
+            }
+        });
     }
 }

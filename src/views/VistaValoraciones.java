@@ -21,15 +21,16 @@ public class VistaValoraciones extends JFrame {
     private Usuario usuario;
 
     
-    public static VistaValoraciones getInstance(int idRuta, String nombreRuta) {
+    public static VistaValoraciones getInstance(int idRuta, String nombreRuta, Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
-            instance = new VistaValoraciones(idRuta, nombreRuta);
+            instance = new VistaValoraciones(idRuta, nombreRuta, usuario);
         }
         instance.toFront();
         return instance;
     }
 
-    public VistaValoraciones(int idRuta, String nombreRuta) {
+    public VistaValoraciones(int idRuta, String nombreRuta, Usuario usuario) {
+        this.usuario = usuario;
         this.idRuta = idRuta;
         this.nombreRuta = nombreRuta;
 

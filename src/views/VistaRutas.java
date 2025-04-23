@@ -77,7 +77,7 @@ public class VistaRutas extends JFrame {
 
         panelCabecera.add(panelTitulo, BorderLayout.NORTH);
 
-        // Panel de filtros centrado
+        // Panel de filtros
         JPanel panelFiltros = new JPanel();
         panelFiltros.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
         panelFiltros.setBackground(new Color(236, 240, 241));
@@ -284,7 +284,7 @@ public class VistaRutas extends JFrame {
         }
         int idRuta = (int) modeloTabla.getValueAt(fila, 0);
         String nombreRuta = (String) modeloTabla.getValueAt(fila, 1);
-        VistaValoraciones.getInstance(idRuta, nombreRuta).setVisible(true);
+        VistaValoraciones.getInstance(idRuta, nombreRuta, usuario).setVisible(true);
     }
 
     private void reservarRuta() {

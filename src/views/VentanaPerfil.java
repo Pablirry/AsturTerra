@@ -20,50 +20,53 @@ public class VentanaPerfil extends JDialog {
     public VentanaPerfil(JFrame parent, Usuario usuario) {
         super(parent, "Perfil de Usuario", true);
         this.usuario = usuario;
-        setLayout(null);
-        setSize(400, 350);
+        getContentPane().setLayout(null);
+        setSize(459, 392);
         setLocationRelativeTo(parent);
 
         JLabel lbl1 = new JLabel("Nombre:");
         lbl1.setBounds(30, 30, 80, 25);
-        add(lbl1);
+        getContentPane().add(lbl1);
         txtNombre = new JTextField(usuario.getNombre());
         txtNombre.setBounds(120, 30, 220, 25);
-        add(txtNombre);
+        txtNombre.setEnabled(false);
+        getContentPane().add(txtNombre);
 
         JLabel lbl2 = new JLabel("Correo:");
         lbl2.setBounds(30, 70, 80, 25);
-        add(lbl2);
+        getContentPane().add(lbl2);
         txtCorreo = new JTextField(usuario.getCorreo());
         txtCorreo.setBounds(120, 70, 220, 25);
-        add(txtCorreo);
+        txtCorreo.setEnabled(false);
+        getContentPane().add(txtCorreo);
 
         JLabel lbl3 = new JLabel("Contraseña:");
         lbl3.setBounds(30, 110, 80, 25);
-        add(lbl3);
+        getContentPane().add(lbl3);
         txtContrasena = new JPasswordField(usuario.getContrasena());
         txtContrasena.setBounds(120, 110, 220, 25);
-        add(txtContrasena);
+        txtContrasena.setEnabled(false);
+        getContentPane().add(txtContrasena);
 
         lblImagen = new JLabel();
-        lblImagen.setBounds(150, 150, 100, 100);
+        lblImagen.setBounds(167, 146, 100, 100);
         setImagenPerfil(false);
-        add(lblImagen);
+        getContentPane().add(lblImagen);
 
         btnCambiarImagen = new JButton("Cambiar Imagen");
-        btnCambiarImagen.setBounds(120, 260, 150, 25);
+        btnCambiarImagen.setBounds(147, 257, 150, 25);
         btnCambiarImagen.addActionListener(e -> seleccionarImagen());
-        add(btnCambiarImagen);
+        getContentPane().add(btnCambiarImagen);
 
         btnEditar = new JButton("Editar");
-        btnEditar.setBounds(80, 300, 100, 30);
+        btnEditar.setBounds(104, 295, 100, 30);
         btnEditar.addActionListener(e -> setEditable(true));
-        add(btnEditar);
+        getContentPane().add(btnEditar);
 
         btnGuardar = new JButton("Guardar");
-        btnGuardar.setBounds(150, 295, 100, 30);
+        btnGuardar.setBounds(225, 295, 100, 30);
         btnGuardar.addActionListener(e -> guardarCambios());
-        add(btnGuardar);
+        getContentPane().add(btnGuardar);
     }
 
     private void setEditable(boolean editable) {
@@ -72,7 +75,7 @@ public class VentanaPerfil extends JDialog {
         txtContrasena.setEnabled(editable);
         btnCambiarImagen.setEnabled(editable);
         btnGuardar.setEnabled(editable);
-        btnEditar.setEnabled(editable);
+        btnEditar.setEnabled(!editable);
     }
 
     private void setImagenPerfil(boolean editable) {
@@ -83,9 +86,13 @@ public class VentanaPerfil extends JDialog {
                 imgBytes = Files.readAllBytes(nuevaImagen.toPath());
             }
             if (imgBytes != null) {
-                img = new ImageIcon(imgBytes).getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                // Convertir bytes a BufferedImage correctamente
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(imgBytes);
+                BufferedImage bufferedImage = javax.imageio.ImageIO.read(bais);
+                img = bufferedImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             } else {
-                img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(100, 100,
+                        Image.SCALE_SMOOTH);
             }
         } catch (Exception ex) {
             img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
