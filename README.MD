@@ -35,7 +35,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
     
 # 📜 **Diagrama casos de uso**
 
-![Diagrama de Casos de Uso](/assets/DiagramaCasosDeUso.png)
+![Diagrama de Casos](/assets/diagramaCasosDeUso.png)
 
 # 📜 **Diagrama ER**
 
