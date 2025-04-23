@@ -110,7 +110,7 @@ public class VistaReservas extends JFrame {
             MenuPrincipal.getInstance(usuario).setVisible(true);
             dispose();
         });
-
+        ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
         setVisible(true);
     }
 
