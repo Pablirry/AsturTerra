@@ -78,7 +78,7 @@ public class ValorarRestaurantes extends JFrame {
         // Estrellas visuales (todas vacías al inicio)
         for (int i = 0; i < 5; i++) {
             estrellas[i] = new JLabel("☆");
-            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 28)); // Cambia aquí
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 28)); 
             estrellas[i].setForeground(new Color(241, 196, 15));
             final int estrellaIndex = i;
             estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));

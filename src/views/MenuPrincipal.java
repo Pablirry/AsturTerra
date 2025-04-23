@@ -90,9 +90,10 @@ public class MenuPrincipal extends JFrame {
             new VentanaPerfil(this, usuario).setVisible(true);
             cargarImagenPerfil();
         });
-        
+
         itemCerrarSesion.addActionListener(e -> {
             dispose();
+            MenuPrincipal.instance = null;
             new Login().setVisible(true);
         });
 
