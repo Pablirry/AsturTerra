@@ -129,8 +129,9 @@ public class VistaRestaurantes extends JFrame {
         try {
             List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
             for (Restaurante r : restaurantes) {
+                double media = TurismoService.getInstance().obtenerValoracionMediaRestaurante(r.getId());
                 modeloTabla.addRow(new Object[] {
-                        r.getId(), r.getNombre(), r.getUbicacion(), r.getValoracion()
+                        r.getId(), r.getNombre(), r.getUbicacion(), String.format("%.1f", media)
                 });
             }
         } catch (Exception ex) {
@@ -181,7 +182,7 @@ public class VistaRestaurantes extends JFrame {
                     java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
                     BufferedImage original = javax.imageio.ImageIO.read(bais);
                     Image img = original.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                    // Crear imagen circular
+                    // imagen circular
                     BufferedImage circleBuffer = new BufferedImage(120, 120, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g2 = circleBuffer.createGraphics();
                     g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -211,7 +212,6 @@ public class VistaRestaurantes extends JFrame {
             panelDatos.setLayout(new BoxLayout(panelDatos, BoxLayout.Y_AXIS));
             panelDatos.setBackground(fondo);
             panelDatos.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
-
             JLabel lblNombre = new JLabel(nombre);
             lblNombre.setFont(new Font("Arial", Font.BOLD, 22));
             lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -222,11 +222,10 @@ public class VistaRestaurantes extends JFrame {
             lblUbicacion.setAlignmentX(Component.CENTER_ALIGNMENT);
             lblUbicacion.setForeground(texto);
 
-            JLabel lblValoracion = new JLabel("Valoración: " + valoracionStr + " ⭐");
-            lblValoracion.setFont(new Font("Segoe UI Emoji", Font.BOLD, 15));
-            lblValoracion.setForeground(new Color(241, 196, 15));
+            JLabel lblValoracion = new JLabel("Valoración: " + valoracionStr + " ☆");
+            lblValoracion.setFont(new Font("Segoe UI Symbol", Font.BOLD, 18));
+            lblValoracion.setForeground(texto);
             lblValoracion.setAlignmentX(Component.CENTER_ALIGNMENT);
-
 
             panelDatos.add(Box.createVerticalStrut(10));
             panelDatos.add(lblNombre);
@@ -241,7 +240,61 @@ public class VistaRestaurantes extends JFrame {
             panel.add(lblImagen, BorderLayout.NORTH);
             panel.add(panelDatos, BorderLayout.CENTER);
 
-            JOptionPane.showMessageDialog(this, panel, "Detalles del Restaurante", JOptionPane.PLAIN_MESSAGE);
+            JButton btnOk = new JButton("Ok");
+            btnOk.setFocusPainted(false);
+            btnOk.setFont(new Font("Arial", Font.BOLD, dark ? 14 : 16));
+            btnOk.setPreferredSize(new Dimension(dark ? 90 : 120, dark ? 32 : 40));
+            btnOk.setForeground(Color.WHITE);
+            Color azulClaro = new Color(52, 152, 219);
+            btnOk.setBackground(azulClaro);
+            btnOk.setContentAreaFilled(true);
+            btnOk.setOpaque(true);
+            btnOk.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            btnOk.setBorder(new javax.swing.border.CompoundBorder(
+                    BorderFactory.createLineBorder(azulClaro, 2, true),
+                    new javax.swing.border.EmptyBorder(8, 30, 8, 30)));
+            if (dark) {
+                btnOk.setBorder(new javax.swing.border.EmptyBorder(8, 30, 8, 30));
+                btnOk.setContentAreaFilled(true);
+                btnOk.setOpaque(true);
+                btnOk.setBackground(azulClaro);
+                btnOk.setForeground(Color.WHITE);
+                btnOk.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnOk.setBorder(BorderFactory.createLineBorder(azulClaro, 2, true));
+            } else {
+                btnOk.setBorder(new javax.swing.border.EmptyBorder(8, 30, 8, 30));
+                btnOk.setContentAreaFilled(true);
+                btnOk.setOpaque(true);
+                btnOk.setBackground(azulClaro);
+                btnOk.setForeground(Color.WHITE);
+                btnOk.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                btnOk.setBorder(BorderFactory.createLineBorder(azulClaro, 2, true));
+            }
+
+            // Panel para el botón OK
+            JPanel panelBoton = new JPanel();
+            panelBoton.setBackground(fondo);
+            panelBoton.setLayout(new FlowLayout(FlowLayout.CENTER, 0, dark ? 0 : 10)); // Sin margen extra en oscuro
+            panelBoton.add(btnOk);
+
+            JDialog dialog = new JDialog(this, "Detalles del Restaurante", true);
+            dialog.setLayout(new BorderLayout());
+            dialog.getContentPane().setBackground(fondo);
+            dialog.add(panel, BorderLayout.CENTER);
+
+            // Botón más cerca de la información en oscuro, y ventana más pequeña
+            if (dark) {
+                dialog.add(panelBoton, BorderLayout.SOUTH);
+                dialog.setSize(340, 370); // Más pequeño en oscuro
+            } else {
+                dialog.add(panelBoton, BorderLayout.SOUTH);
+                dialog.setSize(380, 420); // Tamaño original en claro
+            }
+
+            btnOk.addActionListener(e -> dialog.dispose());
+            dialog.setLocationRelativeTo(this);
+            dialog.setResizable(false);
+            dialog.setVisible(true);
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar los detalles del restaurante: " + e.getMessage());

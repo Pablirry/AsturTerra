@@ -74,6 +74,15 @@ public class TurismoService {
         return valoracionDAO.registrarValoracionRestaurante(valoracion);
     }
 
+    public boolean valorarRestaurante(int idRestaurante, int idUsuario, int puntuacion, String comentario) throws ClassNotFoundException {
+    ValoracionRestaurante valoracion = new ValoracionRestaurante();
+    valoracion.setIdRestaurante(idRestaurante);
+    valoracion.setIdUsuario(idUsuario);
+    valoracion.setPuntuacion(puntuacion);
+    valoracion.setComentario(comentario);
+    return valorarRestaurante(valoracion);
+}
+
     public List<ValoracionRuta> obtenerValoracionesRuta(int idRuta) throws ClassNotFoundException {
         return valoracionDAO.obtenerValoracionesRuta(idRuta);
     }

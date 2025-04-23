@@ -8,6 +8,10 @@ public class ValoracionRestaurante {
     private int puntuacion;
     private String comentario;
 
+    public ValoracionRestaurante() {
+        
+    }
+
     public ValoracionRestaurante(int id, int idUsuario, int idRestaurante, int puntuacion, String comentario) {
         this.id = id;
         this.idUsuario = idUsuario;
