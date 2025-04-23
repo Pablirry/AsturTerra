@@ -80,14 +80,21 @@ public class MenuPrincipal extends JFrame {
         cargarImagenPerfil();
         panelFondo.add(lblImagenPerfil);
 
-        // Menu de la imagen de perfil
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem itemPerfil = new JMenuItem("Ver Perfil");
-        JMenuItem itemCambiarImagen = new JMenuItem("Cambiar Imagen");
-        JMenuItem itemCambiarPass = new JMenuItem("Cambiar Contraseña");
+        JMenuItem itemCerrarSesion = new JMenuItem("Cerrar Sesión");
         menuPerfil.add(itemPerfil);
-        menuPerfil.add(itemCambiarImagen);
-        menuPerfil.add(itemCambiarPass);
+        menuPerfil.add(itemCerrarSesion);
+
+        itemPerfil.addActionListener(e -> {
+            new VentanaPerfil(this, usuario).setVisible(true);
+            cargarImagenPerfil();
+        });
+        
+        itemCerrarSesion.addActionListener(e -> {
+            dispose();
+            new Login().setVisible(true);
+        });
 
         lblImagenPerfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lblImagenPerfil.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -97,12 +104,6 @@ public class MenuPrincipal extends JFrame {
                     menuPerfil.show(lblImagenPerfil, evt.getX(), evt.getY());
                 }
             }
-        });
-
-        // Ver Perfil
-        ItemPerfil.addActionListener(e -> {
-            VistaPerfil vistaPerfil = new VistaPerfil(usuario);
-            vistaPerfil.setVisible(true);
         });
 
         panelRutas = crearPanel(50, 100, "Rutas", "assets/rutas.png");
@@ -250,12 +251,15 @@ public class MenuPrincipal extends JFrame {
             try {
                 ByteArrayInputStream bais = new ByteArrayInputStream(usuario.getImagenPerfil());
                 BufferedImage bufferedImage = ImageIO.read(bais);
-                img = bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+                img = bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(),
+                        Image.SCALE_SMOOTH);
             } catch (IOException e) {
-                img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+                img = new ImageIcon("assets/LogoAsturTerra.png").getImage()
+                        .getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
             }
         } else {
-            img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+            img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(),
+                    lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
         }
 
         // Convertir la imagen a circular
