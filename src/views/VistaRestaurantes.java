@@ -33,6 +33,7 @@ public class VistaRestaurantes extends JFrame {
         inicializarComponentes();
         cargarRestaurantes();
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
     private void inicializarComponentes() {

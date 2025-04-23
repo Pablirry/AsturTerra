@@ -22,7 +22,7 @@ public class VistaHistorial extends JFrame {
     }
 
     private void inicializarComponentes() {
-        setTitle("Historial de Actividades");
+        setTitle("Historial");
         setSize(400, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());

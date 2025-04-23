@@ -12,7 +12,7 @@ public class Mensaje {
 
     public Mensaje() {
     }
-    
+
     public Mensaje(int id, int idUsuario, String mensaje, String respuesta, Date fecha) {
         this.id = id;
         this.idUsuario = idUsuario;
@@ -66,5 +66,5 @@ public class Mensaje {
         return "Mensaje [id=" + id + ", idUsuario=" + idUsuario + ", mensaje=" + mensaje + ", respuesta=" + respuesta
                 + ", fecha=" + fecha + "]";
     }
-    
+
 }

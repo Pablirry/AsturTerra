@@ -45,6 +45,7 @@ public class MensajeDAO {
         return mensajes;
     }
 
+
     public List<Mensaje> obtenerConversacion(int idEmisor, int idReceptor) throws ClassNotFoundException {
         List<Mensaje> conversacion = new ArrayList<>();
         String sql = "SELECT * FROM mensajes WHERE id_usuario IN (?, ?) ORDER BY fecha ASC";

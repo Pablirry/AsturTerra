@@ -80,9 +80,16 @@ public class Login extends JFrame {
 
     private void iniciarSesion() {
         try {
-            String correo = txtCorreo.getText();
-            String contrasena = new String(txtContraseña.getPassword());
-
+            String correo = txtCorreo.getText().trim();
+            String contrasena = new String(txtContraseña.getPassword()).trim();
+    
+            System.out.println("Correo: " + correo + ", Contraseña: " + contrasena);
+    
+            if (correo.isEmpty() || contrasena.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Introduce correo y contraseña.");
+                return;
+            }
+    
             Usuario usuario = usuarioDAO.iniciarSesion(correo, contrasena);
             if (usuario != null) {
                 TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion");

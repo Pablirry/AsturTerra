@@ -126,7 +126,6 @@ public class MenuPrincipal extends JFrame {
             btnSoporte.addActionListener(e -> new VistaSoporteAdmin().setVisible(true));
             panelFondo.add(btnSoporte);
         }
-
         agregarEventos();
 
         getContentPane().add(panelFondo);
@@ -150,7 +149,7 @@ public class MenuPrincipal extends JFrame {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(getBackground());
-                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 36, 36); // Usa el mismo radio que el borde
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 36, 36);
                 g2.dispose();
             }
         };

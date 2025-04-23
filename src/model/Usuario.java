@@ -68,6 +68,10 @@ public class Usuario {
         this.imagenPerfil = imagenPerfil;
     }
 
+    public boolean isAdmin() {
+        return tipo != null && tipo.equalsIgnoreCase("admin");
+    }
+
     @Override
     public String toString() {
         return "Usuario [id=" + id + ", nombre=" + nombre + ", correo=" + correo + ", contrasena=" + contrasena

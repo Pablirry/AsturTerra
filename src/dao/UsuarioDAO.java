@@ -17,7 +17,7 @@ public class UsuarioDAO {
             ps.setString(1, correo);
             ps.setString(2, contrasena);
             ResultSet rs = ps.executeQuery();
-
+    
             if (rs.next()) {
                 return new Usuario(
                         rs.getInt("id"),
