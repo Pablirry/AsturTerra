@@ -39,7 +39,8 @@ public class MenuPrincipal extends JFrame {
                     g.fillRect(0, 0, getWidth(), getHeight());
                 } else {
                     Graphics2D g2d = (Graphics2D) g;
-                    GradientPaint gradient = new GradientPaint(0, 0, new Color(52, 152, 219), getWidth(), getHeight(), new Color(44, 62, 80));
+                    GradientPaint gradient = new GradientPaint(0, 0, new Color(52, 152, 219), getWidth(), getHeight(),
+                            new Color(44, 62, 80));
                     g2d.setPaint(gradient);
                     g2d.fillRect(0, 0, getWidth(), getHeight());
                 }
@@ -75,9 +76,34 @@ public class MenuPrincipal extends JFrame {
         // Imagen de perfil
         lblImagenPerfil = new JLabel();
         lblImagenPerfil.setBounds(600, 10, 80, 80);
-        lblImagenPerfil.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+        lblImagenPerfil.setBorder(BorderFactory.createEmptyBorder());
         cargarImagenPerfil();
         panelFondo.add(lblImagenPerfil);
+
+        // Menu de la imagen de perfil
+        JPopupMenu menuPerfil = new JPopupMenu();
+        JMenuItem itemPerfil = new JMenuItem("Ver Perfil");
+        JMenuItem itemCambiarImagen = new JMenuItem("Cambiar Imagen");
+        JMenuItem itemCambiarPass = new JMenuItem("Cambiar Contraseña");
+        menuPerfil.add(itemPerfil);
+        menuPerfil.add(itemCambiarImagen);
+        menuPerfil.add(itemCambiarPass);
+
+        lblImagenPerfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        lblImagenPerfil.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                if (evt.getButton() == java.awt.event.MouseEvent.BUTTON1) {
+                    menuPerfil.show(lblImagenPerfil, evt.getX(), evt.getY());
+                }
+            }
+        });
+
+        // Ver Perfil
+        ItemPerfil.addActionListener(e -> {
+            VistaPerfil vistaPerfil = new VistaPerfil(usuario);
+            vistaPerfil.setVisible(true);
+        });
 
         panelRutas = crearPanel(50, 100, "Rutas", "assets/rutas.png");
         panelReservas = crearPanel(370, 100, "Reservas", "assets/reserva.png");
@@ -90,6 +116,15 @@ public class MenuPrincipal extends JFrame {
         panelFondo.add(panelRestaurantes);
         panelFondo.add(panelHistorial);
         panelFondo.add(panelChat);
+
+        if (usuario.getTipo().equals("admin")) {
+            JButton btnSoporte = new JButton("Soporte Admin");
+            btnSoporte.setBounds(20, 60, 130, 30);
+            btnSoporte.setBackground(new Color(52, 152, 219));
+            btnSoporte.setForeground(Color.WHITE);
+            btnSoporte.addActionListener(e -> new VistaSoporteAdmin().setVisible(true));
+            panelFondo.add(btnSoporte);
+        }
 
         agregarEventos();
 
@@ -106,11 +141,26 @@ public class MenuPrincipal extends JFrame {
     }
 
     private JPanel crearPanel(int x, int y, String texto, String rutaImagen) {
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                // Pinta el fondo redondeado
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getBackground());
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 36, 36); // Usa el mismo radio que el borde
+                g2.dispose();
+            }
+        };
+        panel.setOpaque(false);
         panel.setLayout(null);
         panel.setBounds(x, y, 250, 130);
         panel.setBackground(new Color(236, 240, 241));
-        panel.setBorder(BorderFactory.createLineBorder(new Color(44, 62, 80), 3));
+        panel.setBorder(new views.ThemeManager.RoundedBorder(
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(33, 47, 60)
+                        : new Color(44, 62, 80),
+                3, 18));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         ImageIcon icon = new ImageIcon(rutaImagen);
@@ -195,15 +245,26 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void cargarImagenPerfil() {
+        Image img;
         if (usuario.getImagenPerfil() != null) {
             try {
                 ByteArrayInputStream bais = new ByteArrayInputStream(usuario.getImagenPerfil());
                 BufferedImage bufferedImage = ImageIO.read(bais);
-                ImageIcon icon = new ImageIcon(bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH));
-                lblImagenPerfil.setIcon(icon);
+                img = bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
             } catch (IOException e) {
-                e.printStackTrace();
+                img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
             }
+        } else {
+            img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
         }
+
+        // Convertir la imagen a circular
+        int size = Math.min(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight());
+        BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = circleBuffer.createGraphics();
+        g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, size, size));
+        g2.drawImage(img, 0, 0, size, size, null);
+        g2.dispose();
+        lblImagenPerfil.setIcon(new ImageIcon(circleBuffer));
     }
 }

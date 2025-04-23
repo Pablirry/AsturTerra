@@ -19,6 +19,7 @@ public class Registro extends JFrame {
     private JButton btnRegistrar, btnSeleccionarImagen;
     private JCheckBox chkAdmin;
     private File imagenPerfil;
+    private JPasswordField txtAdminPass;
 
     private UsuarioDAO usuarioDAO;
 
@@ -70,8 +71,26 @@ public class Registro extends JFrame {
         panelCampos.add(lblTipo);
 
         chkAdmin = new JCheckBox();
-        chkAdmin.setBounds(150, 180, 200, 25);
+        chkAdmin.setBounds(150, 180, 20, 25);
         panelCampos.add(chkAdmin);
+
+        JLabel lblAdminPass = new JLabel("Clave:");
+        lblAdminPass.setBounds(180, 180, 120, 25);
+        panelCampos.add(lblAdminPass);
+
+        txtAdminPass = new JPasswordField();
+        txtAdminPass.setBounds(230, 180, 120, 25);
+        panelCampos.add(txtAdminPass);
+
+        lblAdminPass.setVisible(false);
+        txtAdminPass.setVisible(false);
+
+        chkAdmin.addActionListener(e -> {
+            boolean select = chkAdmin.isSelected();
+            lblAdminPass.setVisible(select);
+            txtAdminPass.setVisible(select);
+        });
+
 
         btnSeleccionarImagen = new JButton("Seleccionar Imagen");
         btnSeleccionarImagen.setBounds(50, 220, 300, 40);
@@ -105,6 +124,14 @@ public class Registro extends JFrame {
             String contrasena = new String(txtContraseña.getPassword()).trim();
             String tipo = chkAdmin.isSelected() ? "admin" : "cliente";
             byte[] imagenBytes = null;
+
+            if (chkAdmin.isSelected()) {
+                String adminPass = new String(txtAdminPass.getPassword()).trim();
+                if (!adminPass.equals("admin")) {
+                    JOptionPane.showMessageDialog(this, "Clave de administrador incorrecta.");
+                    return;
+                }
+            }
 
             if (imagenPerfil != null) {
                 imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));

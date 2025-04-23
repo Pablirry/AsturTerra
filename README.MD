@@ -31,7 +31,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 # 📜 **Diagrama de Clases**
 
-![Diagrama de Clases](/assets/DiagramaClases.png)
+![Diagrama de Clases](/assets/DiagramaDeClases.png)
     
 # 📜 **Diagrama casos de uso**
 

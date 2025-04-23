@@ -50,7 +50,7 @@ public class ThemeManager {
     }
 
     // Borde redondeado personalizado
-    private static class RoundedBorder extends AbstractBorder {
+    public static class RoundedBorder extends AbstractBorder {
         private final Color color;
         private final int thickness;
         private final int radius;

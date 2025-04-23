@@ -78,4 +78,37 @@ public class MensajeDAO {
             return false;
         }
     }
+
+    public List<Mensaje> obtenerMensajesSinRespuesta() throws ClassNotFoundException {
+        List<Mensaje> mensajes = new ArrayList<>();
+        String sql = "SELECT * FROM mensajes WHERE respuesta IS NULL OR respuesta = '' ORDER BY fecha ASC";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                mensajes.add(new Mensaje(
+                        rs.getInt("id"),
+                        rs.getInt("id_usuario"),
+                        rs.getString("mensaje"),
+                        rs.getString("respuesta"),
+                        rs.getTimestamp("fecha")));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error obtenerMensajesSinRespuesta: " + e.getMessage());
+        }
+        return mensajes;
+    }
+
+    public boolean responderMensaje(int idMensaje, String respuesta) throws ClassNotFoundException {
+        String sql = "UPDATE mensajes SET respuesta = ? WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, respuesta);
+            ps.setInt(2, idMensaje);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error responderMensaje: " + e.getMessage());
+            return false;
+        }
+    }
 }
