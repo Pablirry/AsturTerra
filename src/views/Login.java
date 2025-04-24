@@ -17,6 +17,7 @@ public class Login extends JFrame {
     private JButton btnRegistro;
     private JPanel panelFondo;
     private UsuarioDAO usuarioDAO;
+    public static Usuario usuarioActual;
 
     public Login() {
         setTitle("Inicio de Sesión");
@@ -94,7 +95,7 @@ public class Login extends JFrame {
             if (usuario != null) {
                 TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion");
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
-                MenuPrincipal.getInstance(usuario).setVisible(true);
+                new MenuPrincipal(usuario).setVisible(true);
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Credenciales incorrectas");

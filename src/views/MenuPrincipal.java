@@ -4,11 +4,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import model.Usuario;
+import services.TurismoService;
 
 public class MenuPrincipal extends JFrame {
 
@@ -94,7 +97,16 @@ public class MenuPrincipal extends JFrame {
         itemCerrarSesion.addActionListener(e -> {
             dispose();
             MenuPrincipal.instance = null;
+            Login.usuarioActual = null;
+            TurismoService.usuarioSesion = null;
             new Login().setVisible(true);
+        });
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                MenuPrincipal.instance = null;
+            }
         });
 
         lblImagenPerfil.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -120,7 +132,7 @@ public class MenuPrincipal extends JFrame {
         panelFondo.add(panelChat);
 
         if (usuario.getTipo().equals("admin")) {
-            JButton btnSoporte = new JButton("Soporte Admin");
+            JButton btnSoporte = new JButton("Soporte");
             btnSoporte.setBounds(20, 60, 130, 30);
             btnSoporte.setBackground(new Color(52, 152, 219));
             btnSoporte.setForeground(Color.WHITE);
@@ -135,7 +147,10 @@ public class MenuPrincipal extends JFrame {
     }
 
     public static MenuPrincipal getInstance(Usuario usuario) {
-        if (instance == null) {
+        if (instance == null || instance.usuario == null || instance.usuario.getId() != usuario.getId()) {
+            if (instance != null) {
+                instance.dispose();
+            }
             instance = new MenuPrincipal(usuario);
         }
         return instance;

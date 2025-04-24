@@ -103,7 +103,7 @@ public class VistaRestaurantes extends JFrame {
         btnVerDetalles.addActionListener(e -> verDetallesRestaurante());
         btnValorar.addActionListener(e -> valorarRestaurante());
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance(usuario).setVisible(true);
+            new MenuPrincipal(usuario).setVisible(true);
             dispose();
         });
 

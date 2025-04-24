@@ -54,7 +54,7 @@ public class VistaChat extends JFrame {
         });
 
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance(usuario).setVisible(true);
+            new MenuPrincipal(usuario).setVisible(true);
             dispose();
         });
 

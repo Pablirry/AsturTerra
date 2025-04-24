@@ -13,6 +13,7 @@ public class TurismoService {
     private final ReservarDAO reservaDAO;
     private final HistorialDAO historialDAO;
     private final MensajeDAO mensajeDAO;
+    public static Usuario usuarioSesion;
 
     private TurismoService() {
         usuarioDAO = new UsuarioDAO();

@@ -47,7 +47,7 @@ public class VistaHistorial extends JFrame {
         add(panelBotones, BorderLayout.SOUTH);
 
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance(usuario).setVisible(true);
+            new MenuPrincipal(usuario).setVisible(true);
             dispose();
         });
 

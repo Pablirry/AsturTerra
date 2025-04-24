@@ -167,7 +167,7 @@ public class VistaRutas extends JFrame {
         btnValorar.addActionListener(e -> valorarRuta());
         btnReservar.addActionListener(e -> reservarRuta());
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance(usuario).setVisible(true);
+            new MenuPrincipal(usuario).setVisible(true);
             dispose();
         });
 

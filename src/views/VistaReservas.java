@@ -107,7 +107,7 @@ public class VistaReservas extends JFrame {
         btnReservar.addActionListener(e -> reservarRuta());
         btnCancelar.addActionListener(e -> cancelarReserva());
         btnVolver.addActionListener(e -> {
-            MenuPrincipal.getInstance(usuario).setVisible(true);
+            new MenuPrincipal(usuario).setVisible(true);
             dispose();
         });
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);

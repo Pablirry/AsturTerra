@@ -3,11 +3,8 @@ package views;
 import javax.swing.*;
 import model.Restaurante;
 import model.Usuario;
-import model.ValoracionRestaurante;
-import services.TurismoService;
-
 import java.awt.*;
-import java.awt.event.ActionEvent;
+
 
 public class ValorarRestaurantes extends JFrame {
 

@@ -3,13 +3,10 @@ package views;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.AbstractBorder;
-import java.awt.geom.RoundRectangle2D;
+
 
 public class ThemeManager {
     public enum Theme {
@@ -159,8 +156,11 @@ public class ThemeManager {
             // Borde redondeado para el botón
             Border rounded = new RoundedBorder(
                     theme == Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80),
-                    2, 14);
+                    2, 18); // Aumenta el radio para que se vean más grandes y redondeados
             ((JButton) comp).setBorder(rounded);
+            // Aumenta el tamaño de la fuente y el padding
+            ((JButton) comp).setFont(new Font("Dialog", Font.BOLD, 18));
+            ((JButton) comp).setMargin(new Insets(12, 24, 12, 24)); // top, left, bottom, right
         }
         if (comp instanceof JTextField || comp instanceof JTextArea || comp instanceof JPasswordField) {
             comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
@@ -184,4 +184,3 @@ public class ThemeManager {
         return currentTheme;
     }
 }
-
