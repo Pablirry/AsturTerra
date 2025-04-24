@@ -151,8 +151,8 @@ public class VistaRutas extends JFrame {
         panelBotones.add(btnVerDetalles);
         panelBotones.add(btnValorar);
         panelBotones.add(btnReservar);
-        panelBotones.add(btnVolver);
         panelBotones.add(btnEditar);
+        panelBotones.add(btnVolver);
 
         add(panelBotones, BorderLayout.SOUTH);
 
@@ -313,7 +313,18 @@ public class VistaRutas extends JFrame {
             if (ruta.getImagen() != null) {
                 img = ImageIO.read(new ByteArrayInputStream(ruta.getImagen()));
             } else {
-                img = ImageIO.read(new java.io.File("assets/imagen.png"));
+                img = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = img.createGraphics();
+                g.setColor(new Color(220, 220, 220));
+                g.fillOval(0, 0, 200, 200);
+                g.setColor(new Color(160, 160, 160));
+                g.setFont(new Font("Arial", Font.BOLD, 18));
+                FontMetrics fm = g.getFontMetrics();
+                String texto = "Sin imagen";
+                int x = (200 - fm.stringWidth(texto)) / 2;
+                int y = (200 - fm.getHeight()) / 2 + fm.getAscent();
+                g.drawString(texto, x, y);
+                g.dispose();
             }
             if (img != null) {
                 img = resizeImage(img, 200, 200);

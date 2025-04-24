@@ -15,6 +15,43 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ✅ **Exportación de datos** a **PDF y Excel**.  
 ✅ **Modo oscuro/claro** para la interfaz gráfica.  
 
+mejoras que hacer 
+
+3. Seguridad
+Ocultar contraseñas en los campos y en la base de datos (usa hash en vez de texto plano).
+Cerrar sesión correctamente: limpia la sesión y variables estáticas al cerrar sesión.
+Control de acceso: asegúrate de que solo los administradores pueden acceder a funciones de administración.
+4. Escalabilidad y mantenibilidad
+Centraliza los estilos (colores, fuentes, bordes) en ThemeManager para facilitar cambios de diseño.
+Refactoriza código repetido (por ejemplo, creación de botones, paneles, validaciones) en métodos utilitarios.
+Internacionalización: usa archivos de recursos para los textos, facilitando traducción a otros idiomas.
+5. Funcionalidad extra útil
+Búsqueda y filtrado avanzado en tablas de rutas, restaurantes y reservas (por nombre, precio, dificultad, valoración, etc.).
+Ordenar columnas en las tablas haciendo clic en el encabezado.
+Exportar datos (rutas, reservas, historial) a PDF o Excel.
+Notificaciones: muestra avisos cuando haya nuevas respuestas del soporte o cambios importantes.
+Historial de cambios: permite ver qué acciones ha realizado cada usuario (ya tienes historial, pero puedes mostrarlo de forma más visual).
+6. Robustez y control de errores
+Manejo de excepciones: muestra mensajes claros y registra los errores para depuración.
+Evita bloqueos de la interfaz: usa hilos (SwingWorker) para operaciones largas (carga de imágenes, consultas grandes).
+Comprueba la conexión a la base de datos y muestra un mensaje si hay problemas.
+7. Accesibilidad y diseño
+Soporte para teclado: permite navegar y operar la app solo con teclado.
+Contraste de colores: asegúrate de que los textos sean legibles en todos los modos.
+Tamaños adaptativos: haz que la interfaz se vea bien en diferentes resoluciones y tamaños de pantalla.
+8. Mejoras en el chat/soporte
+Soporte para archivos adjuntos (imágenes, PDF) en el chat.
+Notificaciones en tiempo real cuando el usuario recibe respuesta.
+Historial de conversaciones accesible para el usuario.
+9. Mejoras en reservas y valoraciones
+Evitar reservas duplicadas para la misma ruta y usuario.
+Mostrar la media de valoraciones en tiempo real y permitir ver comentarios de otros usuarios.
+Permitir modificar/cancelar valoraciones propias.
+10. Documentación y ayuda
+Manual de usuario accesible desde la app.
+Tooltips en botones y campos para explicar su función.
+Estas mejoras harán tu aplicación más robusta, profesional y agradable de usar tanto para usuarios como para administradores.
+
 ---
 
 # 📂 **Estructura del Proyecto**
