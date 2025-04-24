@@ -125,6 +125,21 @@ public class Registro extends JFrame {
             String tipo = chkAdmin.isSelected() ? "admin" : "cliente";
             byte[] imagenBytes = null;
 
+            if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                JOptionPane.showMessageDialog(this, "Correo electrónico no válido", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (contrasena.length() < 6) {
+                JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 6 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             if (chkAdmin.isSelected()) {
                 String adminPass = new String(txtAdminPass.getPassword()).trim();
                 if (!adminPass.equals("admin")) {
@@ -135,6 +150,12 @@ public class Registro extends JFrame {
 
             if (imagenPerfil != null) {
                 imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));
+            }
+            
+             // Evitar duplicados correo
+             if (new dao.UsuarioDAO().obtenerUsuarioPorCorreo(correo) != null) {
+                JOptionPane.showMessageDialog(this, "El correo ya está registrado", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
             Usuario nuevoUsuario = new Usuario(0, nombre, correo, contrasena, tipo, imagenBytes);

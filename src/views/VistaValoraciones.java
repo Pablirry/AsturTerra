@@ -9,18 +9,18 @@ import java.util.List;
 import java.awt.*;
 
 public class VistaValoraciones extends JFrame {
-	
-	private static VistaValoraciones instance;
+
+    private static VistaValoraciones instance;
     private JTable tablaValoraciones;
     private DefaultTableModel modeloTabla;
-    private JComboBox<Integer> cmbPuntuacion;
     private JTextArea txtComentario;
     private JButton btnEnviar, btnCancelar;
     private int idRuta;
     private String nombreRuta;
     private Usuario usuario;
+    private int puntuacionSeleccionada = 0;
+    private JLabel[] estrellas = new JLabel[5];
 
-    
     public static VistaValoraciones getInstance(int idRuta, String nombreRuta, Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
             instance = new VistaValoraciones(idRuta, nombreRuta, usuario);
@@ -69,18 +69,55 @@ public class VistaValoraciones extends JFrame {
         panelCentral.add(panelTabla);
 
         // Formulario
-        JPanel panelFormulario = new JPanel(new GridLayout(3, 2, 10, 10));
+        JPanel panelFormulario = new JPanel();
+        panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Nueva valoración"));
+        panelFormulario.setBackground(Color.WHITE);
 
+        // Puntuación con estrellas visuales
+        JPanel panelPuntuacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        panelPuntuacion.setBackground(Color.WHITE);
         JLabel lblPuntuacion = new JLabel("Puntuación:");
-        cmbPuntuacion = new JComboBox<>(new Integer[]{1, 2, 3, 4, 5});
-        JLabel lblComentario = new JLabel("Comentario:");
-        txtComentario = new JTextArea(3, 20);
-        JScrollPane scrollComentario = new JScrollPane(txtComentario);
+        lblPuntuacion.setFont(new Font("Arial", Font.PLAIN, 16));
+        panelPuntuacion.add(lblPuntuacion);
 
-        panelFormulario.add(lblPuntuacion);
-        panelFormulario.add(cmbPuntuacion);
+        for (int i = 0; i < 5; i++) {
+            estrellas[i] = new JLabel("☆");
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 28));
+            estrellas[i].setForeground(new Color(241, 196, 15));
+            final int estrellaIndex = i;
+            estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            estrellas[i].addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    puntuacionSeleccionada = estrellaIndex + 1;
+                    actualizarEstrellas();
+                }
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    resaltarEstrellas(estrellaIndex + 1);
+                }
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    actualizarEstrellas();
+                }
+            });
+            panelPuntuacion.add(estrellas[i]);
+        }
+        panelFormulario.add(panelPuntuacion);
+        panelFormulario.add(Box.createVerticalStrut(10));
+
+        // Comentario
+        JLabel lblComentario = new JLabel("Comentario:");
+        lblComentario.setFont(new Font("Arial", Font.PLAIN, 16));
         panelFormulario.add(lblComentario);
+
+        txtComentario = new JTextArea(3, 20);
+        txtComentario.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtComentario.setLineWrap(true);
+        txtComentario.setWrapStyleWord(true);
+        JScrollPane scrollComentario = new JScrollPane(txtComentario);
+        scrollComentario.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
         panelFormulario.add(scrollComentario);
 
         panelCentral.add(panelFormulario);
@@ -109,8 +146,35 @@ public class VistaValoraciones extends JFrame {
         btnCancelar.addActionListener(e -> dispose());
 
         cargarValoraciones();
+        actualizarEstrellas();
 
         setVisible(true);
+    }
+
+    private void actualizarEstrellas() {
+        for (int i = 0; i < 5; i++) {
+            if (i < puntuacionSeleccionada) {
+                estrellas[i].setText("★");
+                estrellas[i].setForeground(new Color(241, 196, 15));
+            } else {
+                estrellas[i].setText("☆");
+                estrellas[i].setForeground(new Color(189, 195, 199));
+            }
+        }
+    }
+
+    private void resaltarEstrellas(int hasta) {
+        for (int i = 0; i < 5; i++) {
+            if (i < hasta) {
+                estrellas[i].setFont(new Font("Dialog", Font.BOLD, 28));
+                estrellas[i].setText("★");
+                estrellas[i].setForeground(new Color(241, 196, 15));
+            } else {
+                estrellas[i].setFont(new Font("Dialog", Font.BOLD, 28));
+                estrellas[i].setText("☆");
+                estrellas[i].setForeground(new Color(189, 195, 199));
+            }
+        }
     }
 
     private void cargarValoraciones() {
@@ -132,15 +196,17 @@ public class VistaValoraciones extends JFrame {
     }
 
     private void enviarValoracion() {
+        if (puntuacionSeleccionada == 0) {
+            JOptionPane.showMessageDialog(this, "Selecciona una puntuación.");
+            return;
+        }
+        String comentario = txtComentario.getText().trim();
         try {
-            int puntuacion = (Integer) cmbPuntuacion.getSelectedItem();
-            String comentario = txtComentario.getText().trim();
-
             ValoracionRuta valoracion = new ValoracionRuta(
                 0,
                 usuario.getId(),
                 idRuta,
-                puntuacion,
+                puntuacionSeleccionada,
                 comentario
             );
 
@@ -151,6 +217,8 @@ public class VistaValoraciones extends JFrame {
                 JOptionPane.showMessageDialog(this, "¡Valoración enviada con éxito!");
                 cargarValoraciones();
                 txtComentario.setText("");
+                puntuacionSeleccionada = 0;
+                actualizarEstrellas();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo registrar la valoración.");
             }

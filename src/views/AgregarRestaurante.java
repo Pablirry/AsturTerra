@@ -88,28 +88,39 @@ public class AgregarRestaurante extends JFrame {
         }
     }
 
-    private void agregarRestaurante() {
+        private void agregarRestaurante() {
         try {
             String nombre = txtNombre.getText().trim();
             String ubicacion = txtUbicacion.getText().trim();
             float valoracion = ((Integer) spnValoracion.getValue()).floatValue();
-            byte[] imagenBytes = null;
-
-            if (imagenPerfil != null) {
-                imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));
+    
+            if (nombre.isEmpty() || ubicacion.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-
+    
+            // Evitar duplicados por nombre
+            if (new dao.RestauranteDAO().obtenerRestaurantePorNombre(nombre) != null) {
+                JOptionPane.showMessageDialog(this, "Ya existe un restaurante con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            byte[] imagenBytes = null;
+            if (imagenPerfil != null) {
+                imagenBytes = Files.readAllBytes(imagenPerfil.toPath());
+            }
+    
             Restaurante restaurante = new Restaurante(0, nombre, ubicacion, valoracion, imagenBytes);
-            boolean guardado = TurismoService.getInstance().agregarRestaurante(restaurante);
-
+            boolean guardado = services.TurismoService.getInstance().agregarRestaurante(restaurante);
+    
             if (guardado) {
                 JOptionPane.showMessageDialog(this, "Restaurante agregado correctamente.");
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo agregar el restaurante.");
+                JOptionPane.showMessageDialog(this, "No se pudo agregar el restaurante.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al agregar restaurante: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al agregar restaurante: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

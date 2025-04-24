@@ -89,4 +89,27 @@ public class UsuarioDAO {
         }
         return null;
     }
+
+    public Usuario obtenerUsuarioPorCorreo(String correo) throws ClassNotFoundException{
+        try (Connection con = ConexionDB.getConection()) {
+            String sql = "SELECT * FROM usuarios WHERE correo = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, correo);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new Usuario(
+                    rs.getInt("id"),
+                    rs.getString("nombre"),
+                    rs.getString("correo"),
+                    rs.getString("contrasena"),
+                    rs.getString("tipo"),
+                    rs.getBytes("imagen_perfil")
+                );
+            }
+        } catch (SQLException ex) {
+            System.err.println("Error al obtener usuario por correo " + ex.getMessage());
+        }
+        return null;
+    }
 }

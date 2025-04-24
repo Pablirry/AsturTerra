@@ -95,27 +95,44 @@ public class AgregarRuta extends JFrame {
         try {
             String nombre = txtNombre.getText().trim();
             String descripcion = txtDescripcion.getText().trim();
-            double precio = Double.parseDouble(txtPrecio.getText().trim());
+            String precioStr = txtPrecio.getText().trim();
             String dificultad = (String) cmbDificultad.getSelectedItem();
-            byte[] imagenBytes = null;
 
+            if (nombre.isEmpty() || descripcion.isEmpty() || precioStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            double precio;
+            try {
+                precio = Double.parseDouble(precioStr);
+                if (precio < 0) throw new NumberFormatException();
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Precio no válido.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            // Evitar duplicados por nombre
+            if (new dao.RutaDAO().obtenerRutaPorNombre(nombre) != null) {
+                JOptionPane.showMessageDialog(this, "Ya existe una ruta con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+    
+            byte[] imagenBytes = null;
             if (imagenRuta != null) {
                 imagenBytes = Files.readAllBytes(imagenRuta.toPath());
             }
-
+    
             Ruta ruta = new Ruta(0, nombre, descripcion, imagenBytes, precio, dificultad);
-            boolean insertada = TurismoService.getInstance().agregarRuta(ruta);
-
-            if (insertada) {
+            boolean guardado = services.TurismoService.getInstance().agregarRuta(ruta);
+    
+            if (guardado) {
                 JOptionPane.showMessageDialog(this, "Ruta agregada correctamente.");
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo agregar la ruta.");
+                JOptionPane.showMessageDialog(this, "No se pudo agregar la ruta.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (NumberFormatException nfe) {
-            JOptionPane.showMessageDialog(this, "El precio debe ser un número válido.");
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al agregar ruta: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al agregar ruta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

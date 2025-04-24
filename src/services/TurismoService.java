@@ -62,8 +62,12 @@ public class TurismoService {
         return rutaDAO.eliminarRuta(idRuta);
     }
 
-    public Ruta obtenerRutaPorId(int id) throws ClassNotFoundException {
-        return rutaDAO.obtenerRutaPorId(id);
+    public Ruta obtenerRutaPorId(int idRuta) throws ClassNotFoundException {
+        return rutaDAO.obtenerRutaPorId(idRuta);
+    }
+
+    public boolean actualizarRuta(Ruta ruta) throws ClassNotFoundException {
+        return rutaDAO.actualizarRuta(ruta);
     }
 
     // Valoraciones
@@ -119,6 +123,10 @@ public class TurismoService {
 
     public Restaurante obtenerRestaurantePorNombre(String nombreRestaurante) throws ClassNotFoundException {
         return restauranteDAO.obtenerRestaurantePorNombre(nombreRestaurante);
+    }
+
+    public boolean actualizarRestaurante(Restaurante restaurante) throws ClassNotFoundException {
+        return restauranteDAO.actualizarRestaurante(restaurante);
     }
 
     // Reservas

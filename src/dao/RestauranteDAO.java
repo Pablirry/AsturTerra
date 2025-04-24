@@ -99,4 +99,19 @@ public class RestauranteDAO {
         }
         return restaurante;
     }
+
+    public boolean actualizarRestaurante(Restaurante restaurante) throws ClassNotFoundException {
+        String sql = "UPDATE restaurantes SET nombre = ?, ubicacion = ?, imagen = ? WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, restaurante.getNombre());
+            ps.setString(2, restaurante.getUbicacion());
+            ps.setBytes(3, restaurante.getImagen());
+            ps.setInt(4, restaurante.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error actualizarRestaurante: " + e.getMessage());
+            return false;
+        }
+    }
 }

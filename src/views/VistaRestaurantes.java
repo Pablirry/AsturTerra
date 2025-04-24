@@ -126,6 +126,9 @@ public class VistaRestaurantes extends JFrame {
     }
 
     private void cargarRestaurantes() {
+
+        int selectedRow = tablaRestaurantes.getSelectedRow();
+        Object selectedId = selectedRow != -1 ? modeloTabla.getValueAt(selectedRow, 0) : null;
         modeloTabla.setRowCount(0);
         try {
             List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
@@ -134,6 +137,14 @@ public class VistaRestaurantes extends JFrame {
                 modeloTabla.addRow(new Object[] {
                         r.getId(), r.getNombre(), r.getUbicacion(), String.format("%.1f", media)
                 });
+            }
+            if (selectedId != null) {
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    if (modeloTabla.getValueAt(i, 0).equals(selectedId)) {
+                        tablaRestaurantes.setRowSelectionInterval(i, i);
+                        break;
+                    }
+                }
             }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar restaurantes: " + ex.getMessage());
@@ -146,6 +157,10 @@ public class VistaRestaurantes extends JFrame {
             JOptionPane.showMessageDialog(this, "Selecciona un restaurante para eliminar.");
             return;
         }
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres eliminar este restaurante?",
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
         int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
         try {
             boolean eliminado = TurismoService.getInstance().eliminarRestaurante(idRestaurante);

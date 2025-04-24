@@ -161,9 +161,12 @@ public class MenuPrincipal extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Pinta el fondo redondeado
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                // Sombra
+                g2.setColor(new Color(0, 0, 0, 30));
+                g2.fillRoundRect(4, 4, getWidth() - 8, getHeight() - 8, 36, 36);
+                // Fondo
                 g2.setColor(getBackground());
                 g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 36, 36);
                 g2.dispose();
@@ -172,11 +175,8 @@ public class MenuPrincipal extends JFrame {
         panel.setOpaque(false);
         panel.setLayout(null);
         panel.setBounds(x, y, 250, 130);
-        panel.setBackground(new Color(236, 240, 241));
-        panel.setBorder(new views.ThemeManager.RoundedBorder(
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(33, 47, 60)
-                        : new Color(44, 62, 80),
-                3, 18));
+        panel.setBackground(ThemeManager.COLOR_FONDO_CLARO);
+        panel.setBorder(new ThemeManager.RoundedBorder(ThemeManager.COLOR_SECUNDARIO, 2, 18));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         ImageIcon icon = new ImageIcon(rutaImagen);
@@ -226,6 +226,7 @@ public class MenuPrincipal extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 VistaRutas.getInstance(usuario).setVisible(true);
+                dispose();
             }
         });
 
@@ -233,6 +234,7 @@ public class MenuPrincipal extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 VistaReservas.getInstance(usuario).setVisible(true);
+                dispose();
             }
         });
 
@@ -240,6 +242,7 @@ public class MenuPrincipal extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 VistaRestaurantes.getInstance(usuario).setVisible(true);
+                dispose();
             }
         });
 

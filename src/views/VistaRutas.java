@@ -1,10 +1,13 @@
 package views;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
@@ -18,7 +21,7 @@ public class VistaRutas extends JFrame {
 
     private JTable tablaRutas;
     private DefaultTableModel modeloTabla;
-    private JButton btnAgregar, btnEliminar, btnVerDetalles, btnValorar, btnReservar, btnVolver;
+    private JButton btnAgregar, btnEliminar, btnVerDetalles, btnValorar, btnReservar, btnVolver, btnEditar;
     private Usuario usuario;
     private JTextField txtBuscarNombre;
     private JSlider sliderPrecioMax;
@@ -39,6 +42,7 @@ public class VistaRutas extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         inicializarComponentes();
         cargarRutas();
         addWindowListener(new WindowAdapter() {
@@ -47,7 +51,7 @@ public class VistaRutas extends JFrame {
             }
         });
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
-        
+
     }
 
     private void inicializarComponentes() {
@@ -56,24 +60,14 @@ public class VistaRutas extends JFrame {
         panelCabecera.setBackground(new Color(44, 62, 80));
 
         // Panel de título centrado con icono de actualizar a la derecha
-        JPanel panelTitulo = new JPanel(new BorderLayout());
-        panelTitulo.setBackground(new Color(44, 62, 80));
-
-        JLabel lblTitulo = new JLabel("Gestión de Rutas", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
+        JPanel panelTitulo = new JPanel();
+        panelTitulo.setBackground(ThemeManager.COLOR_SECUNDARIO);
+        panelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
+        JLabel lblTitulo = new JLabel("Gestión de Rutas");
+        lblTitulo.setFont(ThemeManager.FUENTE_TITULO);
         lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        panelTitulo.add(lblTitulo, BorderLayout.CENTER);
-
-        // Botón de actualizar al lado del título
-        ImageIcon iconoAct = new ImageIcon("assets/carga.png");
-        JButton btnActualizar = new JButton(iconoAct);
-        btnActualizar.setBackground(new Color(52, 152, 219));
-        btnActualizar.setForeground(Color.WHITE);
-        btnActualizar.setFocusPainted(false);
-        btnActualizar.setPreferredSize(new Dimension(40, 40));
-        btnActualizar.addActionListener(e -> cargarRutas());
-        panelTitulo.add(btnActualizar, BorderLayout.EAST);
+        panelTitulo.add(lblTitulo);
+        add(panelTitulo, BorderLayout.NORTH);
 
         panelCabecera.add(panelTitulo, BorderLayout.NORTH);
 
@@ -150,6 +144,7 @@ public class VistaRutas extends JFrame {
         btnValorar = crearBoton("Valorar Ruta", new Color(46, 204, 113));
         btnReservar = crearBoton("Reservar Ruta", new Color(46, 204, 113));
         btnVolver = crearBoton("Volver al Menú", new Color(52, 152, 219));
+        btnEditar = crearBoton("Editar Ruta", new Color(241, 196, 15));
 
         panelBotones.add(btnAgregar);
         panelBotones.add(btnEliminar);
@@ -157,11 +152,19 @@ public class VistaRutas extends JFrame {
         panelBotones.add(btnValorar);
         panelBotones.add(btnReservar);
         panelBotones.add(btnVolver);
+        panelBotones.add(btnEditar);
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Acciones de botones
-        btnAgregar.addActionListener(e -> new AgregarRuta().setVisible(true));
+        btnAgregar.addActionListener(e -> {
+            new AgregarRuta() {
+                @Override
+                public void dispose() {
+                    super.dispose();
+                    cargarRutas();
+                }
+            }.setVisible(true);
+        });
         btnEliminar.addActionListener(e -> eliminarRuta());
         btnVerDetalles.addActionListener(e -> verDetallesRuta());
         btnValorar.addActionListener(e -> valorarRuta());
@@ -169,6 +172,28 @@ public class VistaRutas extends JFrame {
         btnVolver.addActionListener(e -> {
             new MenuPrincipal(usuario).setVisible(true);
             dispose();
+        });
+        btnEditar.addActionListener(e -> {
+            int fila = tablaRutas.getSelectedRow();
+            if (fila == -1) {
+                JOptionPane.showMessageDialog(this, "Selecciona una ruta para editar.");
+                return;
+            }
+            int idRuta = (int) modeloTabla.getValueAt(fila, 0);
+            Ruta ruta;
+            try {
+                ruta = TurismoService.getInstance().obtenerRutaPorId(idRuta);
+            } catch (ClassNotFoundException ex) {
+                JOptionPane.showMessageDialog(this, "Error al obtener la ruta: " + ex.getMessage());
+                return;
+            }
+            new EditarRuta(ruta) {
+                @Override
+                public void dispose() {
+                    super.dispose();
+                    cargarRutas();
+                }
+            }.setVisible(true);
         });
 
         addWindowListener(new WindowAdapter() {
@@ -189,6 +214,9 @@ public class VistaRutas extends JFrame {
     }
 
     private void cargarRutas() {
+        int selectedRow = tablaRutas.getSelectedRow();
+        Object selectedId = selectedRow != -1 ? modeloTabla.getValueAt(selectedRow, 0) : null;
+
         modeloTabla.setRowCount(0);
         try {
             String filtroNombre = txtBuscarNombre.getText().trim().toLowerCase();
@@ -214,6 +242,15 @@ public class VistaRutas extends JFrame {
                     });
                 }
             }
+
+            if (selectedId != null) {
+                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                    if (modeloTabla.getValueAt(i, 0).equals(selectedId)) {
+                        tablaRutas.setRowSelectionInterval(i, i);
+                        break;
+                    }
+                }
+            }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar rutas: " + ex.getMessage());
         }
@@ -226,10 +263,14 @@ public class VistaRutas extends JFrame {
             return;
         }
         int idRuta = (int) modeloTabla.getValueAt(fila, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres eliminar esta ruta?",
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION)
+            return;
         try {
             boolean eliminado = TurismoService.getInstance().eliminarRuta(idRuta);
             if (eliminado) {
-                modeloTabla.removeRow(fila);
+                cargarRutas(); // Actualiza la tabla
                 JOptionPane.showMessageDialog(this, "Ruta eliminada.");
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo eliminar la ruta.");
@@ -246,31 +287,113 @@ public class VistaRutas extends JFrame {
             return;
         }
 
-        String nombre = (String) modeloTabla.getValueAt(fila, 1);
-        String descripcion = (String) modeloTabla.getValueAt(fila, 2);
-        double precio = (double) modeloTabla.getValueAt(fila, 3);
-        String dificultad = (String) modeloTabla.getValueAt(fila, 4);
-
         try {
             int idRuta = (int) modeloTabla.getValueAt(fila, 0);
             Ruta ruta = TurismoService.getInstance().obtenerRutaPorId(idRuta);
 
-            String detalles = "Nombre: " + nombre +
-                    "\nDescripción: " + descripcion +
-                    "\nPrecio: " + precio +
-                    "\nDificultad: " + dificultad;
+            ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
+            Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
+            Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
+            Color btnBg = new Color(52, 152, 219);
+            Color btnFg = Color.WHITE;
 
-            ImageIcon icono = null;
+            JPanel panel = new JPanel(new BorderLayout(20, 20));
+            panel.setBackground(bgPanel);
+            panel.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createLineBorder(btnBg, 2, true),
+                    BorderFactory.createEmptyBorder(20, 20, 20, 20)));
 
-            if (ruta.getImagen() != null) {
-                Image img = Toolkit.getDefaultToolkit().createImage(ruta.getImagen());
-                icono = new ImageIcon(img.getScaledInstance(200, 200, Image.SCALE_SMOOTH));
-            }
-            JLabel lblImagen = new JLabel(icono);
+            // Imagen de la ruta redondeada o por defecto
+            JLabel lblImagen = new JLabel();
             lblImagen.setHorizontalAlignment(JLabel.CENTER);
+            lblImagen.setVerticalAlignment(JLabel.CENTER);
+            lblImagen.setPreferredSize(new Dimension(220, 220));
 
-            JOptionPane.showMessageDialog(this, detalles, "Detalles de la Ruta", JOptionPane.INFORMATION_MESSAGE,
-                    icono);
+            BufferedImage img;
+            if (ruta.getImagen() != null) {
+                img = ImageIO.read(new ByteArrayInputStream(ruta.getImagen()));
+            } else {
+                img = ImageIO.read(new java.io.File("assets/imagen.png"));
+            }
+            if (img != null) {
+                img = resizeImage(img, 200, 200);
+            } else {
+                img = new BufferedImage(200, 200, BufferedImage.TYPE_INT_ARGB);
+            }
+
+            // Convertir a circular
+            int size = 200;
+            BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = circleBuffer.createGraphics();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, size, size));
+            g2.drawImage(img, 0, 0, size, size, null);
+            g2.setClip(null);
+            g2.setStroke(new BasicStroke(4));
+            g2.setColor(btnBg);
+            g2.drawOval(2, 2, size - 4, size - 4);
+            g2.dispose();
+            lblImagen.setIcon(new ImageIcon(circleBuffer));
+            panel.add(lblImagen, BorderLayout.WEST);
+
+            // Panel de detalles con iconos y separación visual
+            JPanel panelDetalles = new JPanel();
+            panelDetalles.setLayout(new BoxLayout(panelDetalles, BoxLayout.Y_AXIS));
+            panelDetalles.setBackground(bgPanel);
+
+            JLabel lblNombre = new JLabel(" " + ruta.getNombre());
+            lblNombre.setFont(new Font("Arial", Font.BOLD, 22));
+            lblNombre.setForeground(fgPanel);
+
+            JLabel lblDescripcion = new JLabel(
+                    "<html><div style='width:260px;'><b>Descripción:</b> " + ruta.getDescripcion() + "</div></html>");
+            lblDescripcion.setFont(new Font("Arial", Font.PLAIN, 15));
+            lblDescripcion.setForeground(new Color(52, 73, 94));
+
+            JLabel lblPrecio = new JLabel(" Precio: $" + ruta.getPrecio());
+            lblPrecio.setFont(new Font("Arial", Font.BOLD, 16));
+            lblPrecio.setForeground(new Color(39, 174, 96));
+
+            JLabel lblDificultad = new JLabel(" Dificultad: " + ruta.getDificultad());
+            lblDificultad.setFont(new Font("Arial", Font.BOLD, 16));
+            lblDificultad.setForeground(new Color(243, 156, 18));
+
+            panelDetalles.add(lblNombre);
+            panelDetalles.add(Box.createVerticalStrut(12));
+            panelDetalles.add(lblDescripcion);
+            panelDetalles.add(Box.createVerticalStrut(18));
+            panelDetalles.add(lblPrecio);
+            panelDetalles.add(Box.createVerticalStrut(10));
+            panelDetalles.add(lblDificultad);
+
+            // Botón cerrar
+            JPanel panelBoton = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+            panelBoton.setBackground(bgPanel);
+            JButton btnCerrar = new JButton("Cerrar");
+            btnCerrar.setBackground(btnBg);
+            btnCerrar.setForeground(btnFg);
+            btnCerrar.setFocusPainted(false);
+            btnCerrar.setFont(new Font("Arial", Font.BOLD, 14));
+            btnCerrar.addActionListener(e -> {
+                Window w = SwingUtilities.getWindowAncestor(btnCerrar);
+                if (w != null)
+                    w.dispose();
+            });
+            panelBoton.add(btnCerrar);
+
+            panelDetalles.add(Box.createVerticalStrut(18));
+            panelDetalles.add(panelBoton);
+
+            panel.add(panelDetalles, BorderLayout.CENTER);
+
+            // Mostrar en un JDialog para mejor visual
+            JDialog dialog = new JDialog(this, "Detalles de la Ruta", true);
+            dialog.setContentPane(panel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setResizable(false);
+            dialog.setVisible(true);
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al cargar los detalles de la ruta: " + ex.getMessage());
         }
@@ -324,5 +447,14 @@ public class VistaRutas extends JFrame {
 
     public Usuario getUsuario() {
         return usuario;
+    }
+
+    private BufferedImage resizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        Image resultingImage = originalImage.getScaledInstance(targetWidth, targetHeight, Image.SCALE_SMOOTH);
+        BufferedImage outputImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = outputImage.createGraphics();
+        g2d.drawImage(resultingImage, 0, 0, null);
+        g2d.dispose();
+        return outputImage;
     }
 }

@@ -116,9 +116,26 @@ public class RutaDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error en obtenerRutaPorNombre: " + e.getMessage());
+            System.err.println("Error al obtener ruta por nombre: " + e.getMessage());
         }
         return null;
+    }
+
+    public boolean actualizarRuta(Ruta ruta) throws ClassNotFoundException {
+        String sql = "UPDATE rutas SET nombre = ?, descripcion = ?, imagen = ?, precio = ?, dificultad = ? WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, ruta.getNombre());
+            ps.setString(2, ruta.getDescripcion());
+            ps.setBytes(3, ruta.getImagen());
+            ps.setDouble(4, ruta.getPrecio());
+            ps.setString(5, ruta.getDificultad());
+            ps.setInt(6, ruta.getId());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error actualizarRuta: " + e.getMessage());
+            return false;
+        }
     }
 
 }
