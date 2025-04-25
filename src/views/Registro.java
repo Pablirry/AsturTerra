@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import model.Usuario;
+import utils.PasswordUtils;
 
 public class Registro extends JFrame {
 
@@ -91,7 +92,6 @@ public class Registro extends JFrame {
             txtAdminPass.setVisible(select);
         });
 
-
         btnSeleccionarImagen = new JButton("Seleccionar Imagen");
         btnSeleccionarImagen.setBounds(50, 220, 300, 40);
         btnSeleccionarImagen.setBackground(new Color(52, 152, 219));
@@ -126,7 +126,8 @@ public class Registro extends JFrame {
             byte[] imagenBytes = null;
 
             if (nombre.isEmpty() || correo.isEmpty() || contrasena.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -135,8 +136,20 @@ public class Registro extends JFrame {
                 return;
             }
 
-            if (contrasena.length() < 6) {
-                JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos 6 caracteres", "Error", JOptionPane.ERROR_MESSAGE);
+            /*
+             ! (?=.*[a-z]) al menos una minúscula
+             ! (?=.*[A-Z]) al menos una mayúscula
+             ! (?=(?:.*\d){2,}) al menos dos dígitos
+             ! (?=.*[!@#$%^&*()_+\-={}:;"'|<>,.?/~])` al menos un carácter especial
+             ! .{8,} mínimo 8 caracteres
+             */
+
+            if (!contrasena.matches(
+                    "^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\\d){2,})(?=.*[!@#$%^&*()_+\\-={}:;\"'|<>,.?/~`]).{8,}$")) {
+                JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos:\n-" +
+                        "8 caracteres\n- 1 mayúscula\n- 1 minúscula\n- 2 números\n-" +
+                        "1 carácter especial(@#$%^&*()_+\\-={}:;\"'|<>,.?/~)",
+                        "Contraseña insegura", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -151,14 +164,15 @@ public class Registro extends JFrame {
             if (imagenPerfil != null) {
                 imagenBytes = Files.readAllBytes(Paths.get(imagenPerfil.getAbsolutePath()));
             }
-            
-             // Evitar duplicados correo
-             if (new dao.UsuarioDAO().obtenerUsuarioPorCorreo(correo) != null) {
+
+            // Evitar duplicados correo
+            if (new dao.UsuarioDAO().obtenerUsuarioPorCorreo(correo) != null) {
                 JOptionPane.showMessageDialog(this, "El correo ya está registrado", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            Usuario nuevoUsuario = new Usuario(0, nombre, correo, contrasena, tipo, imagenBytes);
+            String hash = PasswordUtils.hash(contrasena);
+            Usuario nuevoUsuario = new Usuario(0, nombre, correo, hash, tipo, imagenBytes);
             boolean registrado = usuarioDAO.registrarUsuario(nuevoUsuario);
 
             if (registrado) {

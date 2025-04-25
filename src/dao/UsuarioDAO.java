@@ -7,18 +7,21 @@ import java.sql.SQLException;
 
 import config.ConexionDB;
 import model.Usuario;
+import utils.PasswordUtils;
 
 public class UsuarioDAO {
 
     public Usuario iniciarSesion(String correo, String contrasena) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
-            String sql = "SELECT * FROM usuarios WHERE correo = ? AND contrasena = ?";
+            String sql = "SELECT * FROM usuarios WHERE correo = ?";
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, correo);
-            ps.setString(2, contrasena);
             ResultSet rs = ps.executeQuery();
     
             if (rs.next()) {
+                String hashAlmacenado = rs.getString("contrasena");
+                String hashIngresado = PasswordUtils.hash(contrasena);
+            if (hashAlmacenado.equals(hashIngresado)){
                 return new Usuario(
                         rs.getInt("id"),
                         rs.getString("nombre"),
@@ -27,7 +30,12 @@ public class UsuarioDAO {
                         rs.getString("tipo"),
                         rs.getBytes("imagen_perfil")
                 );
+            } else {
+                System.out.println("Contraseña incorrecta");
             }
+            } else {
+                System.out.println("Usuario no encontrado");
+        }
         } catch (SQLException e) {
             System.err.println("Error iniciarSesion: " + e.getMessage());
         }

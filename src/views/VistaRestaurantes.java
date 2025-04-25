@@ -85,7 +85,6 @@ public class VistaRestaurantes extends JFrame {
         panelBotones.add(btnValorar);
         panelBotones.add(btnEditar);
         panelBotones.add(btnVolver);
-        
 
         add(panelBotones, BorderLayout.SOUTH);
 
@@ -127,6 +126,10 @@ public class VistaRestaurantes extends JFrame {
                 JOptionPane.showMessageDialog(this, "Error al cargar restaurante: " + ex.getMessage());
             }
         });
+
+        btnEditar.setVisible(usuario.isAdmin());
+        btnEliminar.setVisible(usuario.isAdmin());
+        btnAgregar.setVisible(usuario.isAdmin());
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -232,10 +235,10 @@ public class VistaRestaurantes extends JFrame {
                     g2.dispose();
                     icono = new ImageIcon(circleBuffer);
                 } catch (Exception ex) {
-                    icono = new ImageIcon("assets/imagen.png");
+                    icono = crearIconoSinImagen();
                 }
             } else {
-                icono = new ImageIcon("assets/imagen.png");
+                icono = crearIconoSinImagen();
             }
 
             JLabel lblImagen = new JLabel(icono);
@@ -362,5 +365,28 @@ public class VistaRestaurantes extends JFrame {
                 }
             }
         });
+    }
+    private ImageIcon crearIconoSinImagen() {
+        int size = 120;
+        BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = circleBuffer.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        // Círculo de fondo
+        g2.setColor(new Color(220, 220, 220));
+        g2.fillOval(0, 0, size, size);
+        // Borde
+        g2.setStroke(new BasicStroke(3));
+        g2.setColor(new Color(52, 152, 219));
+        g2.drawOval(2, 2, size - 4, size - 4);
+        // Texto centrado
+        g2.setColor(new Color(160, 160, 160));
+        g2.setFont(new Font("Arial", Font.BOLD, 16));
+        FontMetrics fm = g2.getFontMetrics();
+        String texto = "Sin imagen";
+        int x = (size - fm.stringWidth(texto)) / 2;
+        int y = (size - fm.getHeight()) / 2 + fm.getAscent();
+        g2.drawString(texto, x, y);
+        g2.dispose();
+        return new ImageIcon(circleBuffer);
     }
 }

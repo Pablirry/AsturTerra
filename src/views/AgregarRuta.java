@@ -9,7 +9,8 @@ import services.TurismoService;
 
 public class AgregarRuta extends JFrame {
 
-    private JTextField txtNombre, txtDescripcion, txtPrecio;
+    private JTextField txtNombre, txtPrecio;
+    private JTextArea txtDescripcion;
     private JComboBox<String> cmbDificultad;
     private JButton btnSeleccionarImagen, btnAgregar, btnCancelar;
     private File imagenRuta;
@@ -21,6 +22,7 @@ public class AgregarRuta extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(0, 0));
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Colores y tema
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
@@ -65,39 +67,28 @@ public class AgregarRuta extends JFrame {
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblNombre.setForeground(fgPanel);
         panelCampos.add(lblNombre, gbc);
 
         gbc.gridy++;
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Arial", Font.PLAIN, 15));
-        txtNombre.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
-        txtNombre.setForeground(fgPanel);
-        txtNombre.setCaretColor(fgPanel);
-        txtNombre.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(borderColor, 1, true),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtNombre.setPreferredSize(new Dimension(400, 38)); // Más grande
+        txtNombre.setPreferredSize(new Dimension(500, 36)); // MÁS ANCHO
         panelCampos.add(txtNombre, gbc);
 
         // Descripción
         gbc.gridy++;
         JLabel lblDescripcion = new JLabel("Descripción:");
         lblDescripcion.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblDescripcion.setForeground(fgPanel);
         panelCampos.add(lblDescripcion, gbc);
 
         gbc.gridy++;
-        txtDescripcion = new JTextField();
+        txtDescripcion = new JTextArea(10, 30); // MÁS ANCHO
         txtDescripcion.setFont(new Font("Arial", Font.PLAIN, 15));
-        txtDescripcion.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
-        txtDescripcion.setForeground(fgPanel);
-        txtDescripcion.setCaretColor(fgPanel);
-        txtDescripcion.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(borderColor, 1, true),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtDescripcion.setPreferredSize(new Dimension(400, 38)); // Más grande
-        panelCampos.add(txtDescripcion, gbc);
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setPreferredSize(new Dimension(500, 100)); // MÁS ANCHO
+        panelCampos.add(scrollDesc, gbc);
 
         // Precio
         gbc.gridy++;
@@ -126,7 +117,7 @@ public class AgregarRuta extends JFrame {
         panelCampos.add(lblDificultad, gbc);
 
         gbc.gridy++;
-        cmbDificultad = new JComboBox<>(new String[]{"Fácil", "Media", "Difícil"});
+        cmbDificultad = new JComboBox<>(new String[] { "Fácil", "Media", "Difícil" });
         cmbDificultad.setFont(new Font("Arial", Font.PLAIN, 15));
         cmbDificultad.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         cmbDificultad.setForeground(fgPanel);
@@ -207,13 +198,15 @@ public class AgregarRuta extends JFrame {
             String dificultad = (String) cmbDificultad.getSelectedItem();
 
             if (nombre.isEmpty() || descripcion.isEmpty() || precioStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
             double precio;
             try {
                 precio = Double.parseDouble(precioStr);
-                if (precio < 0) throw new NumberFormatException();
+                if (precio < 0)
+                    throw new NumberFormatException();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Precio no válido.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -221,7 +214,8 @@ public class AgregarRuta extends JFrame {
 
             // Evitar duplicados por nombre
             if (new dao.RutaDAO().obtenerRutaPorNombre(nombre) != null) {
-                JOptionPane.showMessageDialog(this, "Ya existe una ruta con ese nombre.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Ya existe una ruta con ese nombre.", "Error",
+                        JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
@@ -240,7 +234,8 @@ public class AgregarRuta extends JFrame {
                 JOptionPane.showMessageDialog(this, "No se pudo agregar la ruta.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al agregar ruta: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al agregar ruta: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -145,6 +145,8 @@ public class VistaRutas extends JFrame {
         btnReservar = crearBoton("Reservar Ruta", new Color(46, 204, 113));
         btnVolver = crearBoton("Volver al Menú", new Color(52, 152, 219));
         btnEditar = crearBoton("Editar Ruta", new Color(241, 196, 15));
+        btnEliminar.setVisible(usuario.isAdmin());
+        btnEditar.setVisible(usuario.isAdmin());
 
         panelBotones.add(btnAgregar);
         panelBotones.add(btnEliminar);

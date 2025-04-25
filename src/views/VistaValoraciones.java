@@ -40,6 +40,11 @@ public class VistaValoraciones extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Detectar tema
+        boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
+        Color fondo = dark ? new Color(44, 62, 80) : Color.WHITE;
+        Color texto = dark ? Color.WHITE : new Color(44, 62, 80);
+
         // Panel título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
@@ -51,12 +56,14 @@ public class VistaValoraciones extends JFrame {
 
         // Panel central con tabla y formulario
         JPanel panelCentral = new JPanel(new GridLayout(2, 1, 10, 10));
+        panelCentral.setBackground(fondo);
 
         // Tabla de valoraciones
         JPanel panelTabla = new JPanel(new BorderLayout());
         panelTabla.setBorder(BorderFactory.createTitledBorder("Valoraciones existentes"));
+        panelTabla.setBackground(fondo);
 
-        modeloTabla = new DefaultTableModel(new String[]{"Usuario", "Puntuación", "Comentario"}, 0) {
+        modeloTabla = new DefaultTableModel(new String[] { "Usuario", "Puntuación", "Comentario" }, 0) {
             public boolean isCellEditable(int row, int col) {
                 return false;
             }
@@ -64,6 +71,11 @@ public class VistaValoraciones extends JFrame {
 
         tablaValoraciones = new JTable(modeloTabla);
         tablaValoraciones.getTableHeader().setReorderingAllowed(false);
+        tablaValoraciones.setBackground(fondo);
+        tablaValoraciones.setForeground(texto);
+        tablaValoraciones.getTableHeader().setBackground(dark ? new Color(44, 62, 80) : new Color(236, 240, 241));
+        tablaValoraciones.getTableHeader().setForeground(texto);
+
         panelTabla.add(new JScrollPane(tablaValoraciones), BorderLayout.CENTER);
 
         panelCentral.add(panelTabla);
@@ -72,13 +84,14 @@ public class VistaValoraciones extends JFrame {
         JPanel panelFormulario = new JPanel();
         panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Nueva valoración"));
-        panelFormulario.setBackground(Color.WHITE);
+        panelFormulario.setBackground(fondo);
 
         // Puntuación con estrellas visuales
         JPanel panelPuntuacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        panelPuntuacion.setBackground(Color.WHITE);
+        panelPuntuacion.setBackground(fondo);
         JLabel lblPuntuacion = new JLabel("Puntuación:");
         lblPuntuacion.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblPuntuacion.setForeground(texto);
         panelPuntuacion.add(lblPuntuacion);
 
         for (int i = 0; i < 5; i++) {
@@ -93,10 +106,12 @@ public class VistaValoraciones extends JFrame {
                     puntuacionSeleccionada = estrellaIndex + 1;
                     actualizarEstrellas();
                 }
+
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent e) {
                     resaltarEstrellas(estrellaIndex + 1);
                 }
+
                 @Override
                 public void mouseExited(java.awt.event.MouseEvent e) {
                     actualizarEstrellas();
@@ -110,14 +125,18 @@ public class VistaValoraciones extends JFrame {
         // Comentario
         JLabel lblComentario = new JLabel("Comentario:");
         lblComentario.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblComentario.setForeground(texto);
         panelFormulario.add(lblComentario);
 
         txtComentario = new JTextArea(3, 20);
         txtComentario.setFont(new Font("Arial", Font.PLAIN, 15));
         txtComentario.setLineWrap(true);
         txtComentario.setWrapStyleWord(true);
+        txtComentario.setBackground(fondo);
+        txtComentario.setForeground(texto);
         JScrollPane scrollComentario = new JScrollPane(txtComentario);
         scrollComentario.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
+        scrollComentario.setBackground(fondo);
         panelFormulario.add(scrollComentario);
 
         panelCentral.add(panelFormulario);
@@ -125,7 +144,7 @@ public class VistaValoraciones extends JFrame {
 
         // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(new Color(236, 240, 241));
+        panelBotones.setBackground(dark ? new Color(52, 73, 94) : new Color(236, 240, 241));
 
         btnEnviar = new JButton("Enviar");
         btnEnviar.setBackground(new Color(46, 204, 113));
@@ -184,10 +203,10 @@ public class VistaValoraciones extends JFrame {
             modeloTabla.setRowCount(0); // limpiar tabla
 
             for (ValoracionRuta v : valoraciones) {
-                modeloTabla.addRow(new Object[]{
-                    "Usuario ID: " + v.getIdUsuario(),
-                    v.getPuntuacion(),
-                    v.getComentario()
+                modeloTabla.addRow(new Object[] {
+                        "Usuario ID: " + v.getIdUsuario(),
+                        v.getPuntuacion(),
+                        v.getComentario()
                 });
             }
         } catch (Exception e) {
@@ -203,12 +222,11 @@ public class VistaValoraciones extends JFrame {
         String comentario = txtComentario.getText().trim();
         try {
             ValoracionRuta valoracion = new ValoracionRuta(
-                0,
-                usuario.getId(),
-                idRuta,
-                puntuacionSeleccionada,
-                comentario
-            );
+                    0,
+                    usuario.getId(),
+                    idRuta,
+                    puntuacionSeleccionada,
+                    comentario);
 
             ValoracionDAO dao = new ValoracionDAO();
             boolean registrada = dao.registrarValoracionRuta(valoracion);
