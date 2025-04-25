@@ -39,19 +39,33 @@ public class ReservarDAO {
         }
     }
 
+    public boolean confirmarReserva(int idReserva) throws ClassNotFoundException {
+        String sql = "UPDATE reservas SET confirmada = 1 WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idReserva);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error confirmarReserva: " + e.getMessage());
+            return false;
+        }
+    }
+    
     public List<Reserva> obtenerReservasUsuario(int idUsuario) throws ClassNotFoundException {
         List<Reserva> reservas = new ArrayList<>();
         String sql = "SELECT * FROM reservas WHERE id_usuario = ?";
         try (Connection con = ConexionDB.getConection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
+             PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, idUsuario);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 reservas.add(new Reserva(
-                        rs.getInt("id"),
-                        rs.getInt("id_usuario"),
-                        rs.getInt("id_ruta"),
-                        rs.getDate("fecha")));
+                    rs.getInt("id"),
+                    rs.getInt("id_usuario"),
+                    rs.getInt("id_ruta"),
+                    rs.getDate("fecha"),
+                    rs.getBoolean("confirmada")
+                ));
             }
         } catch (SQLException e) {
             System.err.println("Error obtenerReservasUsuario: " + e.getMessage());

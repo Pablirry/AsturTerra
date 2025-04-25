@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import dao.ValoracionDAO;
 import model.Usuario;
 import model.ValoracionRuta;
+import utils.I18n;
+
 import java.util.List;
 import java.awt.*;
 
@@ -63,7 +65,10 @@ public class VistaValoraciones extends JFrame {
         panelTabla.setBorder(BorderFactory.createTitledBorder("Valoraciones existentes"));
         panelTabla.setBackground(fondo);
 
-        modeloTabla = new DefaultTableModel(new String[] { "Usuario", "Puntuación", "Comentario" }, 0) {
+        modeloTabla = new DefaultTableModel(new String[] {
+                I18n.t("columna.usuario"),
+                I18n.t("columna.puntuacion"),
+                I18n.t("columna.comentario") }, 0) {
             public boolean isCellEditable(int row, int col) {
                 return false;
             }
@@ -146,13 +151,13 @@ public class VistaValoraciones extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(dark ? new Color(52, 73, 94) : new Color(236, 240, 241));
 
-        btnEnviar = new JButton("Enviar");
+        btnEnviar = new JButton(I18n.t("boton.enviar"));
         btnEnviar.setBackground(new Color(46, 204, 113));
         btnEnviar.setForeground(Color.WHITE);
         btnEnviar.setFont(new Font("Arial", Font.BOLD, 14));
         panelBotones.add(btnEnviar);
 
-        btnCancelar = new JButton("Cancelar");
+        btnCancelar = new JButton(I18n.t("boton.cancelar"));
         btnCancelar.setBackground(new Color(231, 76, 60));
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFont(new Font("Arial", Font.BOLD, 14));

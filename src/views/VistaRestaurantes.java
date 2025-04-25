@@ -11,6 +11,8 @@ import java.util.List;
 import model.Restaurante;
 import model.Usuario;
 import services.TurismoService;
+import utils.I18n;
+import utils.UIUtils;
 
 public class VistaRestaurantes extends JFrame {
     private static VistaRestaurantes instance;
@@ -45,7 +47,7 @@ public class VistaRestaurantes extends JFrame {
 
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
-        JLabel lblTitulo = new JLabel("Gestión de Restaurantes");
+        JLabel lblTitulo = new JLabel(I18n.t("titulo.restaurantes"));
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
         lblTitulo.setForeground(Color.WHITE);
         panelTitulo.add(lblTitulo);
@@ -72,12 +74,12 @@ public class VistaRestaurantes extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
-        btnAgregar = crearBoton("Agregar Restaurante", new Color(52, 152, 219));
-        btnEliminar = crearBoton("Eliminar Restaurante", new Color(231, 76, 60));
-        btnVerDetalles = crearBoton("Ver Detalles", new Color(46, 204, 113));
-        btnValorar = crearBoton("Valorar Restaurante", new Color(241, 196, 15));
-        btnVolver = crearBoton("Volver al Menú", new Color(52, 152, 219));
-        btnEditar = crearBoton("Editar Restaurante", new Color(241, 196, 15));
+        btnAgregar = UIUtils.crearBoton(I18n.t("boton.agregar"), new Color(52, 152, 219));
+        btnEliminar = UIUtils.crearBoton(I18n.t("boton.eliminar"), new Color(231, 76, 60));
+        btnVerDetalles = UIUtils.crearBoton(I18n.t("boton.detalles"), new Color(46, 204, 113));
+        btnValorar = UIUtils.crearBoton(I18n.t("boton.valorar"), new Color(241, 196, 15));
+        btnEditar = UIUtils.crearBoton(I18n.t("boton.editar"), new Color(241, 196, 15));
+        btnVolver = UIUtils.crearBoton(I18n.t("boton.volver"), new Color(52, 152, 219));
 
         panelBotones.add(btnAgregar);
         panelBotones.add(btnEliminar);
@@ -108,7 +110,7 @@ public class VistaRestaurantes extends JFrame {
         btnEditar.addActionListener(e -> {
             int fila = tablaRestaurantes.getSelectedRow();
             if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona un restaurante para editar.");
+                UIUtils.mostrarError(this, I18n.t("mensaje.selecciona.restaurante"));
                 return;
             }
             int idRestaurante = (int) modeloTabla.getValueAt(fila, 0);
@@ -139,14 +141,6 @@ public class VistaRestaurantes extends JFrame {
         });
 
         setVisible(true);
-    }
-
-    private JButton crearBoton(String texto, Color color) {
-        JButton btn = new JButton(texto);
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
-        btn.setFont(new Font("Arial", Font.BOLD, 14));
-        return btn;
     }
 
     private void cargarRestaurantes() {
@@ -366,6 +360,7 @@ public class VistaRestaurantes extends JFrame {
             }
         });
     }
+
     private ImageIcon crearIconoSinImagen() {
         int size = 120;
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);

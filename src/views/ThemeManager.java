@@ -7,14 +7,13 @@ import javax.swing.table.JTableHeader;
 import javax.swing.text.JTextComponent;
 import javax.swing.border.AbstractBorder;
 
-
 public class ThemeManager {
-    public static final Color COLOR_PRIMARIO = new Color(52,152,219);
-    public static final Color COLOR_SECUNDARIO = new Color(44,62,80);
-    public static final Color COLOR_FONDO_CLARO = new Color(236, 240, 241);
-    public static final Color COLOR_FONDO_OSCURO = new Color(44, 62, 80);
+    public static final Color COLOR_PRIMARIO = new Color(52, 152, 219);
+    public static final Color COLOR_SECUNDARIO = new Color(236, 240, 241);
+    public static final Color COLOR_EXITO = new Color(46, 204, 113);
+    public static final Color COLOR_ERROR = new Color(231, 76, 60);
     public static final Font FUENTE_TITULO = new Font("Arial", Font.BOLD, 24);
-    public static final Font FUENTE_NORMAL = new Font("Arial", Font.PLAIN, 16);
+    public static final Font FUENTE_NORMAL = new Font("Arial", Font.PLAIN, 15);
 
     public enum Theme {
         LIGHT, DARK

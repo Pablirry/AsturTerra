@@ -71,7 +71,7 @@ public class Login extends JFrame {
 
         btnLogin.addActionListener(e -> iniciarSesion());
         btnRegistro.addActionListener(e -> {
-            new Registro().setVisible(true);
+            new Registro( ).setVisible(true);
             dispose();
         });
 

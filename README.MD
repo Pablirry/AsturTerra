@@ -17,10 +17,6 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 mejoras que hacer 
 
-3. Seguridad
-Ocultar contraseñas en los campos y en la base de datos (usa hash en vez de texto plano).
-Cerrar sesión correctamente: limpia la sesión y variables estáticas al cerrar sesión.
-Control de acceso: asegúrate de que solo los administradores pueden acceder a funciones de administración.
 4. Escalabilidad y mantenibilidad
 Centraliza los estilos (colores, fuentes, bordes) en ThemeManager para facilitar cambios de diseño.
 Refactoriza código repetido (por ejemplo, creación de botones, paneles, validaciones) en métodos utilitarios.

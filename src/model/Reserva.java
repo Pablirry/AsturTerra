@@ -8,12 +8,22 @@ public class Reserva {
     private int idUsuario;
     private int idRuta;
     private Date fecha;
-    
-    public Reserva(int id, int idUsuario, int idRuta, Date fecha) {
+    private boolean confirmada;
+
+    public Reserva(int id, int idUsuario, int idRuta, Date fecha, boolean confirmada) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.idRuta = idRuta;
         this.fecha = fecha;
+        this.confirmada = confirmada;
+    }
+
+    public boolean isConfirmada() {
+        return confirmada;
+    }
+
+    public void setConfirmada(boolean confirmada) {
+        this.confirmada = confirmada;
     }
 
     public int getId() {
@@ -52,5 +62,5 @@ public class Reserva {
     public String toString() {
         return "Reserva [id=" + id + ", idUsuario=" + idUsuario + ", idRuta=" + idRuta + ", fecha=" + fecha + "]";
     }
-    
+
 }

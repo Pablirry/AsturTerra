@@ -28,6 +28,7 @@ CREATE TABLE reservas (
     id_usuario INT,
     id_ruta INT,
     fecha DATE,
+    confirmada TINYINT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_ruta) REFERENCES rutas(id)
 );

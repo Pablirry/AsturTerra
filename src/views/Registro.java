@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 
 import model.Usuario;
 import utils.PasswordUtils;
+import utils.UIUtils;
 
 public class Registro extends JFrame {
 
@@ -131,21 +132,12 @@ public class Registro extends JFrame {
                 return;
             }
 
-            if (!correo.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            if (!UIUtils.validarEmail(correo)) {
                 JOptionPane.showMessageDialog(this, "Correo electrónico no válido", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
-            /*
-             ! (?=.*[a-z]) al menos una minúscula
-             ! (?=.*[A-Z]) al menos una mayúscula
-             ! (?=(?:.*\d){2,}) al menos dos dígitos
-             ! (?=.*[!@#$%^&*()_+\-={}:;"'|<>,.?/~])` al menos un carácter especial
-             ! .{8,} mínimo 8 caracteres
-             */
-
-            if (!contrasena.matches(
-                    "^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\\d){2,})(?=.*[!@#$%^&*()_+\\-={}:;\"'|<>,.?/~`]).{8,}$")) {
+            if (!UIUtils.validarPasswordSegura(contrasena)) {
                 JOptionPane.showMessageDialog(this, "La contraseña debe tener al menos:\n-" +
                         "8 caracteres\n- 1 mayúscula\n- 1 minúscula\n- 2 números\n-" +
                         "1 carácter especial(@#$%^&*()_+\\-={}:;\"'|<>,.?/~)",
@@ -176,15 +168,15 @@ public class Registro extends JFrame {
             boolean registrado = usuarioDAO.registrarUsuario(nuevoUsuario);
 
             if (registrado) {
-                JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente.");
+                UIUtils.mostrarInfo(this, "Usuario registrado exitosamente.");
                 dispose();
                 new Login().setVisible(true);
             } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar usuario. Verifique los datos.");
+                UIUtils.mostrarError(this, "Error al registrar usuario. Verifique los datos.");
             }
 
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+            UIUtils.mostrarError(this, "Error: " + ex.getMessage());
         }
     }
 }

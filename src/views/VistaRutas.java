@@ -11,6 +11,8 @@ import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.List;
 
+import utils.I18n;
+import utils.UIUtils;
 import dao.*;
 import model.Ruta;
 import model.Usuario;
@@ -59,11 +61,10 @@ public class VistaRutas extends JFrame {
         panelCabecera.setLayout(new BorderLayout());
         panelCabecera.setBackground(new Color(44, 62, 80));
 
-        // Panel de título centrado con icono de actualizar a la derecha
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(ThemeManager.COLOR_SECUNDARIO);
         panelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
-        JLabel lblTitulo = new JLabel("Gestión de Rutas");
+        JLabel lblTitulo = new JLabel(I18n.t("titulo.rutas"));
         lblTitulo.setFont(ThemeManager.FUENTE_TITULO);
         lblTitulo.setForeground(Color.WHITE);
         panelTitulo.add(lblTitulo);
@@ -138,13 +139,13 @@ public class VistaRutas extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
-        btnAgregar = crearBoton("Agregar Ruta", new Color(52, 152, 219));
-        btnEliminar = crearBoton("Eliminar Ruta", new Color(231, 76, 60));
-        btnVerDetalles = crearBoton("Ver Detalles", new Color(46, 204, 113));
-        btnValorar = crearBoton("Valorar Ruta", new Color(46, 204, 113));
-        btnReservar = crearBoton("Reservar Ruta", new Color(46, 204, 113));
-        btnVolver = crearBoton("Volver al Menú", new Color(52, 152, 219));
-        btnEditar = crearBoton("Editar Ruta", new Color(241, 196, 15));
+        btnAgregar = UIUtils.crearBoton(I18n.t("boton.agregar"), new Color(52, 152, 219));
+        btnEliminar = UIUtils.crearBoton(I18n.t("boton.eliminar"), new Color(231, 76, 60));
+        btnVerDetalles = UIUtils.crearBoton(I18n.t("boton.detalles"), new Color(46, 204, 113));
+        btnValorar = UIUtils.crearBoton(I18n.t("boton.valorar"), new Color(46, 204, 113));
+        btnReservar = UIUtils.crearBoton(I18n.t("boton.reservar"), new Color(46, 204, 113));
+        btnEditar = UIUtils.crearBoton(I18n.t("boton.editar"), new Color(241, 196, 15));
+        btnVolver = UIUtils.crearBoton(I18n.t("boton.volver"), new Color(52, 152, 219));
         btnEliminar.setVisible(usuario.isAdmin());
         btnEditar.setVisible(usuario.isAdmin());
 
@@ -178,7 +179,7 @@ public class VistaRutas extends JFrame {
         btnEditar.addActionListener(e -> {
             int fila = tablaRutas.getSelectedRow();
             if (fila == -1) {
-                JOptionPane.showMessageDialog(this, "Selecciona una ruta para editar.");
+                UIUtils.mostrarError(this, I18n.t("mensaje.selecciona.ruta"));
                 return;
             }
             int idRuta = (int) modeloTabla.getValueAt(fila, 0);
@@ -186,7 +187,7 @@ public class VistaRutas extends JFrame {
             try {
                 ruta = TurismoService.getInstance().obtenerRutaPorId(idRuta);
             } catch (ClassNotFoundException ex) {
-                JOptionPane.showMessageDialog(this, "Error al obtener la ruta: " + ex.getMessage());
+                UIUtils.mostrarError(this, I18n.t("mensaje.error.obtener.ruta") + ": " + ex.getMessage());
                 return;
             }
             new EditarRuta(ruta) {
@@ -205,14 +206,6 @@ public class VistaRutas extends JFrame {
             }
         });
         setVisible(true);
-    }
-
-    private JButton crearBoton(String texto, Color color) {
-        JButton btn = new JButton(texto);
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
-        btn.setFont(new Font("Arial", Font.BOLD, 14));
-        return btn;
     }
 
     private void cargarRutas() {

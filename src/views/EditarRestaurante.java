@@ -88,7 +88,7 @@ public class EditarRestaurante extends JDialog {
         gbc.gridy++;
         txtUbicacion = new JTextField(restaurante.getUbicacion());
         txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
-        txtUbicacion.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
+        txtUbicacion.setBackground(theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80));
         txtUbicacion.setForeground(fgPanel);
         txtUbicacion.setCaretColor(fgPanel);
         txtUbicacion.setBorder(BorderFactory.createCompoundBorder(

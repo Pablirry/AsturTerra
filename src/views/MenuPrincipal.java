@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import model.Usuario;
 import services.TurismoService;
+import utils.I18n;
 
 public class MenuPrincipal extends JFrame {
 
@@ -82,6 +83,30 @@ public class MenuPrincipal extends JFrame {
         lblImagenPerfil.setBorder(BorderFactory.createEmptyBorder());
         cargarImagenPerfil();
         panelFondo.add(lblImagenPerfil);
+
+        JMenuBar menuBar = new JMenuBar();
+        setJMenuBar(menuBar);
+
+        JMenu menuIdioma = new JMenu("Idioma");
+        JMenuItem itemEsp = new JMenuItem("Español");
+        JMenuItem itemEng = new JMenuItem("English");
+
+        itemEsp.addActionListener(e -> {
+            I18n.setLocale(new java.util.Locale("es"));
+            JOptionPane.showMessageDialog(this, "Idioma cambiado a Español");
+            // Aquí puedes recargar la ventana si quieres aplicar el idioma automáticamente
+        });
+
+        // Acción para cambiar a inglés
+        itemEng.addActionListener(e -> {
+            I18n.setLocale(new java.util.Locale("en"));
+            JOptionPane.showMessageDialog(this, "Language changed to English");
+            // Aquí puedes recargar la ventana si quieres aplicar el idioma automáticamente
+        });
+
+        menuIdioma.add(itemEsp);
+        menuIdioma.add(itemEng);
+        menuBar.add(menuIdioma);
 
         JPopupMenu menuPerfil = new JPopupMenu();
         JMenuItem itemPerfil = new JMenuItem("Ver Perfil");
@@ -175,7 +200,8 @@ public class MenuPrincipal extends JFrame {
         panel.setOpaque(false);
         panel.setLayout(null);
         panel.setBounds(x, y, 250, 130);
-        panel.setBackground(ThemeManager.COLOR_FONDO_CLARO);
+        panel.setBackground(
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80));
         panel.setBorder(new ThemeManager.RoundedBorder(ThemeManager.COLOR_SECUNDARIO, 2, 18));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 

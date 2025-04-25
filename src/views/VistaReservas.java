@@ -8,7 +8,6 @@ import dao.RutaDAO;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Date;
 import java.util.List;
 import model.Reserva;
 import model.Ruta;
@@ -84,7 +83,7 @@ public class VistaReservas extends JFrame {
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
 
-        btnReservar = new JButton("Reservar");
+        btnReservar = new JButton("Confirmar reserva");
         btnReservar.setBackground(new Color(46, 204, 113));
         btnReservar.setForeground(Color.WHITE);
         btnReservar.setFont(new Font("Arial", Font.BOLD, 14));
@@ -104,7 +103,7 @@ public class VistaReservas extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        btnReservar.addActionListener(e -> reservarRuta());
+        btnReservar.addActionListener(e -> confirmarReserva());
         btnCancelar.addActionListener(e -> cancelarReserva());
         btnVolver.addActionListener(e -> {
             new MenuPrincipal(usuario).setVisible(true);
@@ -118,64 +117,63 @@ public class VistaReservas extends JFrame {
         try {
             ReservarDAO dao = new ReservarDAO();
             reservas = dao.obtenerReservasUsuario(usuario.getId());
-
+    
             DefaultListModel<String> model = new DefaultListModel<>();
             RutaDAO rutaDAO = new RutaDAO();
-
+    
             for (Reserva reserva : reservas) {
                 Ruta ruta = rutaDAO.obtenerRutaPorId(reserva.getIdRuta());
+                String estado = reserva.isConfirmada() ? "CONFIRMADA" : "PENDIENTE";
                 model.addElement("ID Reserva: " + reserva.getId() +
                         " - Ruta: " + (ruta != null ? ruta.getNombre() : "Desconocida") +
-                        " - Fecha: " + reserva.getFecha());
+                        " - Fecha: " + reserva.getFecha() +
+                        " - Estado: " + estado);
             }
             listaReservas.setModel(model);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al cargar reservas: " + e.getMessage());
         }
     }
-
-    private void reservarRuta() {
+    
+    private void confirmarReserva() {
+        int index = listaReservas.getSelectedIndex();
+        if (index == -1 || reservas == null || index >= reservas.size()) {
+            JOptionPane.showMessageDialog(this, "Seleccione una reserva.");
+            return;
+        }
+        Reserva reserva = reservas.get(index);
+        if (reserva.isConfirmada()) {
+            JOptionPane.showMessageDialog(this, "La reserva ya está confirmada.");
+            return;
+        }
         try {
-            if (rutaSeleccionada == null) {
-                JOptionPane.showMessageDialog(this, "No hay ruta seleccionada.");
-                return;
-            }
-
-            RutaDAO rutaDAO = new RutaDAO();
-            Ruta ruta = rutaDAO.obtenerRutaPorNombre(rutaSeleccionada);
-
-            if (ruta == null) {
-                JOptionPane.showMessageDialog(this, "Ruta no encontrada.");
-                return;
-            }
-
             ReservarDAO dao = new ReservarDAO();
-            boolean reservado = dao.reservarRuta(usuario.getId(), ruta.getId(), new Date());
-
-            if (reservado) {
-                JOptionPane.showMessageDialog(this, "Reserva realizada con éxito.");
+            boolean confirmado = dao.confirmarReserva(reserva.getId());
+            if (confirmado) {
+                JOptionPane.showMessageDialog(this, "Reserva confirmada. Proceda al pago.");
                 cargarReservas();
             } else {
-                JOptionPane.showMessageDialog(this, "No se pudo realizar la reserva.");
+                JOptionPane.showMessageDialog(this, "No se pudo confirmar la reserva.");
             }
-
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al reservar ruta: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al confirmar reserva: " + e.getMessage());
         }
     }
-
+    
     private void cancelarReserva() {
         int index = listaReservas.getSelectedIndex();
         if (index == -1 || reservas == null || index >= reservas.size()) {
             JOptionPane.showMessageDialog(this, "Seleccione una reserva.");
             return;
         }
-
         Reserva reserva = reservas.get(index);
+        if (reserva.isConfirmada()) {
+            JOptionPane.showMessageDialog(this, "No se puede cancelar una reserva confirmada.");
+            return;
+        }
         try {
             ReservarDAO dao = new ReservarDAO();
             boolean cancelado = dao.cancelarReserva(reserva.getId());
-
             if (cancelado) {
                 JOptionPane.showMessageDialog(this, "Reserva cancelada.");
                 cargarReservas();
