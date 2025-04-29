@@ -2,10 +2,7 @@ package views;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -29,14 +26,15 @@ public class MenuPrincipal extends JFrame {
     public MenuPrincipal(Usuario usuario) {
         this.usuario = usuario;
 
-        setTitle("Menú Principal - Turismo Asturias");
-        setSize(705, 585);
+        setTitle("Menú Principal - AsturTerra");
+        setMinimumSize(new Dimension(900, 700)); // Ampliado
+        setSize(1100, 800); // Tamaño inicial más grande
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        getContentPane().setLayout(null);
         setLocationRelativeTo(null);
+        setLayout(new BorderLayout()); // Cambiado para que el panelFondo ocupe todo
 
         // Fondo con degradado
-        panelFondo = new JPanel() {
+        panelFondo = new JPanel(null) {
             @Override
             protected void paintComponent(Graphics g) {
                 if (ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK) {
@@ -51,7 +49,6 @@ public class MenuPrincipal extends JFrame {
                 }
             }
         };
-        panelFondo.setBounds(0, 0, 700, 550);
         panelFondo.setLayout(null);
 
         btnTema = UIUtils.crearBotonRedondeado(
@@ -77,7 +74,7 @@ public class MenuPrincipal extends JFrame {
         panelFondo.add(btnTema);
 
         // Título
-        lblTitulo = new JLabel("Turismo Asturias", SwingConstants.CENTER);
+        lblTitulo = new JLabel("AsturTerra", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBounds(150, 30, 400, 40);
@@ -148,11 +145,12 @@ public class MenuPrincipal extends JFrame {
             }
         });
 
-        panelRutas = crearPanel(50, 100, "Rutas", "assets/rutas.png");
-        panelReservas = crearPanel(370, 100, "Reservas", "assets/reserva.png");
-        panelRestaurantes = crearPanel(50, 250, "Restaurantes", "assets/restaurante.png");
-        panelHistorial = crearPanel(370, 250, "Historial", "assets/historial.png");
-        panelChat = crearPanel(210, 400, "Soporte", "assets/chat.png");
+        // Paneles de menú: posiciones iniciales, pero se ajustarán con el listener
+        panelRutas = crearPanel(0, 0, "Rutas", "assets/rutas.png");
+        panelReservas = crearPanel(0, 0, "Reservas", "assets/reserva.png");
+        panelRestaurantes = crearPanel(0, 0, "Restaurantes", "assets/restaurante.png");
+        panelHistorial = crearPanel(0, 0, "Historial", "assets/historial.png");
+        panelChat = crearPanel(0, 0, "Soporte", "assets/chat.png");
 
         panelFondo.add(panelRutas);
         panelFondo.add(panelReservas);
@@ -174,9 +172,18 @@ public class MenuPrincipal extends JFrame {
         }
         agregarEventos();
 
-        getContentPane().add(panelFondo);
+        getContentPane().add(panelFondo, BorderLayout.CENTER); // Cambiado para que panelFondo ocupe todo
         setVisible(true);
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
+
+        // Responsive: ajustar paneles al tamaño de la ventana
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                ajustarComponentes();
+            }
+        });
+        ajustarComponentes();
     }
 
     public static MenuPrincipal getInstance(Usuario usuario) {
@@ -209,7 +216,7 @@ public class MenuPrincipal extends JFrame {
         panel.setLayout(null);
         panel.setBounds(x, y, 250, 130);
         panel.setBackground(
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80));
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : new Color(236, 240, 241));
         panel.setBorder(new ThemeManager.RoundedBorder(ThemeManager.COLOR_SECUNDARIO, 2, 18));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -232,8 +239,8 @@ public class MenuPrincipal extends JFrame {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK) {
-                    panel.setBackground(new Color(52, 73, 94));
-                    lblTexto.setForeground(new Color(236, 240, 241));
+                    panel.setBackground(new Color(41, 128, 185));
+                    lblTexto.setForeground(Color.WHITE);
                 } else {
                     panel.setBackground(new Color(52, 152, 219));
                     lblTexto.setForeground(Color.WHITE);
@@ -243,7 +250,7 @@ public class MenuPrincipal extends JFrame {
             @Override
             public void mouseExited(MouseEvent e) {
                 if (ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK) {
-                    panel.setBackground(new Color(44, 62, 80));
+                    panel.setBackground(new Color(52, 73, 94));
                     lblTexto.setForeground(new Color(236, 240, 241));
                 } else {
                     panel.setBackground(new Color(236, 240, 241));
@@ -295,6 +302,33 @@ public class MenuPrincipal extends JFrame {
                 dispose();
             }
         });
+    }
+
+    // Ajusta los paneles de menú para que sean responsive y estén más abajo
+    private void ajustarComponentes() {
+        int w = panelFondo.getWidth();
+        int h = panelFondo.getHeight();
+
+        int panelWidth = 270;
+        int panelHeight = 140;
+        int sepX = (w - 2 * panelWidth) / 3;
+        int sepY = 40;
+        int top = h / 5; // Más abajo
+
+        // Primera fila
+        panelRutas.setBounds(sepX, top, panelWidth, panelHeight);
+        panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
+
+        // Segunda fila
+        panelRestaurantes.setBounds(sepX, top + panelHeight + sepY, panelWidth, panelHeight);
+        panelHistorial.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
+
+        // Soporte centrado abajo
+        panelChat.setBounds(w / 2 - panelWidth / 2, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
+
+        // Recoloca título e imagen perfil si es necesario
+        lblTitulo.setBounds(w / 2 - 200, 30, 400, 40);
+        lblImagenPerfil.setBounds(w - 100, 10, 80, 80);
     }
 
     private void cargarImagenPerfil() {

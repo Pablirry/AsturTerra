@@ -2,6 +2,7 @@ package views;
 
 import model.Restaurante;
 import services.TurismoService;
+import utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,47 +19,36 @@ public class AgregarRestaurante extends JFrame {
     private JLabel[] estrellas = new JLabel[5];
 
     public AgregarRestaurante() {
-        setTitle("Agregar Restaurante");
-        setSize(440, 550);
+        setTitle("Nuevo Restaurante");
+        setSize(520, 650);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(0, 0));
 
-        // Colores según el tema
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
         Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
         Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
         Color borderColor = new Color(52, 152, 219);
 
-        // Panel principal con fondo y borde redondeado
-        JPanel panel = new JPanel() {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(bgPanel);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 32, 32);
-                g2.dispose();
-            }
-        };
-        panel.setOpaque(false);
+        // Panel principal redondeado con sombra
+        JPanel panel = UIUtils.crearPanelRedondeado(bgPanel, 32, 2, borderColor);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
 
         // Título
         JLabel lblTitulo = new JLabel("Nuevo Restaurante");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitulo.setForeground(fgPanel);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(lblTitulo);
         panel.add(Box.createVerticalStrut(18));
 
+        // Panel campos
         JPanel panelCampos = new JPanel();
         panelCampos.setOpaque(false);
         panelCampos.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(6, 0, 6, 0);
+        gbc.insets = new Insets(10, 0, 10, 0);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -102,21 +92,19 @@ public class AgregarRestaurante extends JFrame {
 
         panelCampos.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(panelCampos);
-        panel.add(Box.createVerticalStrut(12));
+        panel.add(Box.createVerticalStrut(18));
 
         // Imagen
         lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(120, 120));
+        lblImagen.setPreferredSize(new Dimension(160, 120));
         lblImagen.setFont(new Font("Arial", Font.ITALIC, 14));
         lblImagen.setForeground(theme == ThemeManager.Theme.DARK ? new Color(120, 120, 120) : new Color(160, 160, 160));
         lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblImagen.setBorder(BorderFactory.createLineBorder(borderColor, 1, true));
         panel.add(lblImagen);
 
-        btnImagen = new JButton("Seleccionar Imagen");
-        btnImagen.setBackground(borderColor);
-        btnImagen.setForeground(Color.WHITE);
-        btnImagen.setFocusPainted(false);
+        btnImagen = UIUtils.crearBotonRedondeado("Seleccionar Imagen", borderColor, 18);
+        ThemeManager.setComponentTheme(btnImagen, theme);
         btnImagen.setFont(new Font("Arial", Font.BOLD, 14));
         btnImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -125,8 +113,11 @@ public class AgregarRestaurante extends JFrame {
         panel.add(btnImagen);
         panel.add(Box.createVerticalStrut(14));
 
-        // Panel de estrellas
-        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        // Panel de estrellas (valoración inicial) centrado SIEMPRE
+        JPanel panelEstrellasWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        panelEstrellasWrapper.setOpaque(false);
+
+        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         panelEstrellas.setOpaque(false);
         JLabel lblValoracion = new JLabel("Valoración inicial:");
         lblValoracion.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -158,33 +149,35 @@ public class AgregarRestaurante extends JFrame {
             });
             panelEstrellas.add(estrellas[i]);
         }
-        panel.add(panelEstrellas);
+        panelEstrellasWrapper.add(panelEstrellas);
+        panel.add(panelEstrellasWrapper);
+        panel.add(Box.createVerticalStrut(18));
 
-        // Botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        // Panel de botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 0));
         panelBotones.setOpaque(false);
-        btnGuardar = new JButton("Guardar");
-        btnGuardar.setBackground(new Color(46, 204, 113));
-        btnGuardar.setForeground(Color.WHITE);
-        btnGuardar.setFocusPainted(false);
-        btnGuardar.setFont(new Font("Arial", Font.BOLD, 15));
-        btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        btnCancelar = new JButton("Cancelar");
-        btnCancelar.setBackground(new Color(231, 76, 60));
-        btnCancelar.setForeground(Color.WHITE);
-        btnCancelar.setFocusPainted(false);
-        btnCancelar.setFont(new Font("Arial", Font.BOLD, 15));
-        btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
+        btnGuardar = UIUtils.crearBotonRedondeado("Guardar", new Color(46, 204, 113), 24);
+        btnGuardar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnGuardar.setPreferredSize(new Dimension(170, 48));
+        btnGuardar.setFocusable(true);
+        btnGuardar.setEnabled(true);
+        btnGuardar.addActionListener(e -> agregarRestaurante());
         panelBotones.add(btnGuardar);
+
+        btnCancelar = UIUtils.crearBotonRedondeado("Cancelar", new Color(231, 76, 60), 24);
+        btnCancelar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnCancelar.setPreferredSize(new Dimension(170, 48));
+        btnCancelar.setFocusable(true);
+        btnCancelar.setEnabled(true);
+        btnCancelar.addActionListener(e -> dispose());
         panelBotones.add(btnCancelar);
 
-        add(panel, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        panel.add(Box.createVerticalGlue());
+        panel.add(panelBotones);
+        panel.add(Box.createVerticalStrut(10));
 
-        btnGuardar.addActionListener(e -> agregarRestaurante());
-        btnCancelar.addActionListener(e -> dispose());
+        add(panel, BorderLayout.CENTER);
 
         setVisible(true);
     }
@@ -202,21 +195,13 @@ public class AgregarRestaurante extends JFrame {
 
     private void actualizarEstrellas() {
         for (int i = 0; i < 5; i++) {
-            if (i < valoracionSeleccionada) {
-                estrellas[i].setText("★");
-            } else {
-                estrellas[i].setText("☆");
-            }
+            estrellas[i].setText(i < valoracionSeleccionada ? "★" : "☆");
         }
     }
 
     private void resaltarEstrellas(int hasta) {
         for (int i = 0; i < 5; i++) {
-            if (i < hasta) {
-                estrellas[i].setText("★");
-            } else {
-                estrellas[i].setText("☆");
-            }
+            estrellas[i].setText(i < hasta ? "★" : "☆");
         }
     }
 
@@ -236,7 +221,6 @@ public class AgregarRestaurante extends JFrame {
                 return;
             }
 
-            // Evitar duplicados por nombre
             if (new dao.RestauranteDAO().obtenerRestaurantePorNombre(nombre) != null) {
                 JOptionPane.showMessageDialog(this, "Ya existe un restaurante con ese nombre.", "Error",
                         JOptionPane.ERROR_MESSAGE);

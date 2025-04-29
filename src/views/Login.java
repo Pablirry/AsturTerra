@@ -8,6 +8,9 @@ import dao.UsuarioDAO;
 import model.Usuario;
 
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
 
 public class Login extends JFrame {
 
@@ -16,67 +19,106 @@ public class Login extends JFrame {
     private JButton btnLogin;
     private JButton btnRegistro;
     private JPanel panelFondo;
+    private JLabel lblLogo;
     private UsuarioDAO usuarioDAO;
     public static Usuario usuarioActual;
 
     public Login() {
         setTitle("Inicio de Sesión");
-        setSize(400, 500);
+        setMinimumSize(new Dimension(400, 500));
+        setSize(450, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(null);
 
         usuarioDAO = new UsuarioDAO();
 
         panelFondo = new JPanel();
         panelFondo.setBackground(new Color(44, 62, 80));
-        panelFondo.setBounds(0, 0, 400, 500);
-        panelFondo.setLayout(null);
+        panelFondo.setLayout(new BorderLayout());
 
-        JLabel lblTitulo = new JLabel("ASTURTERRA", SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
-        lblTitulo.setForeground(Color.WHITE);
-        lblTitulo.setBounds(100, 50, 200, 40);
-        panelFondo.add(lblTitulo);
+        // Panel central con BoxLayout vertical
+        JPanel panelCentral = new JPanel();
+        panelCentral.setOpaque(false);
+        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+
+        // Logo responsive
+        lblLogo = new JLabel();
+        lblLogo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        actualizarLogo();
+
+        // Campos y botones
+        panelCentral.add(Box.createVerticalStrut(30));
+        panelCentral.add(lblLogo);
+        panelCentral.add(Box.createVerticalStrut(30));
 
         JLabel lblCorreo = new JLabel("Correo:");
         lblCorreo.setForeground(Color.WHITE);
-        lblCorreo.setBounds(50, 120, 100, 25);
-        panelFondo.add(lblCorreo);
+        lblCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(lblCorreo);
 
         txtCorreo = new JTextField();
-        txtCorreo.setBounds(50, 150, 300, 30);
-        panelFondo.add(txtCorreo);
+        txtCorreo.setMaximumSize(new Dimension(300, 32));
+        txtCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(txtCorreo);
 
         JLabel lblContraseña = new JLabel("Contraseña:");
         lblContraseña.setForeground(Color.WHITE);
-        lblContraseña.setBounds(50, 200, 100, 25);
-        panelFondo.add(lblContraseña);
+        lblContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(lblContraseña);
 
         txtContraseña = new JPasswordField();
-        txtContraseña.setBounds(50, 230, 300, 30);
-        panelFondo.add(txtContraseña);
+        txtContraseña.setMaximumSize(new Dimension(300, 32));
+        txtContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(txtContraseña);
+
+        panelCentral.add(Box.createVerticalStrut(20));
 
         btnLogin = new JButton("Iniciar Sesión");
-        btnLogin.setBounds(50, 300, 300, 40);
         btnLogin.setBackground(new Color(52, 152, 219));
         btnLogin.setForeground(Color.WHITE);
-        panelFondo.add(btnLogin);
+        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(btnLogin);
+
+        panelCentral.add(Box.createVerticalStrut(10));
 
         btnRegistro = new JButton("Registrarse");
-        btnRegistro.setBounds(50, 360, 300, 40);
         btnRegistro.setBackground(new Color(46, 204, 113));
         btnRegistro.setForeground(Color.WHITE);
-        panelFondo.add(btnRegistro);
+        btnRegistro.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(btnRegistro);
+
+        panelFondo.add(panelCentral, BorderLayout.CENTER);
+        add(panelFondo);
 
         btnLogin.addActionListener(e -> iniciarSesion());
         btnRegistro.addActionListener(e -> {
-            new Registro( ).setVisible(true);
+            new Registro().setVisible(true);
             dispose();
         });
 
-        add(panelFondo);
+        // Responsive: actualizar logo al cambiar tamaño
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                actualizarLogo();
+            }
+        });
+
         setVisible(true);
+    }
+
+    private void actualizarLogo() {
+        int ancho = Math.max(100, getWidth() / 3);
+        int alto = ancho;
+        try {
+            BufferedImage img = javax.imageio.ImageIO.read(new java.io.File("assets/LogoAsturTerra.png"));
+            Image scaled = img.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+            lblLogo.setIcon(new ImageIcon(scaled));
+        } catch (Exception ex) {
+            lblLogo.setText("ASTURTERRA");
+            lblLogo.setFont(new Font("Arial", Font.BOLD, 28));
+            lblLogo.setForeground(Color.WHITE);
+        }
     }
 
     private void iniciarSesion() {
