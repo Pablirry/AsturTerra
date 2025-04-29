@@ -3,6 +3,9 @@ package views;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -25,9 +28,11 @@ public class VistaRutas extends JFrame {
     private DefaultTableModel modeloTabla;
     private JButton btnAgregar, btnEliminar, btnVerDetalles, btnValorar, btnReservar, btnVolver, btnEditar;
     private Usuario usuario;
-    private JTextField txtBuscarNombre;
-    private JSlider sliderPrecioMax;
-    private JLabel lblPrecioMax;
+    private JPanel panelFiltrosLateral;
+    private boolean filtrosVisibles = false;
+    private JTextField txtBuscarNombre = new JTextField(14);
+    private JSlider sliderPrecioMax = new JSlider(0, 500, 500);;
+    private JLabel lblPrecioMax = new JLabel("Máximo: $500");;
 
     public static VistaRutas getInstance(Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
@@ -40,7 +45,7 @@ public class VistaRutas extends JFrame {
     public VistaRutas(Usuario usuario) {
         this.usuario = usuario;
         setTitle("Gestión de Rutas");
-        setSize(600, 700);
+        setSize(600, 7000);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -53,72 +58,39 @@ public class VistaRutas extends JFrame {
             }
         });
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
-
     }
 
     private void inicializarComponentes() {
-        JPanel panelCabecera = new JPanel();
-        panelCabecera.setLayout(new BorderLayout());
-        panelCabecera.setBackground(new Color(44, 62, 80));
+        // Panel cabecera con título y botón de filtros
+        JPanel panelCabecera = new JPanel(new BorderLayout());
+        panelCabecera.setBackground(new Color(236, 240, 241));
 
-        JPanel panelTitulo = new JPanel();
-        panelTitulo.setBackground(ThemeManager.COLOR_SECUNDARIO);
-        panelTitulo.setBorder(BorderFactory.createEmptyBorder(15, 0, 15, 0));
-        JLabel lblTitulo = new JLabel(I18n.t("titulo.rutas"));
+        JLabel lblTitulo = new JLabel(I18n.t("titulo.rutas"), SwingConstants.CENTER);
         lblTitulo.setFont(ThemeManager.FUENTE_TITULO);
-        lblTitulo.setForeground(Color.WHITE);
-        panelTitulo.add(lblTitulo);
-        add(panelTitulo, BorderLayout.NORTH);
+        lblTitulo.setForeground(new Color(44, 62, 80));
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 0));
 
-        panelCabecera.add(panelTitulo, BorderLayout.NORTH);
+        JButton btnMostrarFiltros = new JButton("Filtros");
+        btnMostrarFiltros.setFont(new Font("Arial", Font.BOLD, 14));
+        btnMostrarFiltros.setBackground(new Color(52, 152, 219));
+        btnMostrarFiltros.setForeground(Color.WHITE);
+        btnMostrarFiltros.setFocusPainted(false);
+        btnMostrarFiltros.setPreferredSize(new Dimension(100, 28));
+        btnMostrarFiltros.addActionListener(e -> togglePanelFiltros());
 
-        // Panel de filtros
-        JPanel panelFiltros = new JPanel();
-        panelFiltros.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        panelFiltros.setBackground(new Color(236, 240, 241));
+        panelCabecera.add(lblTitulo, BorderLayout.CENTER);
+        panelCabecera.add(btnMostrarFiltros, BorderLayout.EAST);
 
-        JLabel lblBuscar = new JLabel("Buscar nombre:");
-        lblBuscar.setFont(new Font("Arial", Font.PLAIN, 14));
-        panelFiltros.add(lblBuscar);
+        // Panel principal con BorderLayout
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.setBackground(new Color(236, 240, 241));
 
-        txtBuscarNombre = new JTextField(12);
-        txtBuscarNombre.setFont(new Font("Arial", Font.PLAIN, 14));
-        panelFiltros.add(txtBuscarNombre);
+        // Panel de filtros lateral (inicialmente oculto)
+        panelFiltrosLateral = crearPanelFiltrosLateral();
+        panelFiltrosLateral.setVisible(false);
+        panelPrincipal.add(panelFiltrosLateral, BorderLayout.WEST);
 
-        JLabel lblSlider = new JLabel("Precio máximo:");
-        lblSlider.setFont(new Font("Arial", Font.PLAIN, 14));
-        panelFiltros.add(lblSlider);
-
-        sliderPrecioMax = new JSlider(0, 200, 100);
-        sliderPrecioMax.setMajorTickSpacing(200);
-        sliderPrecioMax.setMinorTickSpacing(50);
-        sliderPrecioMax.setPaintTicks(true);
-        sliderPrecioMax.setPaintLabels(true);
-        sliderPrecioMax.setPreferredSize(new Dimension(180, 45));
-        sliderPrecioMax.addChangeListener(e -> lblPrecioMax.setText("Máximo: $" + sliderPrecioMax.getValue()));
-        panelFiltros.add(sliderPrecioMax);
-
-        lblPrecioMax = new JLabel("Máximo: $500");
-        lblPrecioMax.setFont(new Font("Arial", Font.PLAIN, 14));
-        panelFiltros.add(lblPrecioMax);
-
-        JButton btnFiltrar = new JButton("Filtrar");
-        btnFiltrar.setFont(new Font("Arial", Font.BOLD, 14));
-        btnFiltrar.setBackground(new Color(52, 152, 219));
-        btnFiltrar.setForeground(Color.WHITE);
-        btnFiltrar.setFocusPainted(false);
-        btnFiltrar.addActionListener(e -> cargarRutas());
-        panelFiltros.add(btnFiltrar);
-
-        panelCabecera.add(panelFiltros, BorderLayout.SOUTH);
-
-        // Añadir cabecera (título + filtros)
-        add(panelCabecera, BorderLayout.NORTH);
-
-        // Panel de tabla
-        JPanel panelTabla = new JPanel(new BorderLayout());
-        panelTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        // Tabla directamente en el centro del panel principal, sin panel extra
         String[] columnas = { "ID", "Nombre", "Descripción", "Precio", "Dificultad" };
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -126,19 +98,22 @@ public class VistaRutas extends JFrame {
                 return false;
             }
         };
-
         tablaRutas = new JTable(modeloTabla);
+
+        // Permitir ordenar columnas haciendo clic en el encabezado
+        TableRowSorter<TableModel> sorter = new TableRowSorter<>(modeloTabla);
+        tablaRutas.setRowSorter(sorter);
+
         tablaRutas.getTableHeader().setReorderingAllowed(false);
         tablaRutas.setFont(new Font("Arial", Font.PLAIN, 14));
         tablaRutas.setRowHeight(22);
         JScrollPane scrollTabla = new JScrollPane(tablaRutas);
-        panelTabla.add(scrollTabla, BorderLayout.CENTER);
-        add(panelTabla, BorderLayout.CENTER);
+        scrollTabla.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panelPrincipal.add(scrollTabla, BorderLayout.CENTER);
 
         // Panel de botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(new Color(236, 240, 241));
-
         btnAgregar = UIUtils.crearBoton(I18n.t("boton.agregar"), new Color(52, 152, 219));
         btnEliminar = UIUtils.crearBoton(I18n.t("boton.eliminar"), new Color(231, 76, 60));
         btnVerDetalles = UIUtils.crearBoton(I18n.t("boton.detalles"), new Color(46, 204, 113));
@@ -146,6 +121,7 @@ public class VistaRutas extends JFrame {
         btnReservar = UIUtils.crearBoton(I18n.t("boton.reservar"), new Color(46, 204, 113));
         btnEditar = UIUtils.crearBoton(I18n.t("boton.editar"), new Color(241, 196, 15));
         btnVolver = UIUtils.crearBoton(I18n.t("boton.volver"), new Color(52, 152, 219));
+
         btnEliminar.setVisible(usuario.isAdmin());
         btnEditar.setVisible(usuario.isAdmin());
 
@@ -156,9 +132,14 @@ public class VistaRutas extends JFrame {
         panelBotones.add(btnReservar);
         panelBotones.add(btnEditar);
         panelBotones.add(btnVolver);
+        panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
-        add(panelBotones, BorderLayout.SOUTH);
+        // Añadir cabecera y panel principal al frame
+        setLayout(new BorderLayout());
+        add(panelCabecera, BorderLayout.NORTH);
+        add(panelPrincipal, BorderLayout.CENTER);
 
+        // Listeners de botones igual que antes...
         btnAgregar.addActionListener(e -> {
             new AgregarRuta() {
                 @Override
@@ -206,6 +187,94 @@ public class VistaRutas extends JFrame {
             }
         });
         setVisible(true);
+    }
+
+    private JPanel crearPanelFiltrosLateral() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBackground(new Color(225, 232, 239));
+        panel.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(52, 152, 219)));
+        panel.setPreferredSize(new Dimension(270, 0));
+
+        JLabel lblFiltros = new JLabel("Filtros de búsqueda");
+        lblFiltros.setFont(new Font("Arial", Font.BOLD, 17));
+        lblFiltros.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblFiltros.setBorder(BorderFactory.createEmptyBorder(18, 0, 18, 0));
+        panel.add(lblFiltros);
+
+        // Filtro nombre
+        JLabel lblBuscar = new JLabel("🔍 Nombre:");
+        lblBuscar.setFont(new Font("Dialog", Font.PLAIN, 15));
+        lblBuscar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblBuscar);
+
+        txtBuscarNombre.setMaximumSize(new Dimension(220, 30));
+        txtBuscarNombre.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtBuscarNombre.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(189, 195, 199), 1, true),
+                BorderFactory.createEmptyBorder(6, 10, 6, 10)));
+        panel.add(txtBuscarNombre);
+
+        panel.add(Box.createVerticalStrut(16));
+
+        // Filtro precio
+        JLabel lblSlider = new JLabel("💰 Precio máximo:");
+        lblSlider.setFont(new Font("Dialog", Font.PLAIN, 15));
+        lblSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblSlider);
+
+        sliderPrecioMax.setMajorTickSpacing(200);
+        sliderPrecioMax.setMinorTickSpacing(50);
+        sliderPrecioMax.setPaintTicks(true);
+        sliderPrecioMax.setPaintLabels(true);
+        sliderPrecioMax.setBackground(new Color(225, 232, 239));
+        sliderPrecioMax.setMaximumSize(new Dimension(220, 40));
+        panel.add(sliderPrecioMax);
+
+        lblPrecioMax.setFont(new Font("Arial", Font.PLAIN, 14));
+        lblPrecioMax.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(lblPrecioMax);
+
+        sliderPrecioMax.addChangeListener(e -> lblPrecioMax.setText("Máximo: $" + sliderPrecioMax.getValue()));
+
+        panel.add(Box.createVerticalStrut(18));
+
+        // Botón filtrar
+        JButton btnFiltrar = new JButton("Aplicar filtros");
+        btnFiltrar.setFont(new Font("Arial", Font.BOLD, 14));
+        btnFiltrar.setBackground(new Color(52, 152, 219));
+        btnFiltrar.setForeground(Color.WHITE);
+        btnFiltrar.setFocusPainted(false);
+        btnFiltrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnFiltrar.setMaximumSize(new Dimension(180, 32));
+        btnFiltrar.addActionListener(e -> {
+            cargarRutas();
+            togglePanelFiltros();
+        });
+        panel.add(btnFiltrar);
+
+        panel.add(Box.createVerticalStrut(10));
+
+        // Botón cerrar
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setFont(new Font("Arial", Font.PLAIN, 13));
+        btnCerrar.setBackground(new Color(189, 195, 199));
+        btnCerrar.setForeground(Color.BLACK);
+        btnCerrar.setFocusPainted(false);
+        btnCerrar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnCerrar.setMaximumSize(new Dimension(180, 28));
+        btnCerrar.addActionListener(e -> togglePanelFiltros());
+        panel.add(btnCerrar);
+
+        panel.add(Box.createVerticalGlue());
+        return panel;
+    }
+
+    private void togglePanelFiltros() {
+        filtrosVisibles = !filtrosVisibles;
+        panelFiltrosLateral.setVisible(filtrosVisibles);
+        revalidate();
+        repaint();
     }
 
     private void cargarRutas() {

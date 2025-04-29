@@ -17,10 +17,6 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 mejoras que hacer 
 
-4. Escalabilidad y mantenibilidad
-Centraliza los estilos (colores, fuentes, bordes) en ThemeManager para facilitar cambios de diseño.
-Refactoriza código repetido (por ejemplo, creación de botones, paneles, validaciones) en métodos utilitarios.
-Internacionalización: usa archivos de recursos para los textos, facilitando traducción a otros idiomas.
 5. Funcionalidad extra útil
 Búsqueda y filtrado avanzado en tablas de rutas, restaurantes y reservas (por nombre, precio, dificultad, valoración, etc.).
 Ordenar columnas en las tablas haciendo clic en el encabezado.

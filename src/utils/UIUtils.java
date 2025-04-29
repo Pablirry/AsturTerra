@@ -68,4 +68,38 @@ public class UIUtils {
     public static void mostrarInfo(Component parent, String mensaje) {
         JOptionPane.showMessageDialog(parent, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    public static JButton crearBotonRedondeado(String texto, Color color, int radio) {
+        JButton btn = new JButton(texto) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getModel().isPressed() ? color.darker() : color);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), radio, radio);
+                super.paintComponent(g);
+                g2.dispose();
+            }
+    
+            @Override
+            protected void paintBorder(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(color.darker());
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radio, radio);
+                g2.dispose();
+            }
+        };
+        btn.setOpaque(false);
+        btn.setContentAreaFilled(false);
+        btn.setBorderPainted(false);
+        btn.setFocusPainted(false);
+        btn.setForeground(Color.WHITE);
+        btn.setFont(new Font("Arial", Font.BOLD, 14));
+        btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btn.setMargin(new Insets(10, 24, 10, 24));
+        btn.setHorizontalAlignment(SwingConstants.CENTER);
+        return btn;
+    }
 }

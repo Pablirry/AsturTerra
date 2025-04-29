@@ -1,6 +1,8 @@
 package views;
 
 import java.awt.*;
+import java.awt.event.MouseListener;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.JTableHeader;
@@ -157,16 +159,68 @@ public class ThemeManager {
             }
         }
         if (comp instanceof JButton) {
-            comp.setBackground(theme == Theme.DARK ? new Color(33, 47, 60) : new Color(52, 152, 219));
-            comp.setForeground(Color.WHITE);
-            // Borde redondeado para el botón
+            JButton btn = (JButton) comp;
+            // Colores de fondo para los estados
+            Color normalBg = theme == Theme.DARK ? new Color(41, 128, 185) : new Color(52, 152, 219);
+            Color hoverBg = theme == Theme.DARK ? new Color(52, 152, 219) : new Color(93, 173, 226); // Más claro en
+                                                                                                     // hover
+            Color pressedBg = theme == Theme.DARK ? new Color(33, 47, 60) : new Color(31, 97, 141); // Más oscuro al
+                                                                                                    // pulsar
+
+            // Borde: azul en oscuro, gris oscuro en claro
             Border rounded = new RoundedBorder(
                     theme == Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80),
-                    2, 18); // Aumenta el radio para que se vean más grandes y redondeados
-            ((JButton) comp).setBorder(rounded);
-            // Aumenta el tamaño de la fuente y el padding
-            ((JButton) comp).setFont(new Font("Dialog", Font.BOLD, 18));
-            ((JButton) comp).setMargin(new Insets(12, 24, 12, 24)); // top, left, bottom, right
+                    2, 18);
+            btn.setBorder(rounded);
+
+            btn.setBackground(normalBg);
+            btn.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+            btn.setFont(new Font("Dialog", Font.BOLD, 18));
+            btn.setMargin(new Insets(12, 24, 12, 24));
+            btn.setContentAreaFilled(false);
+            btn.setOpaque(false);
+
+            // Elimina listeners anteriores para evitar duplicados
+            for (MouseListener ml : btn.getMouseListeners()) {
+                if (ml.getClass().getName().contains("ButtonPressEffect")
+                        || ml.getClass().getName().contains("MouseAdapter")) {
+                    btn.removeMouseListener(ml);
+                }
+            }
+            // Animación de hover y pulsado
+            btn.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    btn.setBackground(hoverBg);
+                    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    btn.repaint();
+                }
+
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    btn.setBackground(normalBg);
+                    btn.setCursor(Cursor.getDefaultCursor());
+                    btn.repaint();
+                }
+
+                @Override
+                public void mousePressed(java.awt.event.MouseEvent e) {
+                    btn.setBackground(pressedBg);
+                    btn.repaint();
+                }
+
+                @Override
+                public void mouseReleased(java.awt.event.MouseEvent e) {
+                    // Si el ratón sigue encima, vuelve a hover, si no a normal
+                    Point p = e.getPoint();
+                    if (p.x >= 0 && p.x < btn.getWidth() && p.y >= 0 && p.y < btn.getHeight()) {
+                        btn.setBackground(hoverBg);
+                    } else {
+                        btn.setBackground(normalBg);
+                    }
+                    btn.repaint();
+                }
+            });
         }
         if (comp instanceof JTextField || comp instanceof JTextArea || comp instanceof JPasswordField) {
             comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
