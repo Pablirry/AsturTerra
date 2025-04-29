@@ -16,6 +16,7 @@ import java.util.List;
 
 import utils.I18n;
 import utils.UIUtils;
+import views.ThemeManager.RoundedBorder;
 import dao.*;
 import model.Ruta;
 import model.Usuario;
@@ -113,14 +114,53 @@ public class VistaRutas extends JFrame {
 
         // Panel de botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(new Color(236, 240, 241));
-        btnAgregar = UIUtils.crearBoton(I18n.t("boton.agregar"), new Color(52, 152, 219));
-        btnEliminar = UIUtils.crearBoton(I18n.t("boton.eliminar"), new Color(231, 76, 60));
-        btnVerDetalles = UIUtils.crearBoton(I18n.t("boton.detalles"), new Color(46, 204, 113));
-        btnValorar = UIUtils.crearBoton(I18n.t("boton.valorar"), new Color(46, 204, 113));
-        btnReservar = UIUtils.crearBoton(I18n.t("boton.reservar"), new Color(46, 204, 113));
-        btnEditar = UIUtils.crearBoton(I18n.t("boton.editar"), new Color(241, 196, 15));
-        btnVolver = UIUtils.crearBoton(I18n.t("boton.volver"), new Color(52, 152, 219));
+        Color panelBotonesBg = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
+                ? new Color(44, 62, 80)
+                : new Color(220, 230, 241);
+        panelBotones.setBackground(panelBotonesBg);
+
+        btnAgregar = UIUtils.crearBotonRedondeado(I18n.t("boton.agregar"), new Color(52, 152, 219), 24);
+        btnAgregar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnAgregar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnAgregar, ThemeManager.getCurrentTheme());
+
+        btnEliminar = UIUtils.crearBotonRedondeado(I18n.t("boton.eliminar"), new Color(231, 76, 60), 24);
+        btnEliminar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnEliminar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnEliminar, ThemeManager.getCurrentTheme());
+
+        btnVerDetalles = UIUtils.crearBotonRedondeado(I18n.t("boton.detalles"), new Color(46, 204, 113), 24);
+        btnVerDetalles.setFont(new Font("Arial", Font.BOLD, 18));
+        btnVerDetalles.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnVerDetalles, ThemeManager.getCurrentTheme());
+
+        btnValorar = UIUtils.crearBotonRedondeado(I18n.t("boton.valorar"), new Color(241, 196, 15), 24);
+        btnValorar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnValorar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnValorar, ThemeManager.getCurrentTheme());
+
+        btnReservar = UIUtils.crearBotonRedondeado(I18n.t("boton.reservar"), new Color(46, 204, 113), 24);
+        btnReservar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnReservar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnReservar, ThemeManager.getCurrentTheme());
+
+        btnEditar = UIUtils.crearBotonRedondeado(I18n.t("boton.editar"), new Color(241, 196, 15), 24);
+        btnEditar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnEditar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnEditar, ThemeManager.getCurrentTheme());
+
+        btnVolver = UIUtils.crearBotonRedondeado(I18n.t("boton.volver"), new Color(52, 152, 219), 24);
+        btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
+        btnVolver.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnVolver, ThemeManager.getCurrentTheme());
+
+        btnAgregar.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnEliminar.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnVerDetalles.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnValorar.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnReservar.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnEditar.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
+        btnVolver.setBorder(new RoundedBorder(panelBotonesBg, 3, 24));
 
         btnEliminar.setVisible(usuario.isAdmin());
         btnEditar.setVisible(usuario.isAdmin());

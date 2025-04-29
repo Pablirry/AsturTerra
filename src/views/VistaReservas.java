@@ -81,7 +81,10 @@ public class VistaReservas extends JFrame {
 
         JPanel panelBotones = new JPanel();
         panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(new Color(236, 240, 241));
+        Color panelBotonesBg = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
+                ? new Color(44, 62, 80)
+                : new Color(220, 230, 241);
+        panelBotones.setBackground(panelBotonesBg);
 
         btnReservar = new JButton("Confirmar reserva");
         btnReservar.setBackground(new Color(46, 204, 113));
@@ -117,10 +120,10 @@ public class VistaReservas extends JFrame {
         try {
             ReservarDAO dao = new ReservarDAO();
             reservas = dao.obtenerReservasUsuario(usuario.getId());
-    
+
             DefaultListModel<String> model = new DefaultListModel<>();
             RutaDAO rutaDAO = new RutaDAO();
-    
+
             for (Reserva reserva : reservas) {
                 Ruta ruta = rutaDAO.obtenerRutaPorId(reserva.getIdRuta());
                 String estado = reserva.isConfirmada() ? "CONFIRMADA" : "PENDIENTE";
@@ -134,7 +137,7 @@ public class VistaReservas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar reservas: " + e.getMessage());
         }
     }
-    
+
     private void confirmarReserva() {
         int index = listaReservas.getSelectedIndex();
         if (index == -1 || reservas == null || index >= reservas.size()) {
@@ -159,7 +162,7 @@ public class VistaReservas extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al confirmar reserva: " + e.getMessage());
         }
     }
-    
+
     private void cancelarReserva() {
         int index = listaReservas.getSelectedIndex();
         if (index == -1 || reservas == null || index >= reservas.size()) {

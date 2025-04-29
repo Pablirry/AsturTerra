@@ -13,6 +13,7 @@ import javax.imageio.ImageIO;
 import model.Usuario;
 import services.TurismoService;
 import utils.I18n;
+import utils.UIUtils;
 
 public class MenuPrincipal extends JFrame {
 
@@ -53,18 +54,23 @@ public class MenuPrincipal extends JFrame {
         panelFondo.setBounds(0, 0, 700, 550);
         panelFondo.setLayout(null);
 
-        // Botón de modo claro/oscuro
-        btnTema = new JButton("Modo Oscuro");
-        btnTema.setBounds(20, 20, 130, 30);
-        btnTema.setBackground(new Color(52, 152, 219));
-        btnTema.setForeground(Color.WHITE);
+        btnTema = UIUtils.crearBotonRedondeado(
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? "Modo Claro" : "Modo Oscuro",
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185)
+                        : new Color(52, 152, 219),
+                18);
+        btnTema.setBounds(20, 20, 130, 36);
+        btnTema.setFont(new Font("Arial", Font.BOLD, 16));
+        btnTema.setPreferredSize(new Dimension(130, 36));
         btnTema.addActionListener(e -> {
             if (ThemeManager.getCurrentTheme() == ThemeManager.Theme.LIGHT) {
                 ThemeManager.setTheme(ThemeManager.Theme.DARK, this);
                 btnTema.setText("Modo Claro");
+                btnTema.setBackground(new Color(41, 128, 185));
             } else {
                 ThemeManager.setTheme(ThemeManager.Theme.LIGHT, this);
                 btnTema.setText("Modo Oscuro");
+                btnTema.setBackground(new Color(52, 152, 219));
             }
             panelFondo.repaint();
         });
@@ -94,14 +100,12 @@ public class MenuPrincipal extends JFrame {
         itemEsp.addActionListener(e -> {
             I18n.setLocale(new java.util.Locale("es"));
             JOptionPane.showMessageDialog(this, "Idioma cambiado a Español");
-            // Aquí puedes recargar la ventana si quieres aplicar el idioma automáticamente
         });
 
         // Acción para cambiar a inglés
         itemEng.addActionListener(e -> {
             I18n.setLocale(new java.util.Locale("en"));
             JOptionPane.showMessageDialog(this, "Language changed to English");
-            // Aquí puedes recargar la ventana si quieres aplicar el idioma automáticamente
         });
 
         menuIdioma.add(itemEsp);
@@ -157,10 +161,14 @@ public class MenuPrincipal extends JFrame {
         panelFondo.add(panelChat);
 
         if (usuario.getTipo().equals("admin")) {
-            JButton btnSoporte = new JButton("Soporte");
-            btnSoporte.setBounds(20, 60, 130, 30);
-            btnSoporte.setBackground(new Color(52, 152, 219));
-            btnSoporte.setForeground(Color.WHITE);
+            JButton btnSoporte = UIUtils.crearBotonRedondeado(
+                "Soporte",
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185) : new Color(52, 152, 219),
+                18
+            );
+            btnSoporte.setBounds(20, 65, 130, 36);
+            btnSoporte.setFont(new Font("Arial", Font.BOLD, 16));
+            btnSoporte.setPreferredSize(new Dimension(130, 36));
             btnSoporte.addActionListener(e -> new VistaSoporteAdmin().setVisible(true));
             panelFondo.add(btnSoporte);
         }

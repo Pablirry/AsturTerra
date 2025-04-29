@@ -72,14 +72,40 @@ public class VistaRestaurantes extends JFrame {
         add(panelTabla, BorderLayout.CENTER);
 
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(new Color(236, 240, 241));
+        Color panelBotonesBg = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
+                ? new Color(44, 62, 80)
+                : new Color(220, 230, 241);
+        panelBotones.setBackground(panelBotonesBg);
 
         btnAgregar = UIUtils.crearBoton(I18n.t("boton.agregar"), new Color(52, 152, 219));
+        btnAgregar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnAgregar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnAgregar, ThemeManager.getCurrentTheme());
+
         btnEliminar = UIUtils.crearBoton(I18n.t("boton.eliminar"), new Color(231, 76, 60));
+        btnEliminar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnEliminar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnEliminar, ThemeManager.getCurrentTheme());
+
         btnVerDetalles = UIUtils.crearBoton(I18n.t("boton.detalles"), new Color(46, 204, 113));
+        btnVerDetalles.setFont(new Font("Arial", Font.BOLD, 18));
+        btnVerDetalles.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnVerDetalles, ThemeManager.getCurrentTheme());
+
         btnValorar = UIUtils.crearBoton(I18n.t("boton.valorar"), new Color(241, 196, 15));
+        btnValorar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnValorar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnValorar, ThemeManager.getCurrentTheme());
+
         btnEditar = UIUtils.crearBoton(I18n.t("boton.editar"), new Color(241, 196, 15));
+        btnEditar.setFont(new Font("Arial", Font.BOLD, 18));
+        btnEditar.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnEditar, ThemeManager.getCurrentTheme());
+
         btnVolver = UIUtils.crearBoton(I18n.t("boton.volver"), new Color(52, 152, 219));
+        btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
+        btnVolver.setPreferredSize(new Dimension(170, 48));
+        ThemeManager.setComponentTheme(btnVolver, ThemeManager.getCurrentTheme());
 
         panelBotones.add(btnAgregar);
         panelBotones.add(btnEliminar);

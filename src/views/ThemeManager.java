@@ -54,6 +54,39 @@ public class ThemeManager {
         }
     }
 
+    public static class RoundedButton extends JButton {
+        private final int radius;
+
+        public RoundedButton(String text, int radius) {
+            super(text);
+            this.radius = radius;
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setOpaque(false);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+            super.paintComponent(g);
+            g2.dispose();
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getForeground());
+            g2.setStroke(new BasicStroke(3));
+            g2.drawRoundRect(1, 1, getWidth() - 3, getHeight() - 3, radius, radius);
+            g2.dispose();
+        }
+    }
+
     // Borde redondeado personalizado
     public static class RoundedBorder extends AbstractBorder {
         private final Color color;
@@ -88,7 +121,7 @@ public class ThemeManager {
         }
     }
 
-    private static void setComponentTheme(Component comp, Theme theme) {
+    public static void setComponentTheme(Component comp, Theme theme) {
         if (comp instanceof JPanel) {
             if (theme == Theme.DARK) {
                 comp.setBackground(new Color(52, 73, 94));
@@ -160,34 +193,31 @@ public class ThemeManager {
         }
         if (comp instanceof JButton) {
             JButton btn = (JButton) comp;
-            // Colores de fondo para los estados
-            Color normalBg = theme == Theme.DARK ? new Color(41, 128, 185) : new Color(52, 152, 219);
-            Color hoverBg = theme == Theme.DARK ? new Color(52, 152, 219) : new Color(93, 173, 226); // Más claro en
-                                                                                                     // hover
-            Color pressedBg = theme == Theme.DARK ? new Color(33, 47, 60) : new Color(31, 97, 141); // Más oscuro al
-                                                                                                    // pulsar
+            Color colorBase = (Color) btn.getClientProperty("colorBase");
+            if (colorBase == null) {
+                colorBase = theme == Theme.DARK ? new Color(52, 152, 219) : new Color(52, 152, 219);
+            }
+            Color normalBg = colorBase;
+            Color hoverBg = colorBase.brighter();
+            Color pressedBg = colorBase.darker();
 
-            // Borde: azul en oscuro, gris oscuro en claro
+            // Borde más grueso y radio más grande para más redondeo
             Border rounded = new RoundedBorder(
-                    theme == Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80),
-                    2, 18);
+                    theme == Theme.DARK ? colorBase : new Color(44, 62, 80),
+                    3, 24 // grosor 3, radio 24
+            );
             btn.setBorder(rounded);
 
             btn.setBackground(normalBg);
             btn.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
             btn.setFont(new Font("Dialog", Font.BOLD, 18));
             btn.setMargin(new Insets(12, 24, 12, 24));
-            btn.setContentAreaFilled(false);
-            btn.setOpaque(false);
+            btn.setContentAreaFilled(true); // Fondo sólido
+            btn.setOpaque(true); // Fondo sólido
 
-            // Elimina listeners anteriores para evitar duplicados
             for (MouseListener ml : btn.getMouseListeners()) {
-                if (ml.getClass().getName().contains("ButtonPressEffect")
-                        || ml.getClass().getName().contains("MouseAdapter")) {
-                    btn.removeMouseListener(ml);
-                }
+                btn.removeMouseListener(ml);
             }
-            // Animación de hover y pulsado
             btn.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseEntered(java.awt.event.MouseEvent e) {
@@ -211,7 +241,6 @@ public class ThemeManager {
 
                 @Override
                 public void mouseReleased(java.awt.event.MouseEvent e) {
-                    // Si el ratón sigue encima, vuelve a hover, si no a normal
                     Point p = e.getPoint();
                     if (p.x >= 0 && p.x < btn.getWidth() && p.y >= 0 && p.y < btn.getHeight()) {
                         btn.setBackground(hoverBg);
