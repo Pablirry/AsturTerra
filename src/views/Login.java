@@ -1,15 +1,11 @@
 package views;
 
 import javax.swing.*;
-
-
 import services.TurismoService;
 import dao.UsuarioDAO;
 import model.Usuario;
-
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 
 public class Login extends JFrame {
@@ -25,7 +21,7 @@ public class Login extends JFrame {
 
     public Login() {
         setTitle("Inicio de Sesión");
-        setMinimumSize(new Dimension(400, 500));
+        setMinimumSize(new Dimension(320, 480));
         setSize(450, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -36,10 +32,18 @@ public class Login extends JFrame {
         panelFondo.setBackground(new Color(44, 62, 80));
         panelFondo.setLayout(new BorderLayout());
 
-        // Panel central con BoxLayout vertical
         JPanel panelCentral = new JPanel();
         panelCentral.setOpaque(false);
         panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+
+        int margenLateral = 24;
+        JPanel panelMargen = new JPanel(new BorderLayout());
+        panelMargen.setOpaque(false);
+        panelMargen.setBorder(BorderFactory.createEmptyBorder(0, margenLateral, 0, margenLateral));
+        panelMargen.add(panelCentral, BorderLayout.CENTER);
+
+        panelFondo.add(panelMargen, BorderLayout.CENTER);
+        add(panelFondo);
 
         // Logo responsive
         lblLogo = new JLabel();
@@ -56,9 +60,31 @@ public class Login extends JFrame {
         lblCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelCentral.add(lblCorreo);
 
-        txtCorreo = new JTextField();
-        txtCorreo.setMaximumSize(new Dimension(300, 32));
+        Color placeHolderColor = new Color(150, 150, 150, 120);
+
+        txtCorreo = new JTextField("Correo electrónico");
+        txtCorreo.setForeground(placeHolderColor);
+        txtCorreo.setMaximumSize(new Dimension(600, 40));
+        txtCorreo.setPreferredSize(new Dimension(300, 32));
         txtCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtCorreo.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtCorreo.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                if (txtCorreo.getText().equals("Correo electrónico")) {
+                    txtCorreo.setText("");
+                    txtCorreo.setForeground(placeHolderColor);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                if (txtCorreo.getText().isEmpty()) {
+                    txtCorreo.setText("Correo electrónico");
+                    txtCorreo.setForeground(placeHolderColor);
+                }
+            }
+        });
         panelCentral.add(txtCorreo);
 
         JLabel lblContraseña = new JLabel("Contraseña:");
@@ -66,9 +92,34 @@ public class Login extends JFrame {
         lblContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelCentral.add(lblContraseña);
 
-        txtContraseña = new JPasswordField();
-        txtContraseña.setMaximumSize(new Dimension(300, 32));
+        txtContraseña = new JPasswordField("Contraseña");
+        txtContraseña.setForeground(placeHolderColor);
+        txtContraseña.setMaximumSize(new Dimension(600, 40));
+        txtContraseña.setPreferredSize(new Dimension(300, 32));
         txtContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
+        txtContraseña.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtContraseña.setEchoChar((char) 0);
+        txtContraseña.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                String pwd = new String(txtContraseña.getPassword());
+                if (pwd.equals("Contraseña")) {
+                    txtContraseña.setText("");
+                    txtContraseña.setForeground(placeHolderColor);
+                    txtContraseña.setEchoChar('•');
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                String pwd = new String(txtContraseña.getPassword());
+                if (pwd.isEmpty()) {
+                    txtContraseña.setText("Contraseña");
+                    txtContraseña.setForeground(placeHolderColor);
+                    txtContraseña.setEchoChar((char) 0);
+                }
+            }
+        });
         panelCentral.add(txtContraseña);
 
         panelCentral.add(Box.createVerticalStrut(20));
@@ -77,6 +128,10 @@ public class Login extends JFrame {
         btnLogin.setBackground(new Color(52, 152, 219));
         btnLogin.setForeground(Color.WHITE);
         btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnLogin.setFont(new Font("Arial", Font.BOLD, 20));
+        getRootPane().setDefaultButton(btnLogin);
+        btnLogin.setFocusPainted(false);
+        btnLogin.setPreferredSize(new Dimension(220, 48));
         panelCentral.add(btnLogin);
 
         panelCentral.add(Box.createVerticalStrut(10));
@@ -85,6 +140,9 @@ public class Login extends JFrame {
         btnRegistro.setBackground(new Color(46, 204, 113));
         btnRegistro.setForeground(Color.WHITE);
         btnRegistro.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRegistro.setFont(new Font("Arial", Font.BOLD, 20));
+        btnRegistro.setFocusPainted(false);
+        btnRegistro.setPreferredSize(new Dimension(220, 48));
         panelCentral.add(btnRegistro);
 
         panelFondo.add(panelCentral, BorderLayout.CENTER);
@@ -96,24 +154,27 @@ public class Login extends JFrame {
             dispose();
         });
 
-        // Responsive: actualizar logo al cambiar tamaño
+        // Responsive: actualizar logo y componentes al cambiar tamaño
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 actualizarLogo();
+                ajustarComponentes();
             }
         });
 
         setVisible(true);
+        ajustarComponentes();
     }
 
     private void actualizarLogo() {
-        int ancho = Math.max(100, getWidth() / 3);
+        int ancho = Math.max(80, getWidth() / 3);
         int alto = ancho;
         try {
             BufferedImage img = javax.imageio.ImageIO.read(new java.io.File("assets/LogoAsturTerra.png"));
             Image scaled = img.getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
             lblLogo.setIcon(new ImageIcon(scaled));
+            lblLogo.setText("");
         } catch (Exception ex) {
             lblLogo.setText("ASTURTERRA");
             lblLogo.setFont(new Font("Arial", Font.BOLD, 28));
@@ -121,18 +182,39 @@ public class Login extends JFrame {
         }
     }
 
+    private void ajustarComponentes() {
+        int h = getHeight();
+        int w = getWidth();
+        int fontSize = Math.max(16, h / 30);
+        int fieldHeight = Math.max(32, h / 18);
+        int btnHeight = Math.max(40, h / 15);
+        int btnWidth = Math.max(180, Math.min(400, w - 64)); // margen total 2*32
+
+        txtCorreo.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        txtCorreo.setPreferredSize(new Dimension(btnWidth, fieldHeight));
+        txtCorreo.setMaximumSize(new Dimension(btnWidth, fieldHeight));
+
+        txtContraseña.setFont(new Font("Arial", Font.PLAIN, fontSize));
+        txtContraseña.setPreferredSize(new Dimension(btnWidth, fieldHeight));
+        txtContraseña.setMaximumSize(new Dimension(btnWidth, fieldHeight));
+
+        btnLogin.setFont(new Font("Arial", Font.BOLD, fontSize + 2));
+        btnLogin.setPreferredSize(new Dimension(btnWidth, btnHeight));
+
+        btnRegistro.setFont(new Font("Arial", Font.BOLD, fontSize + 2));
+        btnRegistro.setPreferredSize(new Dimension(btnWidth, btnHeight));
+    }
+
     private void iniciarSesion() {
         try {
             String correo = txtCorreo.getText().trim();
             String contrasena = new String(txtContraseña.getPassword()).trim();
-    
-            System.out.println("Correo: " + correo + ", Contraseña: " + contrasena);
-    
+
             if (correo.isEmpty() || contrasena.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Introduce correo y contraseña.");
                 return;
             }
-    
+
             Usuario usuario = usuarioDAO.iniciarSesion(correo, contrasena);
             if (usuario != null) {
                 TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion");

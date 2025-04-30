@@ -40,6 +40,8 @@ public class VistaChat extends JFrame {
         btnEnviar = new JButton("Enviar");
         btnVolver = new JButton("Volver");
 
+        getRootPane().setDefaultButton(btnEnviar);
+
         panelInferior.add(txtMensaje, BorderLayout.CENTER);
         panelInferior.add(btnEnviar, BorderLayout.EAST);
         panelInferior.add(btnVolver, BorderLayout.SOUTH);

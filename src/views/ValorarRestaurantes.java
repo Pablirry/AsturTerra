@@ -126,6 +126,7 @@ public class ValorarRestaurantes extends JFrame {
         btnEnviar.setForeground(Color.WHITE);
         btnEnviar.setFont(new Font("Arial", Font.BOLD, 16));
         btnEnviar.setFocusPainted(false);
+        getRootPane().setDefaultButton(btnEnviar);
         btnEnviar.setPreferredSize(new Dimension(110, 38));
         btnEnviar.setBorder(BorderFactory.createLineBorder(new Color(39, 174, 96), 2, true));
         btnEnviar.addActionListener(e -> enviarValoracion());

@@ -2,53 +2,51 @@ package views;
 
 import model.Restaurante;
 import services.TurismoService;
-import utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.nio.file.Files;
+import java.io.File;
 
 public class AgregarRestaurante extends JFrame {
-
     private JTextField txtNombre, txtUbicacion;
     private JLabel lblImagen;
-    private JButton btnImagen, btnGuardar, btnCancelar;
+    private JButton btnGuardar, btnCancelar, btnImagen;
     private File imagenPerfil;
     private int valoracionSeleccionada = 0;
     private JLabel[] estrellas = new JLabel[5];
 
     public AgregarRestaurante() {
         setTitle("Nuevo Restaurante");
-        setSize(520, 650);
+        setSize(540, 700);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout());
 
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
         Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
         Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
         Color borderColor = new Color(52, 152, 219);
 
-        // Panel principal redondeado con sombra
-        JPanel panel = UIUtils.crearPanelRedondeado(bgPanel, 32, 2, borderColor);
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 40, 30, 40));
+        JPanel panelPrincipal = new JPanel(new BorderLayout());
+        panelPrincipal.setBackground(bgPanel);
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(24, 32, 24, 32));
 
         // Título
         JLabel lblTitulo = new JLabel("Nuevo Restaurante");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
         lblTitulo.setForeground(fgPanel);
-        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(lblTitulo);
-        panel.add(Box.createVerticalStrut(18));
+        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
+        panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
 
-        // Panel campos
-        JPanel panelCampos = new JPanel();
-        panelCampos.setOpaque(false);
-        panelCampos.setLayout(new GridBagLayout());
+        // Panel central con GridBagLayout para mejor organización
+        JPanel panelCentral = new JPanel(new GridBagLayout());
+        panelCentral.setBackground(bgPanel);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -57,9 +55,9 @@ public class AgregarRestaurante extends JFrame {
         JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         lblNombre.setForeground(fgPanel);
-        panelCampos.add(lblNombre, gbc);
+        panelCentral.add(lblNombre, gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Arial", Font.PLAIN, 15));
         txtNombre.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
@@ -68,17 +66,18 @@ public class AgregarRestaurante extends JFrame {
         txtNombre.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor, 1, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtNombre.setPreferredSize(new Dimension(250, 36));
-        panelCampos.add(txtNombre, gbc);
+        txtNombre.setPreferredSize(new Dimension(220, 36));
+        panelCentral.add(txtNombre, gbc);
 
         // Ubicación
+        gbc.gridx = 0;
         gbc.gridy++;
         JLabel lblUbicacion = new JLabel("Ubicación:");
         lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
         lblUbicacion.setForeground(fgPanel);
-        panelCampos.add(lblUbicacion, gbc);
+        panelCentral.add(lblUbicacion, gbc);
 
-        gbc.gridy++;
+        gbc.gridx = 1;
         txtUbicacion = new JTextField();
         txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
         txtUbicacion.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
@@ -87,36 +86,35 @@ public class AgregarRestaurante extends JFrame {
         txtUbicacion.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor, 1, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtUbicacion.setPreferredSize(new Dimension(250, 36));
-        panelCampos.add(txtUbicacion, gbc);
-
-        panelCampos.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panel.add(panelCampos);
-        panel.add(Box.createVerticalStrut(18));
+        txtUbicacion.setPreferredSize(new Dimension(220, 36));
+        panelCentral.add(txtUbicacion, gbc);
 
         // Imagen
+        gbc.gridx = 0;
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
         lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(160, 120));
+        lblImagen.setPreferredSize(new Dimension(180, 120));
         lblImagen.setFont(new Font("Arial", Font.ITALIC, 14));
         lblImagen.setForeground(theme == ThemeManager.Theme.DARK ? new Color(120, 120, 120) : new Color(160, 160, 160));
-        lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblImagen.setBorder(BorderFactory.createLineBorder(borderColor, 1, true));
-        panel.add(lblImagen);
+        lblImagen.setOpaque(true);
+        lblImagen.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
+        panelCentral.add(lblImagen, gbc);
 
-        btnImagen = UIUtils.crearBotonRedondeado("Seleccionar Imagen", borderColor, 18);
-        ThemeManager.setComponentTheme(btnImagen, theme);
-        btnImagen.setFont(new Font("Arial", Font.BOLD, 14));
-        btnImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        // Botón seleccionar imagen
+        gbc.gridy++;
+        btnImagen = new JButton("Seleccionar Imagen");
+        btnImagen.setFont(new Font("Arial", Font.BOLD, 15));
+        btnImagen.setPreferredSize(new Dimension(220, 44));
+        btnImagen.setBorder(BorderFactory.createLineBorder(new Color(52, 152, 219), 2, true));
+        setButtonEffects(btnImagen, new Color(52, 152, 219), new Color(41, 128, 185), new Color(31, 97, 141));
         btnImagen.addActionListener(e -> seleccionarImagen());
-        panel.add(Box.createVerticalStrut(6));
-        panel.add(btnImagen);
-        panel.add(Box.createVerticalStrut(14));
+        panelCentral.add(btnImagen, gbc);
 
-        // Panel de estrellas (valoración inicial) centrado SIEMPRE
-        JPanel panelEstrellasWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
-        panelEstrellasWrapper.setOpaque(false);
-
+        // Valoración (estrellas)
+        gbc.gridy++;
         JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
         panelEstrellas.setOpaque(false);
         JLabel lblValoracion = new JLabel("Valoración inicial:");
@@ -130,56 +128,88 @@ public class AgregarRestaurante extends JFrame {
             estrellas[i].setForeground(new Color(241, 196, 15));
             final int estrellaIndex = i;
             estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            estrellas[i].addMouseListener(new java.awt.event.MouseAdapter() {
+            estrellas[i].addMouseListener(new MouseAdapter() {
                 @Override
-                public void mouseClicked(java.awt.event.MouseEvent e) {
+                public void mouseClicked(MouseEvent e) {
                     valoracionSeleccionada = estrellaIndex + 1;
                     actualizarEstrellas();
                 }
-
                 @Override
-                public void mouseEntered(java.awt.event.MouseEvent e) {
+                public void mouseEntered(MouseEvent e) {
                     resaltarEstrellas(estrellaIndex + 1);
                 }
-
                 @Override
-                public void mouseExited(java.awt.event.MouseEvent e) {
+                public void mouseExited(MouseEvent e) {
                     actualizarEstrellas();
                 }
             });
             panelEstrellas.add(estrellas[i]);
         }
-        panelEstrellasWrapper.add(panelEstrellas);
-        panel.add(panelEstrellasWrapper);
-        panel.add(Box.createVerticalStrut(18));
+        panelCentral.add(panelEstrellas, gbc);
 
-        // Panel de botones
+        panelPrincipal.add(panelCentral, BorderLayout.CENTER);
+
+        // Panel de botones abajo
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 0));
         panelBotones.setOpaque(false);
 
-        btnGuardar = UIUtils.crearBotonRedondeado("Guardar", new Color(46, 204, 113), 24);
+        btnGuardar = new JButton("Guardar");
         btnGuardar.setFont(new Font("Arial", Font.BOLD, 18));
         btnGuardar.setPreferredSize(new Dimension(170, 48));
-        btnGuardar.setFocusable(true);
-        btnGuardar.setEnabled(true);
+        btnGuardar.setBorder(BorderFactory.createLineBorder(new Color(46, 204, 113), 2, true));
+        setButtonEffects(btnGuardar, new Color(46, 204, 113), new Color(39, 174, 96), new Color(30, 132, 73));
         btnGuardar.addActionListener(e -> agregarRestaurante());
         panelBotones.add(btnGuardar);
 
-        btnCancelar = UIUtils.crearBotonRedondeado("Cancelar", new Color(231, 76, 60), 24);
+        btnCancelar = new JButton("Cancelar");
         btnCancelar.setFont(new Font("Arial", Font.BOLD, 18));
         btnCancelar.setPreferredSize(new Dimension(170, 48));
-        btnCancelar.setFocusable(true);
-        btnCancelar.setEnabled(true);
+        btnCancelar.setBorder(BorderFactory.createLineBorder(new Color(231, 76, 60), 2, true));
+        setButtonEffects(btnCancelar, new Color(231, 76, 60), new Color(192, 57, 43), new Color(155, 34, 38));
         btnCancelar.addActionListener(e -> dispose());
         panelBotones.add(btnCancelar);
 
-        panel.add(Box.createVerticalGlue());
-        panel.add(panelBotones);
-        panel.add(Box.createVerticalStrut(10));
+        panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
 
-        add(panel, BorderLayout.CENTER);
+        add(panelPrincipal, BorderLayout.CENTER);
 
         setVisible(true);
+    }
+
+    // Efectos visuales para los botones CRUD
+    private void setButtonEffects(JButton btn, Color normal, Color hover, Color pressed) {
+        btn.setBackground(normal);
+        btn.setForeground(Color.WHITE);
+        btn.setFocusPainted(false);
+        btn.setContentAreaFilled(true);
+        btn.setOpaque(true);
+
+        btn.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                btn.setBackground(hover);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                btn.setBackground(normal);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                btn.setBackground(pressed);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                Point p = e.getPoint();
+                if (p.x >= 0 && p.x < btn.getWidth() && p.y >= 0 && p.y < btn.getHeight()) {
+                    btn.setBackground(hover);
+                } else {
+                    btn.setBackground(normal);
+                }
+            }
+        });
     }
 
     private void seleccionarImagen() {
@@ -188,7 +218,7 @@ public class AgregarRestaurante extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             imagenPerfil = fileChooser.getSelectedFile();
             ImageIcon icon = new ImageIcon(imagenPerfil.getAbsolutePath());
-            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH)));
+            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(180, 120, Image.SCALE_SMOOTH)));
             lblImagen.setText("");
         }
     }

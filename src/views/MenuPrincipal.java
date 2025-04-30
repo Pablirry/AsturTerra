@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.util.List;
+import model.Mensaje;
 import model.Usuario;
 import services.TurismoService;
 import utils.I18n;
@@ -20,6 +22,9 @@ public class MenuPrincipal extends JFrame {
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
     private JLabel lblTitulo, lblImagenPerfil;
     private JButton btnTema;
+    private Timer timerNotificaciones;
+    private int ultimosMensajesRespondidos = 0;
+    private int respuestasPrevias = 0;
 
     private Usuario usuario;
 
@@ -31,7 +36,9 @@ public class MenuPrincipal extends JFrame {
         setSize(1100, 800); // Tamaño inicial más grande
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout()); // Cambiado para que el panelFondo ocupe todo
+        setLayout(new BorderLayout());
+        iniciarNotificacionesSoporte(usuario);
+        iniciarNotificacionesSoporteCliente(usuario);
 
         // Fondo con degradado
         panelFondo = new JPanel(null) {
@@ -160,10 +167,10 @@ public class MenuPrincipal extends JFrame {
 
         if (usuario.getTipo().equals("admin")) {
             JButton btnSoporte = UIUtils.crearBotonRedondeado(
-                "Soporte",
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185) : new Color(52, 152, 219),
-                18
-            );
+                    "Soporte",
+                    ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185)
+                            : new Color(52, 152, 219),
+                    18);
             btnSoporte.setBounds(20, 65, 130, 36);
             btnSoporte.setFont(new Font("Arial", Font.BOLD, 16));
             btnSoporte.setPreferredSize(new Dimension(130, 36));
@@ -216,7 +223,8 @@ public class MenuPrincipal extends JFrame {
         panel.setLayout(null);
         panel.setBounds(x, y, 250, 130);
         panel.setBackground(
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : new Color(236, 240, 241));
+                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(52, 73, 94)
+                        : new Color(236, 240, 241));
         panel.setBorder(new ThemeManager.RoundedBorder(ThemeManager.COLOR_SECUNDARIO, 2, 18));
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -298,6 +306,7 @@ public class MenuPrincipal extends JFrame {
         panelChat.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                abrirSoporte();
                 new VistaChat(usuario).setVisible(true);
                 dispose();
             }
@@ -356,5 +365,95 @@ public class MenuPrincipal extends JFrame {
         g2.drawImage(img, 0, 0, size, size, null);
         g2.dispose();
         lblImagenPerfil.setIcon(new ImageIcon(circleBuffer));
+    }
+
+    private void iniciarNotificacionesSoporte(Usuario usuario) {
+        timerNotificaciones = new Timer(10000, new ActionListener() { // cada 1 minuto
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    List<Mensaje> mensajes = TurismoService.getInstance().obtenerMensajesUsuario(usuario.getId());
+                    int respondidos = 0;
+                    for (Mensaje m : mensajes) {
+                        if (m.getRespuesta() != null && !m.getRespuesta().isEmpty()) {
+                            respondidos++;
+                        }
+                    }
+                    if (respondidos > ultimosMensajesRespondidos) {
+                        ultimosMensajesRespondidos = respondidos;
+                        mostrarPanelNotificacion("¡Tienes nuevas respuestas del soporte!");
+                    }
+                } catch (Exception ex) {
+                    // Puedes registrar el error o ignorar si es temporal
+                }
+            }
+        });
+        timerNotificaciones.start();
+    }
+
+    private void iniciarNotificacionesSoporteCliente(Usuario usuario) {
+        timerNotificaciones = new Timer(60000, e -> { // cada minuto
+            try {
+                List<Mensaje> mensajes = TurismoService.getInstance().obtenerMensajesUsuario(usuario.getId());
+                int respondidos = 0;
+                for (Mensaje m : mensajes) {
+                    if (m.getRespuesta() != null && !m.getRespuesta().isEmpty()) {
+                        respondidos++;
+                    }
+                }
+                // Solo muestra la notificación si hay más respuestas que las ya vistas
+                if (respondidos > respuestasPrevias) {
+                    mostrarPanelNotificacion("¡Tienes una nueva respuesta del soporte!");
+                }
+            } catch (Exception ex) {
+                // Manejo de error opcional
+            }
+        });
+        timerNotificaciones.start();
+    }
+    
+    // Panel personalizado de notificación (dentro de la ventana principal)
+    private void mostrarPanelNotificacion(String mensaje) {
+        JLayeredPane layeredPane = getLayeredPane();
+        JPanel panel = new JPanel();
+        panel.setBackground(new Color(52, 152, 219));
+        panel.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185), 2, true));
+        JLabel lbl = new JLabel(mensaje);
+        lbl.setForeground(Color.WHITE);
+        lbl.setFont(new Font("Arial", Font.BOLD, 16));
+        lbl.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
+        panel.add(lbl);
+    
+        panel.setSize(panel.getPreferredSize());
+        int x = getWidth() - panel.getWidth() - 30;
+        int y = getHeight() - panel.getHeight() - 50;
+        panel.setLocation(x, y);
+    
+        panel.setOpaque(true);
+        panel.setVisible(true);
+    
+        layeredPane.add(panel, JLayeredPane.POPUP_LAYER);
+    
+        Timer timer = new Timer(4000, evt -> {
+            layeredPane.remove(panel);
+            layeredPane.repaint();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    private void abrirSoporte() {
+        try {
+            List<Mensaje> mensajes = TurismoService.getInstance().obtenerMensajesUsuario(usuario.getId());
+            int respondidos = 0;
+            for (Mensaje m : mensajes) {
+                if (m.getRespuesta() != null && !m.getRespuesta().isEmpty()) {
+                    respondidos++;
+                }
+            }
+            respuestasPrevias = respondidos;
+        } catch (Exception ex) {
+            
+        }
     }
 }

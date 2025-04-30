@@ -2,6 +2,7 @@ package dao;
 
 import config.ConexionDB;
 import model.Mensaje;
+import utils.UIUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ public class MensajeDAO {
             ps.setTimestamp(4, new Timestamp(mensaje.getFecha().getTime()));
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Error enviarMensaje: " + e.getMessage());
+            UIUtils.mostrarError(null, "Error al enviar mensaje: " + e.getMessage());
             return false;
         }
     }

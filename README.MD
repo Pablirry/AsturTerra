@@ -12,21 +12,11 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ✅ Sistema de **Valoraciones** de rutas y restaurantes.  
 ✅ **Chat en tiempo real** entre usuarios y administradores.  
 ✅ Registro de **Historial de actividades** de los usuarios.  
-✅ **Exportación de datos** a **PDF y Excel**.  
+✅ **Exportación de datos** a **PDF y Excel**. --> Implementacion futura
 ✅ **Modo oscuro/claro** para la interfaz gráfica.  
 
 mejoras que hacer 
 
-5. Funcionalidad extra útil
-Búsqueda y filtrado avanzado en tablas de rutas, restaurantes y reservas (por nombre, precio, dificultad, valoración, etc.).
-Ordenar columnas en las tablas haciendo clic en el encabezado.
-Exportar datos (rutas, reservas, historial) a PDF o Excel.
-Notificaciones: muestra avisos cuando haya nuevas respuestas del soporte o cambios importantes.
-Historial de cambios: permite ver qué acciones ha realizado cada usuario (ya tienes historial, pero puedes mostrarlo de forma más visual).
-6. Robustez y control de errores
-Manejo de excepciones: muestra mensajes claros y registra los errores para depuración.
-Evita bloqueos de la interfaz: usa hilos (SwingWorker) para operaciones largas (carga de imágenes, consultas grandes).
-Comprueba la conexión a la base de datos y muestra un mensaje si hay problemas.
 7. Accesibilidad y diseño
 Soporte para teclado: permite navegar y operar la app solo con teclado.
 Contraste de colores: asegúrate de que los textos sean legibles en todos los modos.

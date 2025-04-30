@@ -104,6 +104,7 @@ public class Registro extends JFrame {
         btnRegistrar.setBounds(50, 280, 300, 40);
         btnRegistrar.setBackground(new Color(46, 204, 113));
         btnRegistrar.setForeground(Color.WHITE);
+        getRootPane().setDefaultButton(btnRegistrar);
         btnRegistrar.addActionListener(this::registrarUsuario);
         panelCampos.add(btnRegistrar);
 

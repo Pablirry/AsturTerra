@@ -154,6 +154,7 @@ public class VistaValoraciones extends JFrame {
         btnEnviar = new JButton(I18n.t("boton.enviar"));
         btnEnviar.setBackground(new Color(46, 204, 113));
         btnEnviar.setForeground(Color.WHITE);
+        getRootPane().setDefaultButton(btnEnviar);
         btnEnviar.setFont(new Font("Arial", Font.BOLD, 14));
         panelBotones.add(btnEnviar);
 

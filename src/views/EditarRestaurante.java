@@ -20,15 +20,15 @@ public class EditarRestaurante extends JDialog {
     public EditarRestaurante(Restaurante restaurante) {
         super((Frame) null, "Editar Restaurante", true);
         this.restauranteOriginal = restaurante;
-        setSize(480, 540);
+        setSize(560, 650);
         setLocationRelativeTo(null);
         setResizable(false);
 
         // Tema y colores
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
-        Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(250, 252, 255);
+        Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
         Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
-        Color borderColor = theme == ThemeManager.Theme.DARK ? new Color(52, 152, 219) : new Color(44, 62, 80);
+        Color borderColor = new Color(52, 152, 219);
 
         JPanel panel = new JPanel() {
             @Override
@@ -37,67 +37,67 @@ public class EditarRestaurante extends JDialog {
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(bgPanel);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 32, 32);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
                 g2.dispose();
             }
         };
         panel.setOpaque(false);
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setBorder(BorderFactory.createEmptyBorder(25, 35, 25, 35));
+        panel.setBorder(BorderFactory.createEmptyBorder(32, 48, 32, 48));
 
         // Título
         JLabel lblTitulo = new JLabel("Editar Restaurante");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 24));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 30));
         lblTitulo.setForeground(fgPanel);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panel.add(lblTitulo);
-        panel.add(Box.createVerticalStrut(20));
+        panel.add(Box.createVerticalStrut(24));
 
         // Panel de campos
         JPanel panelCampos = new JPanel(new GridBagLayout());
         panelCampos.setOpaque(false);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.insets = new Insets(12, 10, 12, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.gridx = 0;
         gbc.gridy = 0;
 
         // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblNombre.setFont(new Font("Arial", Font.PLAIN, 17));
         lblNombre.setForeground(fgPanel);
         panelCampos.add(lblNombre, gbc);
 
         gbc.gridx = 1;
         txtNombre = new JTextField(restaurante.getNombre());
-        txtNombre.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         txtNombre.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         txtNombre.setForeground(fgPanel);
         txtNombre.setCaretColor(fgPanel);
         txtNombre.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor, 1, true),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtNombre.setPreferredSize(new Dimension(220, 36));
+                BorderFactory.createEmptyBorder(10, 14, 10, 14)));
+        txtNombre.setPreferredSize(new Dimension(240, 38));
         panelCampos.add(txtNombre, gbc);
 
         // Ubicación
         gbc.gridx = 0;
         gbc.gridy++;
         JLabel lblUbicacion = new JLabel("Ubicación:");
-        lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
+        lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 17));
         lblUbicacion.setForeground(fgPanel);
         panelCampos.add(lblUbicacion, gbc);
 
         gbc.gridx = 1;
         txtUbicacion = new JTextField(restaurante.getUbicacion());
-        txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
         txtUbicacion.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         txtUbicacion.setForeground(fgPanel);
         txtUbicacion.setCaretColor(fgPanel);
         txtUbicacion.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor, 1, true),
-                BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtUbicacion.setPreferredSize(new Dimension(220, 36));
+                BorderFactory.createEmptyBorder(10, 14, 10, 14)));
+        txtUbicacion.setPreferredSize(new Dimension(240, 38));
         panelCampos.add(txtUbicacion, gbc);
 
         // Imagen
@@ -106,65 +106,68 @@ public class EditarRestaurante extends JDialog {
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(120, 120));
-        lblImagen.setFont(new Font("Arial", Font.ITALIC, 14));
+        lblImagen.setPreferredSize(new Dimension(200, 140));
+        lblImagen.setFont(new Font("Arial", Font.ITALIC, 15));
         lblImagen.setForeground(theme == ThemeManager.Theme.DARK ? new Color(120, 120, 120) : new Color(160, 160, 160));
         lblImagen.setBorder(BorderFactory.createLineBorder(borderColor, 1, true));
         lblImagen.setOpaque(true);
         lblImagen.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         if (restaurante.getImagen() != null) {
             ImageIcon icon = new ImageIcon(restaurante.getImagen());
-            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH)));
+            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(200, 140, Image.SCALE_SMOOTH)));
             lblImagen.setText("");
         }
         panelCampos.add(lblImagen, gbc);
 
         // Botón cambiar imagen
         gbc.gridy++;
-        btnImagen = new JButton("Cambiar Imagen");
-        ThemeManager.setComponentTheme(btnImagen, theme);
-        btnImagen.setFont(new Font("Arial", Font.BOLD, 14));
+        btnImagen = new JButton("Seleccionar Imagen");
+        btnImagen.setFont(new Font("Arial", Font.BOLD, 16));
+        btnImagen.setPreferredSize(new Dimension(240, 48));
+        btnImagen.setBorder(BorderFactory.createLineBorder(new Color(52, 152, 219), 2, true));
         setButtonEffects(btnImagen, new Color(52, 152, 219), new Color(41, 128, 185), new Color(31, 97, 141));
         btnImagen.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
                 imagenRestaurante = fc.getSelectedFile();
                 ImageIcon icon = new ImageIcon(imagenRestaurante.getAbsolutePath());
-                lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH)));
+                lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(200, 140, Image.SCALE_SMOOTH)));
                 lblImagen.setText("");
             }
         });
         panelCampos.add(btnImagen, gbc);
 
         panel.add(panelCampos);
-        panel.add(Box.createVerticalStrut(18));
+        panel.add(Box.createVerticalStrut(10)); // <-- Reduce el espacio vertical aquí
 
         // Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 0));
-        Color panelBotonesBg = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
-                ? new Color(44, 62, 80)
-                : new Color(220, 230, 241);
-        panelBotones.setBackground(panelBotonesBg);
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 32, 0));
         panelBotones.setOpaque(false);
 
         btnGuardar = new JButton("Guardar");
-        ThemeManager.setComponentTheme(btnGuardar, theme);
-        btnGuardar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnGuardar.setPreferredSize(new Dimension(170, 48));
+        btnGuardar.setFont(new Font("Arial", Font.BOLD, 19));
+        btnGuardar.setPreferredSize(new Dimension(180, 52));
+        btnGuardar.setBorder(BorderFactory.createLineBorder(new Color(46, 204, 113), 2, true));
         setButtonEffects(btnGuardar, new Color(46, 204, 113), new Color(39, 174, 96), new Color(30, 132, 73));
         btnGuardar.addActionListener(e -> guardarCambios());
         panelBotones.add(btnGuardar);
 
         btnCancelar = new JButton("Cancelar");
-        ThemeManager.setComponentTheme(btnCancelar, theme);
-        btnCancelar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnCancelar.setPreferredSize(new Dimension(170, 48));
+        btnCancelar.setFont(new Font("Arial", Font.BOLD, 19));
+        btnCancelar.setPreferredSize(new Dimension(180, 52));
+        btnCancelar.setBorder(BorderFactory.createLineBorder(new Color(231, 76, 60), 2, true));
         setButtonEffects(btnCancelar, new Color(231, 76, 60), new Color(192, 57, 43), new Color(155, 34, 38));
         btnCancelar.addActionListener(e -> dispose());
         panelBotones.add(btnCancelar);
 
+        // Añade el panel de botones con un margen inferior para separarlo del borde
+        JPanel wrapperBotones = new JPanel(new BorderLayout());
+        wrapperBotones.setOpaque(false);
+        wrapperBotones.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0)); // margen inferior
+        wrapperBotones.add(panelBotones, BorderLayout.CENTER);
+
         add(panel, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        add(wrapperBotones, BorderLayout.SOUTH);
     }
 
     // Efectos visuales para los botones CRUD

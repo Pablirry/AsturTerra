@@ -10,6 +10,7 @@ import java.util.List;
 
 import config.ConexionDB;
 import model.Historial;
+import utils.UIUtils;
 
 public class HistorialDAO {
 
@@ -22,7 +23,7 @@ public class HistorialDAO {
             ps.setTimestamp(3, new Timestamp(historial.getFecha().getTime()));
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Error registrarActividad: " + e.getMessage());
+            UIUtils.mostrarError(null, "Error al registrar actividad: " + e.getMessage());
             return false;
         }
     }
@@ -42,7 +43,9 @@ public class HistorialDAO {
                         rs.getTimestamp("fecha")));
             }
         } catch (SQLException e) {
-            System.err.println("Error obtenerHistorialUsuario: " + e.getMessage());
+            UIUtils.mostrarError(null, "Error al obtener historial: " + e.getMessage());
+        } catch (ClassNotFoundException e) {
+            UIUtils.mostrarError(null, "Error de conexión a la base de datos: " + e.getMessage());
         }
         return historial;
     }

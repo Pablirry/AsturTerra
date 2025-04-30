@@ -170,35 +170,45 @@ public class VistaRestaurantes extends JFrame {
     }
 
     private void cargarRestaurantes() {
-
+        
         int selectedRow = tablaRestaurantes.getSelectedRow();
         Object selectedId = selectedRow != -1 ? modeloTabla.getValueAt(selectedRow, 0) : null;
         modeloTabla.setRowCount(0);
-        try {
-            List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
-            for (Restaurante r : restaurantes) {
-                double media = TurismoService.getInstance().obtenerValoracionMediaRestaurante(r.getId());
-                modeloTabla.addRow(new Object[] {
+    new SwingWorker<List<Restaurante>, Void>() {
+        @Override
+        protected List<Restaurante> doInBackground() throws Exception {
+            return TurismoService.getInstance().obtenerRestaurantes();
+        }
+        @Override
+        protected void done() {
+            try {
+                List<Restaurante> restaurantes = get();
+                for (Restaurante r : restaurantes) {
+                    double media = TurismoService.getInstance().obtenerValoracionMediaRestaurante(r.getId());
+                    modeloTabla.addRow(new Object[] {
                         r.getId(), r.getNombre(), r.getUbicacion(), String.format("%.1f", media)
-                });
-            }
-            if (selectedId != null) {
-                for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-                    if (modeloTabla.getValueAt(i, 0).equals(selectedId)) {
-                        tablaRestaurantes.setRowSelectionInterval(i, i);
-                        break;
+                    });
+                }
+                if (selectedId != null) {
+                    for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+                        if (modeloTabla.getValueAt(i, 0).equals(selectedId)) {
+                            tablaRestaurantes.setRowSelectionInterval(i, i);
+                            break;
+                        }
                     }
                 }
+            } catch (Exception ex) {
+                UIUtils.mostrarError(VistaRestaurantes.this, "Error al cargar restaurantes: " + ex.getMessage());
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error al cargar restaurantes: " + ex.getMessage());
         }
+    }.execute();
     }
 
     private void eliminarRestaurante() {
         int fila = tablaRestaurantes.getSelectedRow();
         if (fila == -1) {
-            JOptionPane.showMessageDialog(this, "Selecciona un restaurante para eliminar.");
+            UIUtils.mostrarInfo(this, "Selecciona un restaurante para eliminar.");
             return;
         }
         int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres eliminar este restaurante?",
@@ -345,10 +355,10 @@ public class VistaRestaurantes extends JFrame {
             // Botón más cerca de la información en oscuro, y ventana más pequeña
             if (dark) {
                 dialog.add(panelBoton, BorderLayout.SOUTH);
-                dialog.setSize(340, 370); // Más pequeño en oscuro
+                dialog.setSize(340, 370);
             } else {
                 dialog.add(panelBoton, BorderLayout.SOUTH);
-                dialog.setSize(380, 420); // Tamaño original en claro
+                dialog.setSize(380, 420);
             }
 
             btnOk.addActionListener(e -> dialog.dispose());
