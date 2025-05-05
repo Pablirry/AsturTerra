@@ -119,6 +119,7 @@ public class Registro extends JFrame {
         // Espaciador para centrar
         panelAdmin.add(Box.createHorizontalGlue());
 
+        // Cambia el color del texto del checkbox de administrador a oscuro
         chkAdmin = new JCheckBox("Administrador");
         chkAdmin.setOpaque(false);
         chkAdmin.setForeground(Color.WHITE);
@@ -164,8 +165,6 @@ public class Registro extends JFrame {
         btnRegistrar.addActionListener(this::registrarUsuario);
         panelCentral.add(btnRegistrar);
 
-        // Texto pequeño con "¿Ya tienes cuenta? Inicia sesión" (solo "Inicia sesión" es
-        // clicable)
         JPanel panelLogin = new JPanel();
         panelLogin.setOpaque(false);
         panelLogin.setLayout(new BoxLayout(panelLogin, BoxLayout.X_AXIS));
@@ -174,10 +173,8 @@ public class Registro extends JFrame {
         JLabel lblYaCuenta = new JLabel("¿Ya tienes cuenta? ");
         lblYaCuenta.setFont(new Font("Arial", Font.PLAIN, 14));
         lblYaCuenta.setForeground(Color.WHITE);
-
         JLabel lblLogin = new JLabel("<html><u>Inicia sesión</u></html>");
         lblLogin.setFont(new Font("Arial", Font.PLAIN, 14));
-        // Usa un azul claro para destacar sobre fondo oscuro o imagen
         lblLogin.setForeground(new Color(102, 204, 255));
         lblLogin.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         lblLogin.addMouseListener(new MouseAdapter() {

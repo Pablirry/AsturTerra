@@ -27,8 +27,6 @@ public class MenuPrincipal extends JFrame {
     private int ultimosMensajesRespondidos = 0;
     private int respuestasPrevias = 0;
 
-    
-
     private Usuario usuario;
 
     public MenuPrincipal(Usuario usuario) {
@@ -76,20 +74,16 @@ public class MenuPrincipal extends JFrame {
         btnTema.setForeground(Color.WHITE);
         btnTema.setBackground(colorFijoBtnTema);
         btnTema.setText(dark ? I18n.t("boton.modo.claro") : I18n.t("boton.modo.oscuro"));
-        // Elimina cualquier MouseListener anterior
         for (MouseListener ml : btnTema.getMouseListeners())
             btnTema.removeMouseListener(ml);
-        // MouseListener que NO cambia el color en modo oscuro
         btnTema.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                // No cambiar color en ningún modo
                 btnTema.setBackground(btnTema.getBackground());
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                // No cambiar color en ningún modo
                 btnTema.setBackground(btnTema.getBackground());
             }
         });
@@ -114,6 +108,32 @@ public class MenuPrincipal extends JFrame {
         lblTitulo.setForeground(dark ? Color.WHITE : new Color(44, 62, 80));
         lblTitulo.setBounds(150, 30, 400, 40);
         panelFondo.add(lblTitulo);
+
+        // Imagen decorativa de fondo (por ejemplo, en la esquina inferior derecha)
+        JLabel lblDecorativo = new JLabel();
+        lblDecorativo.setOpaque(false);
+        ImageIcon iconDecorativo = new ImageIcon("assets/LogoAsturTerra.png"); // Usa tu logo o imagen decorativa
+        // Escalado responsivo según tamaño de ventana
+        int anchoImg = Math.max(120, getWidth() / 6);
+        int altoImg = anchoImg;
+        Image imgEscalada = iconDecorativo.getImage().getScaledInstance(anchoImg, altoImg, Image.SCALE_SMOOTH);
+        lblDecorativo.setIcon(new ImageIcon(imgEscalada));
+        // Posición absoluta en la esquina inferior derecha
+        lblDecorativo.setBounds(getWidth() - anchoImg - 30, getHeight() - altoImg - 80, anchoImg, altoImg);
+        lblDecorativo.setVisible(true);
+        panelFondo.add(lblDecorativo);
+
+        // Actualiza la posición y tamaño de la imagen al redimensionar la ventana
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int anchoImg = Math.max(120, getWidth() / 6);
+                int altoImg = anchoImg;
+                Image imgEscalada = iconDecorativo.getImage().getScaledInstance(anchoImg, altoImg, Image.SCALE_SMOOTH);
+                lblDecorativo.setIcon(new ImageIcon(imgEscalada));
+                lblDecorativo.setBounds(getWidth() - anchoImg - 30, getHeight() - altoImg - 80, anchoImg, altoImg);
+            }
+        });
 
         // Imagen de perfil
         lblImagenPerfil = new JLabel();

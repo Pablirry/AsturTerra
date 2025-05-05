@@ -73,7 +73,7 @@ public class Login extends JFrame {
             public void focusGained(FocusEvent e) {
                 if (txtCorreo.getText().equals("Correo electrónico")) {
                     txtCorreo.setText("");
-                    txtCorreo.setForeground(placeHolderColor);
+                    txtCorreo.setForeground(Color.BLACK);
                 }
             }
 
@@ -105,7 +105,7 @@ public class Login extends JFrame {
                 String pwd = new String(txtContraseña.getPassword());
                 if (pwd.equals("Contraseña")) {
                     txtContraseña.setText("");
-                    txtContraseña.setForeground(placeHolderColor);
+                    txtContraseña.setForeground(Color.BLACK);
                     txtContraseña.setEchoChar('•');
                 }
             }
