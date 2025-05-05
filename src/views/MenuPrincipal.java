@@ -21,19 +21,22 @@ public class MenuPrincipal extends JFrame {
     private JPanel panelFondo;
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
     private JLabel lblTitulo, lblImagenPerfil;
-    private JButton btnTema;
+    private JLabel lblRutas, lblReservas, lblRestaurantes, lblHistorial, lblChat;
+    private JButton btnTema, btnSoporte;
     private Timer timerNotificaciones;
     private int ultimosMensajesRespondidos = 0;
     private int respuestasPrevias = 0;
+
+    
 
     private Usuario usuario;
 
     public MenuPrincipal(Usuario usuario) {
         this.usuario = usuario;
 
-        setTitle("Menú Principal - AsturTerra");
-        setMinimumSize(new Dimension(900, 700)); // Ampliado
-        setSize(1100, 800); // Tamaño inicial más grande
+        setTitle(I18n.t("titulo.menu.principal") + " - " + I18n.t("app.nombre"));
+        setMinimumSize(new Dimension(900, 700));
+        setSize(1100, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -58,32 +61,57 @@ public class MenuPrincipal extends JFrame {
         };
         panelFondo.setLayout(null);
 
+        boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
+        Color colorBotonFondo = dark ? new Color(44, 62, 80) : new Color(52, 152, 219);
+
+        final Color colorFijoBtnTema = colorBotonFondo;
+
         btnTema = UIUtils.crearBotonRedondeado(
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? "Modo Claro" : "Modo Oscuro",
-                ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185)
-                        : new Color(52, 152, 219),
+                dark ? I18n.t("boton.modo.claro") : I18n.t("boton.modo.oscuro"),
+                colorBotonFondo,
                 18);
         btnTema.setBounds(20, 20, 130, 36);
         btnTema.setFont(new Font("Arial", Font.BOLD, 16));
         btnTema.setPreferredSize(new Dimension(130, 36));
-        btnTema.addActionListener(e -> {
-            if (ThemeManager.getCurrentTheme() == ThemeManager.Theme.LIGHT) {
-                ThemeManager.setTheme(ThemeManager.Theme.DARK, this);
-                btnTema.setText("Modo Claro");
-                btnTema.setBackground(new Color(41, 128, 185));
-            } else {
-                ThemeManager.setTheme(ThemeManager.Theme.LIGHT, this);
-                btnTema.setText("Modo Oscuro");
-                btnTema.setBackground(new Color(52, 152, 219));
+        btnTema.setForeground(Color.WHITE);
+        btnTema.setBackground(colorFijoBtnTema);
+        btnTema.setText(dark ? I18n.t("boton.modo.claro") : I18n.t("boton.modo.oscuro"));
+        // Elimina cualquier MouseListener anterior
+        for (MouseListener ml : btnTema.getMouseListeners())
+            btnTema.removeMouseListener(ml);
+        // MouseListener que NO cambia el color en modo oscuro
+        btnTema.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                // No cambiar color en ningún modo
+                btnTema.setBackground(btnTema.getBackground());
             }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                // No cambiar color en ningún modo
+                btnTema.setBackground(btnTema.getBackground());
+            }
+        });
+        btnTema.addActionListener(e -> {
+            boolean esClaro = ThemeManager.getCurrentTheme() == ThemeManager.Theme.LIGHT;
+            ThemeManager.setTheme(esClaro ? ThemeManager.Theme.DARK : ThemeManager.Theme.LIGHT, this);
+            boolean darkNow = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
+            Color nuevoColor = darkNow ? new Color(44, 62, 80) : new Color(52, 152, 219);
+            btnTema.setText(darkNow ? I18n.t("boton.modo.claro") : I18n.t("boton.modo.oscuro"));
+            btnTema.setBackground(nuevoColor);
+            if (btnSoporte != null)
+                btnSoporte.setBackground(nuevoColor);
+            panelFondo.setBackground(nuevoColor);
+            lblTitulo.setForeground(darkNow ? Color.WHITE : new Color(44, 62, 80));
             panelFondo.repaint();
         });
         panelFondo.add(btnTema);
 
         // Título
-        lblTitulo = new JLabel("AsturTerra", SwingConstants.CENTER);
+        lblTitulo = new JLabel(I18n.t("app.nombre"), SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
-        lblTitulo.setForeground(Color.WHITE);
+        lblTitulo.setForeground(dark ? Color.WHITE : new Color(44, 62, 80));
         lblTitulo.setBounds(150, 30, 400, 40);
         panelFondo.add(lblTitulo);
 
@@ -97,18 +125,19 @@ public class MenuPrincipal extends JFrame {
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
 
-        JMenu menuIdioma = new JMenu("Idioma");
-        JMenuItem itemEsp = new JMenuItem("Español");
-        JMenuItem itemEng = new JMenuItem("English");
+        JMenu menuIdioma = new JMenu(I18n.t("menu.idioma"));
+        JMenuItem itemEsp = new JMenuItem(I18n.t("menu.idioma.es"));
+        JMenuItem itemEng = new JMenuItem(I18n.t("menu.idioma.en"));
 
         itemEsp.addActionListener(e -> {
             I18n.setLocale(new java.util.Locale("es"));
+            recargarTextos();
             JOptionPane.showMessageDialog(this, "Idioma cambiado a Español");
         });
 
-        // Acción para cambiar a inglés
         itemEng.addActionListener(e -> {
             I18n.setLocale(new java.util.Locale("en"));
+            recargarTextos();
             JOptionPane.showMessageDialog(this, "Language changed to English");
         });
 
@@ -117,8 +146,8 @@ public class MenuPrincipal extends JFrame {
         menuBar.add(menuIdioma);
 
         JPopupMenu menuPerfil = new JPopupMenu();
-        JMenuItem itemPerfil = new JMenuItem("Ver Perfil");
-        JMenuItem itemCerrarSesion = new JMenuItem("Cerrar Sesión");
+        JMenuItem itemPerfil = new JMenuItem(I18n.t("menu.perfil"));
+        JMenuItem itemCerrarSesion = new JMenuItem(I18n.t("menu.cerrar.sesion"));
         menuPerfil.add(itemPerfil);
         menuPerfil.add(itemCerrarSesion);
 
@@ -152,12 +181,21 @@ public class MenuPrincipal extends JFrame {
             }
         });
 
-        // Paneles de menú: posiciones iniciales, pero se ajustarán con el listener
-        panelRutas = crearPanel(0, 0, "Rutas", "assets/rutas.png");
-        panelReservas = crearPanel(0, 0, "Reservas", "assets/reserva.png");
-        panelRestaurantes = crearPanel(0, 0, "Restaurantes", "assets/restaurante.png");
-        panelHistorial = crearPanel(0, 0, "Historial", "assets/historial.png");
-        panelChat = crearPanel(0, 0, "Soporte", "assets/chat.png");
+        // Paneles de menú y labels internos
+        panelRutas = crearPanel(0, 0, I18n.t("titulo.rutas"), "assets/rutas.png");
+        lblRutas = getPanelLabel(panelRutas);
+
+        panelReservas = crearPanel(0, 0, I18n.t("titulo.reservas"), "assets/reserva.png");
+        lblReservas = getPanelLabel(panelReservas);
+
+        panelRestaurantes = crearPanel(0, 0, I18n.t("titulo.restaurantes"), "assets/restaurante.png");
+        lblRestaurantes = getPanelLabel(panelRestaurantes);
+
+        panelHistorial = crearPanel(0, 0, I18n.t("titulo.historial"), "assets/historial.png");
+        lblHistorial = getPanelLabel(panelHistorial);
+
+        panelChat = crearPanel(0, 0, I18n.t("boton.soporte"), "assets/chat.png");
+        lblChat = getPanelLabel(panelChat);
 
         panelFondo.add(panelRutas);
         panelFondo.add(panelReservas);
@@ -165,25 +203,41 @@ public class MenuPrincipal extends JFrame {
         panelFondo.add(panelHistorial);
         panelFondo.add(panelChat);
 
-        if (usuario.getTipo().equals("admin")) {
-            JButton btnSoporte = UIUtils.crearBotonRedondeado(
-                    "Soporte",
-                    ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK ? new Color(41, 128, 185)
-                            : new Color(52, 152, 219),
+        // Botón Soporte (solo admin)
+        if (usuario.getTipo().equalsIgnoreCase("admin")) {
+            btnSoporte = UIUtils.crearBotonRedondeado(
+                    I18n.t("boton.soporte"),
+                    colorBotonFondo,
                     18);
             btnSoporte.setBounds(20, 65, 130, 36);
             btnSoporte.setFont(new Font("Arial", Font.BOLD, 16));
-            btnSoporte.setPreferredSize(new Dimension(130, 36));
+            btnSoporte.setForeground(Color.WHITE);
+            btnSoporte.setBackground(colorFijoBtnTema);
+            btnSoporte.setText(I18n.t("boton.soporte"));
+            for (MouseListener ml : btnSoporte.getMouseListeners())
+                btnSoporte.removeMouseListener(ml);
+            // MouseListener que NO cambia el color en ningún modo
+            btnSoporte.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    btnSoporte.setBackground(btnSoporte.getBackground());
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    btnSoporte.setBackground(btnSoporte.getBackground());
+                }
+            });
             btnSoporte.addActionListener(e -> new VistaSoporteAdmin().setVisible(true));
             panelFondo.add(btnSoporte);
         }
+
         agregarEventos();
 
-        getContentPane().add(panelFondo, BorderLayout.CENTER); // Cambiado para que panelFondo ocupe todo
+        getContentPane().add(panelFondo, BorderLayout.CENTER);
         setVisible(true);
         ThemeManager.setTheme(ThemeManager.getCurrentTheme(), this);
 
-        // Responsive: ajustar paneles al tamaño de la ventana
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -191,6 +245,28 @@ public class MenuPrincipal extends JFrame {
             }
         });
         ajustarComponentes();
+    }
+
+    // Recarga los textos de la interfaz tras cambiar el idioma
+    private void recargarTextos() {
+        setTitle(I18n.t("titulo.menu.principal") + " - " + I18n.t("app.nombre"));
+        btnTema.setText(ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
+                ? I18n.t("boton.modo.claro")
+                : I18n.t("boton.modo.oscuro"));
+        if (btnSoporte != null)
+            btnSoporte.setText(I18n.t("boton.soporte"));
+        lblTitulo.setText(I18n.t("app.nombre"));
+        if (lblRutas != null)
+            lblRutas.setText(I18n.t("titulo.rutas"));
+        if (lblReservas != null)
+            lblReservas.setText(I18n.t("titulo.reservas"));
+        if (lblRestaurantes != null)
+            lblRestaurantes.setText(I18n.t("titulo.restaurantes"));
+        if (lblHistorial != null)
+            lblHistorial.setText(I18n.t("titulo.historial"));
+        if (lblChat != null)
+            lblChat.setText(I18n.t("boton.soporte"));
+        repaint();
     }
 
     public static MenuPrincipal getInstance(Usuario usuario) {
@@ -210,10 +286,8 @@ public class MenuPrincipal extends JFrame {
                 super.paintComponent(g);
                 Graphics2D g2 = (Graphics2D) g.create();
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                // Sombra
                 g2.setColor(new Color(0, 0, 0, 30));
                 g2.fillRoundRect(4, 4, getWidth() - 8, getHeight() - 8, 36, 36);
-                // Fondo
                 g2.setColor(getBackground());
                 g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 36, 36);
                 g2.dispose();
@@ -229,9 +303,7 @@ public class MenuPrincipal extends JFrame {
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         ImageIcon icon = new ImageIcon(rutaImagen);
-        if (icon.getIconWidth() == -1) {
-            System.err.println("No se pudo cargar la imagen: " + rutaImagen);
-        } else {
+        if (icon.getIconWidth() != -1) {
             JLabel lblImagen = new JLabel(icon);
             lblImagen.setBounds(80, 10, 100, 50);
             panel.add(lblImagen);
@@ -268,6 +340,16 @@ public class MenuPrincipal extends JFrame {
         });
 
         return panel;
+    }
+
+    // Devuelve el JLabel de texto principal de un panel
+    private JLabel getPanelLabel(JPanel panel) {
+        for (Component c : panel.getComponents()) {
+            if (c instanceof JLabel && ((JLabel) c).getFont().getSize() == 18) {
+                return (JLabel) c;
+            }
+        }
+        return null;
     }
 
     private void agregarEventos() {
@@ -313,7 +395,6 @@ public class MenuPrincipal extends JFrame {
         });
     }
 
-    // Ajusta los paneles de menú para que sean responsive y estén más abajo
     private void ajustarComponentes() {
         int w = panelFondo.getWidth();
         int h = panelFondo.getHeight();
@@ -322,20 +403,16 @@ public class MenuPrincipal extends JFrame {
         int panelHeight = 140;
         int sepX = (w - 2 * panelWidth) / 3;
         int sepY = 40;
-        int top = h / 5; // Más abajo
+        int top = h / 5;
 
-        // Primera fila
         panelRutas.setBounds(sepX, top, panelWidth, panelHeight);
         panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
 
-        // Segunda fila
         panelRestaurantes.setBounds(sepX, top + panelHeight + sepY, panelWidth, panelHeight);
         panelHistorial.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
 
-        // Soporte centrado abajo
         panelChat.setBounds(w / 2 - panelWidth / 2, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
-        // Recoloca título e imagen perfil si es necesario
         lblTitulo.setBounds(w / 2 - 200, 30, 400, 40);
         lblImagenPerfil.setBounds(w - 100, 10, 80, 80);
     }
@@ -357,7 +434,6 @@ public class MenuPrincipal extends JFrame {
                     lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
         }
 
-        // Convertir la imagen a circular
         int size = Math.min(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight());
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = circleBuffer.createGraphics();
@@ -368,7 +444,7 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void iniciarNotificacionesSoporte(Usuario usuario) {
-        timerNotificaciones = new Timer(10000, new ActionListener() { // cada 1 minuto
+        timerNotificaciones = new Timer(10000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -381,7 +457,7 @@ public class MenuPrincipal extends JFrame {
                     }
                     if (respondidos > ultimosMensajesRespondidos) {
                         ultimosMensajesRespondidos = respondidos;
-                        mostrarPanelNotificacion("¡Tienes nuevas respuestas del soporte!");
+                        mostrarPanelNotificacion(I18n.t("notificacion.nueva.respuesta"));
                     }
                 } catch (Exception ex) {
                     // Puedes registrar el error o ignorar si es temporal
@@ -392,7 +468,7 @@ public class MenuPrincipal extends JFrame {
     }
 
     private void iniciarNotificacionesSoporteCliente(Usuario usuario) {
-        timerNotificaciones = new Timer(60000, e -> { // cada minuto
+        timerNotificaciones = new Timer(60000, e -> {
             try {
                 List<Mensaje> mensajes = TurismoService.getInstance().obtenerMensajesUsuario(usuario.getId());
                 int respondidos = 0;
@@ -401,9 +477,8 @@ public class MenuPrincipal extends JFrame {
                         respondidos++;
                     }
                 }
-                // Solo muestra la notificación si hay más respuestas que las ya vistas
                 if (respondidos > respuestasPrevias) {
-                    mostrarPanelNotificacion("¡Tienes una nueva respuesta del soporte!");
+                    mostrarPanelNotificacion(I18n.t("notificacion.nueva.respuesta"));
                 }
             } catch (Exception ex) {
                 // Manejo de error opcional
@@ -411,8 +486,7 @@ public class MenuPrincipal extends JFrame {
         });
         timerNotificaciones.start();
     }
-    
-    // Panel personalizado de notificación (dentro de la ventana principal)
+
     private void mostrarPanelNotificacion(String mensaje) {
         JLayeredPane layeredPane = getLayeredPane();
         JPanel panel = new JPanel();
@@ -423,17 +497,17 @@ public class MenuPrincipal extends JFrame {
         lbl.setFont(new Font("Arial", Font.BOLD, 16));
         lbl.setBorder(BorderFactory.createEmptyBorder(12, 24, 12, 24));
         panel.add(lbl);
-    
+
         panel.setSize(panel.getPreferredSize());
         int x = getWidth() - panel.getWidth() - 30;
         int y = getHeight() - panel.getHeight() - 50;
         panel.setLocation(x, y);
-    
+
         panel.setOpaque(true);
         panel.setVisible(true);
-    
+
         layeredPane.add(panel, JLayeredPane.POPUP_LAYER);
-    
+
         Timer timer = new Timer(4000, evt -> {
             layeredPane.remove(panel);
             layeredPane.repaint();
@@ -453,7 +527,7 @@ public class MenuPrincipal extends JFrame {
             }
             respuestasPrevias = respondidos;
         } catch (Exception ex) {
-            
+            // Manejo de error opcional
         }
     }
 }
