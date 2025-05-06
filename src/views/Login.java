@@ -7,6 +7,7 @@ import model.Usuario;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.util.prefs.Preferences;
 
 public class Login extends JFrame {
 
@@ -18,6 +19,8 @@ public class Login extends JFrame {
     private JLabel lblLogo;
     private UsuarioDAO usuarioDAO;
     public static Usuario usuarioActual;
+    private JCheckBox chkMostrarContrasena;
+    private JCheckBox chkRecordar;
 
     public Login() {
         setTitle("Inicio de Sesión");
@@ -122,6 +125,30 @@ public class Login extends JFrame {
         });
         panelCentral.add(txtContraseña);
 
+        // Mostrar/ocultar contraseña
+        chkMostrarContrasena = new JCheckBox("Mostrar contraseña");
+        chkMostrarContrasena.setOpaque(false);
+        chkMostrarContrasena.setForeground(Color.WHITE);
+        chkMostrarContrasena.setAlignmentX(Component.CENTER_ALIGNMENT);
+        chkMostrarContrasena.addActionListener(e -> {
+            String pwd = new String(txtContraseña.getPassword());
+            if (chkMostrarContrasena.isSelected()) {
+                txtContraseña.setEchoChar((char) 0);
+            } else {
+                if (!pwd.equals("Contraseña")) {
+                    txtContraseña.setEchoChar('•');
+                }
+            }
+        });
+        panelCentral.add(chkMostrarContrasena);
+
+        // Recordar credenciales
+        chkRecordar = new JCheckBox("Recordar credenciales");
+        chkRecordar.setOpaque(false);
+        chkRecordar.setForeground(Color.WHITE);
+        chkRecordar.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelCentral.add(chkRecordar);
+
         panelCentral.add(Box.createVerticalStrut(20));
 
         btnLogin = new JButton("Iniciar Sesión");
@@ -153,6 +180,9 @@ public class Login extends JFrame {
             new Registro().setVisible(true);
             dispose();
         });
+
+        // Cargar credenciales si existen
+        cargarCredenciales();
 
         // Responsive: actualizar logo y componentes al cambiar tamaño
         addComponentListener(new ComponentAdapter() {
@@ -210,13 +240,19 @@ public class Login extends JFrame {
             String correo = txtCorreo.getText().trim();
             String contrasena = new String(txtContraseña.getPassword()).trim();
 
-            if (correo.isEmpty() || contrasena.isEmpty()) {
+            if (correo.isEmpty() || contrasena.isEmpty() ||
+                correo.equals("Correo electrónico") || contrasena.equals("Contraseña")) {
                 JOptionPane.showMessageDialog(this, "Introduce correo y contraseña.");
                 return;
             }
 
             Usuario usuario = usuarioDAO.iniciarSesion(correo, contrasena);
             if (usuario != null) {
+                if (chkRecordar.isSelected()) {
+                    guardarCredenciales(correo, contrasena);
+                } else {
+                    borrarCredenciales();
+                }
                 TurismoService.getInstance().registrarActividad(usuario.getId(), "Inicio de sesion");
                 JOptionPane.showMessageDialog(this, "Inicio de sesión exitoso");
                 new MenuPrincipal(usuario).setVisible(true);
@@ -227,5 +263,33 @@ public class Login extends JFrame {
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error al iniciar sesión: " + ex.getMessage());
         }
+    }
+
+    private void guardarCredenciales(String correo, String contrasena) {
+        Preferences prefs = Preferences.userRoot().node("turismoapp");
+        prefs.put("correo", correo);
+        prefs.put("contrasena", contrasena);
+    }
+
+    private void cargarCredenciales() {
+        Preferences prefs = Preferences.userRoot().node("turismoapp");
+        String correo = prefs.get("correo", "");
+        String contrasena = prefs.get("contrasena", "");
+        if (!correo.isEmpty()) {
+            txtCorreo.setText(correo);
+            txtCorreo.setForeground(Color.BLACK);
+        }
+        if (!contrasena.isEmpty()) {
+            txtContraseña.setText(contrasena);
+            txtContraseña.setForeground(Color.BLACK);
+            txtContraseña.setEchoChar('•');
+        }
+        chkRecordar.setSelected(!correo.isEmpty() && !contrasena.isEmpty());
+    }
+
+    private void borrarCredenciales() {
+        Preferences prefs = Preferences.userRoot().node("turismoapp");
+        prefs.remove("correo");
+        prefs.remove("contrasena");
     }
 }
