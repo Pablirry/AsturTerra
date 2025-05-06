@@ -18,36 +18,33 @@ public class VistaValoraciones extends JFrame {
     private JTextArea txtComentario;
     private JButton btnEnviar, btnCancelar;
     private int idRuta;
-    private String nombreRuta;
     private Usuario usuario;
     private int puntuacionSeleccionada = 0;
     private JLabel[] estrellas = new JLabel[5];
+    private VistaRutas parentVistaRutas;
 
-    public static VistaValoraciones getInstance(int idRuta, String nombreRuta, Usuario usuario) {
+    public static VistaValoraciones getInstance(VistaRutas parent, int idRuta, String nombreRuta, Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
-            instance = new VistaValoraciones(idRuta, nombreRuta, usuario);
+            instance = new VistaValoraciones(parent, idRuta, nombreRuta, usuario);
         }
         instance.toFront();
         return instance;
     }
 
-    public VistaValoraciones(int idRuta, String nombreRuta, Usuario usuario) {
+    public VistaValoraciones(VistaRutas parent, int idRuta, String nombreRuta, Usuario usuario) {
+        this.parentVistaRutas = parent;
         this.usuario = usuario;
         this.idRuta = idRuta;
-        this.nombreRuta = nombreRuta;
-
         setTitle("Valorar Ruta: " + nombreRuta);
         setSize(600, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Detectar tema
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color fondo = dark ? new Color(44, 62, 80) : Color.WHITE;
         Color texto = dark ? Color.WHITE : new Color(44, 62, 80);
 
-        // Panel título
         JPanel panelTitulo = new JPanel();
         panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Valorar " + nombreRuta);
@@ -56,11 +53,9 @@ public class VistaValoraciones extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        // Panel central con tabla y formulario
         JPanel panelCentral = new JPanel(new GridLayout(2, 1, 10, 10));
         panelCentral.setBackground(fondo);
 
-        // Tabla de valoraciones
         JPanel panelTabla = new JPanel(new BorderLayout());
         panelTabla.setBorder(BorderFactory.createTitledBorder("Valoraciones existentes"));
         panelTabla.setBackground(fondo);
@@ -85,13 +80,11 @@ public class VistaValoraciones extends JFrame {
 
         panelCentral.add(panelTabla);
 
-        // Formulario
         JPanel panelFormulario = new JPanel();
         panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
         panelFormulario.setBorder(BorderFactory.createTitledBorder("Nueva valoración"));
         panelFormulario.setBackground(fondo);
 
-        // Puntuación con estrellas visuales
         JPanel panelPuntuacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         panelPuntuacion.setBackground(fondo);
         JLabel lblPuntuacion = new JLabel("Puntuación:");
@@ -127,7 +120,6 @@ public class VistaValoraciones extends JFrame {
         panelFormulario.add(panelPuntuacion);
         panelFormulario.add(Box.createVerticalStrut(10));
 
-        // Comentario
         JLabel lblComentario = new JLabel("Comentario:");
         lblComentario.setFont(new Font("Arial", Font.PLAIN, 16));
         lblComentario.setForeground(texto);
@@ -147,7 +139,6 @@ public class VistaValoraciones extends JFrame {
         panelCentral.add(panelFormulario);
         add(panelCentral, BorderLayout.CENTER);
 
-        // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(dark ? new Color(52, 73, 94) : new Color(236, 240, 241));
 
@@ -166,9 +157,20 @@ public class VistaValoraciones extends JFrame {
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Eventos
         btnEnviar.addActionListener(e -> enviarValoracion());
-        btnCancelar.addActionListener(e -> dispose());
+        btnCancelar.addActionListener(e -> {
+            dispose();
+            if (parentVistaRutas != null) parentVistaRutas.cargarRutas();
+        });
+
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                if (parentVistaRutas != null) {
+                    parentVistaRutas.cargarRutas();
+                }
+            }
+        });
 
         cargarValoraciones();
         actualizarEstrellas();
@@ -206,7 +208,7 @@ public class VistaValoraciones extends JFrame {
         try {
             ValoracionDAO dao = new ValoracionDAO();
             List<ValoracionRuta> valoraciones = dao.obtenerValoracionesRuta(idRuta);
-            modeloTabla.setRowCount(0); // limpiar tabla
+            modeloTabla.setRowCount(0);
 
             for (ValoracionRuta v : valoraciones) {
                 modeloTabla.addRow(new Object[] {
@@ -243,6 +245,7 @@ public class VistaValoraciones extends JFrame {
                 txtComentario.setText("");
                 puntuacionSeleccionada = 0;
                 actualizarEstrellas();
+                if (parentVistaRutas != null) parentVistaRutas.cargarRutas();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo registrar la valoración.");
             }

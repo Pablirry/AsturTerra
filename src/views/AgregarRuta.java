@@ -15,22 +15,22 @@ public class AgregarRuta extends JFrame {
     private JButton btnSeleccionarImagen, btnAgregar, btnCancelar;
     private File imagenRuta;
     private JLabel lblImagen;
+    private VistaRutas parent;
 
-    public AgregarRuta() {
+    public AgregarRuta(VistaRutas parent) {
+        this.parent = parent;
         setTitle("Agregar Ruta");
-        setSize(650, 700); // Ventana más grande para imagen y campos
+        setSize(650, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(0, 0));
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
-        // Colores y tema
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
         Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
         Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
         Color borderColor = new Color(52, 152, 219);
 
-        // Panel principal con fondo y borde redondeado
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -46,7 +46,6 @@ public class AgregarRuta extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(25, 30, 25, 30));
 
-        // Título
         JLabel lblTitulo = new JLabel("Nueva Ruta");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
         lblTitulo.setForeground(fgPanel);
@@ -54,7 +53,6 @@ public class AgregarRuta extends JFrame {
         panel.add(lblTitulo);
         panel.add(Box.createVerticalStrut(18));
 
-        // Panel campos
         JPanel panelCampos = new JPanel();
         panelCampos.setOpaque(false);
         panelCampos.setLayout(new GridBagLayout());
@@ -64,7 +62,6 @@ public class AgregarRuta extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // Nombre
         JLabel lblNombre = new JLabel("Nombre:");
         lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         panelCampos.add(lblNombre, gbc);
@@ -72,25 +69,23 @@ public class AgregarRuta extends JFrame {
         gbc.gridy++;
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Arial", Font.PLAIN, 15));
-        txtNombre.setPreferredSize(new Dimension(500, 36)); // MÁS ANCHO
+        txtNombre.setPreferredSize(new Dimension(500, 36));
         panelCampos.add(txtNombre, gbc);
 
-        // Descripción
         gbc.gridy++;
         JLabel lblDescripcion = new JLabel("Descripción:");
         lblDescripcion.setFont(new Font("Arial", Font.PLAIN, 16));
         panelCampos.add(lblDescripcion, gbc);
 
         gbc.gridy++;
-        txtDescripcion = new JTextArea(10, 30); // MÁS ANCHO
+        txtDescripcion = new JTextArea(10, 30);
         txtDescripcion.setFont(new Font("Arial", Font.PLAIN, 15));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
         JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
-        scrollDesc.setPreferredSize(new Dimension(500, 100)); // MÁS ANCHO
+        scrollDesc.setPreferredSize(new Dimension(500, 100));
         panelCampos.add(scrollDesc, gbc);
 
-        // Precio
         gbc.gridy++;
         JLabel lblPrecio = new JLabel("Precio:");
         lblPrecio.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -106,10 +101,9 @@ public class AgregarRuta extends JFrame {
         txtPrecio.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(borderColor, 1, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtPrecio.setPreferredSize(new Dimension(120, 36)); // Más pequeño
+        txtPrecio.setPreferredSize(new Dimension(120, 36));
         panelCampos.add(txtPrecio, gbc);
 
-        // Dificultad
         gbc.gridy++;
         JLabel lblDificultad = new JLabel("Dificultad:");
         lblDificultad.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -129,7 +123,6 @@ public class AgregarRuta extends JFrame {
         panel.add(panelCampos);
         panel.add(Box.createVerticalStrut(18));
 
-        // Imagen
         lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
         lblImagen.setPreferredSize(new Dimension(320, 180));
         lblImagen.setFont(new Font("Arial", Font.ITALIC, 14));
@@ -150,7 +143,6 @@ public class AgregarRuta extends JFrame {
         panel.add(btnSeleccionarImagen);
         panel.add(Box.createVerticalStrut(18));
 
-        // Botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setOpaque(false);
         btnAgregar = new JButton("Agregar");
@@ -212,7 +204,6 @@ public class AgregarRuta extends JFrame {
                 return;
             }
 
-            // Evitar duplicados por nombre
             if (new dao.RutaDAO().obtenerRutaPorNombre(nombre) != null) {
                 JOptionPane.showMessageDialog(this, "Ya existe una ruta con ese nombre.", "Error",
                         JOptionPane.ERROR_MESSAGE);
@@ -229,6 +220,7 @@ public class AgregarRuta extends JFrame {
 
             if (guardado) {
                 JOptionPane.showMessageDialog(this, "Ruta agregada correctamente.");
+                if (parent != null) parent.cargarRutas();
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "No se pudo agregar la ruta.", "Error", JOptionPane.ERROR_MESSAGE);

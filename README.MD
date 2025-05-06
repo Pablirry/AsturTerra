@@ -17,14 +17,6 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 
 mejoras que hacer 
 
-7. Accesibilidad y diseño
-Soporte para teclado: permite navegar y operar la app solo con teclado.
-Contraste de colores: asegúrate de que los textos sean legibles en todos los modos.
-Tamaños adaptativos: haz que la interfaz se vea bien en diferentes resoluciones y tamaños de pantalla.
-8. Mejoras en el chat/soporte
-Soporte para archivos adjuntos (imágenes, PDF) en el chat.
-Notificaciones en tiempo real cuando el usuario recibe respuesta.
-Historial de conversaciones accesible para el usuario.
 9. Mejoras en reservas y valoraciones
 Evitar reservas duplicadas para la misma ruta y usuario.
 Mostrar la media de valoraciones en tiempo real y permitir ver comentarios de otros usuarios.
