@@ -12,7 +12,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ✅ Sistema de **Valoraciones** de rutas y restaurantes.  
 ✅ **Chat en tiempo real** entre usuarios y administradores.  
 ✅ Registro de **Historial de actividades** de los usuarios.  
-✅ **Exportación de datos** a **PDF y Excel**. --> Implementacion futura.  
+🟥 **Exportación de datos** a **PDF y Excel**. --> Implementacion futura.  
 ✅ **Modo oscuro/claro** para la interfaz gráfica.  
 
 mejoras que hacer 
@@ -90,7 +90,7 @@ Ejecutar la clase Main.java para iniciar la aplicación.
 (Se agregarán imágenes después de la implementación completa de las vistas)  
 
 ### 🧑‍💻 Tecnologías Utilizadas
-<table> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/226/226777.png" width="50px"><br>Java (Swing)</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/5968/5968313.png" width="50px"><br>MySQL</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/733/733553.png" width="50px"><br>GitHub</td> </tr> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/9167/9167862.png" width="50px"><br>JDBC</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/4325/4325937.png" width="50px"><br>Apache POI</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/732/732220.png" width="50px"><br>iText (PDF)</td> </tr> </table> 
+<table> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/226/226777.png" width="50px"><br>Java (Swing)</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/5968/5968313.png" width="50px"><br>MySQL</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/733/733553.png" width="50px"><br>GitHub</td> </tr> <tr> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/9167/9167862.png" width="50px"><br>JDBC</td> <td align="center"><img src="https://cdn-icons-png.flaticon.com/128/4325/4325937.png" width="50px"><br>Apache POI</td> </tr> </table> 
 
 ### 📩 Contacto y Soporte
 Si tienes alguna pregunta o sugerencia, contacta a:  

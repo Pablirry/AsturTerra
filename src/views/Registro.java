@@ -30,7 +30,6 @@ public class Registro extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        // Fondo con imagen profesional y color
         JPanel panelFondo = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {

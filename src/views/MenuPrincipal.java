@@ -236,7 +236,6 @@ public class MenuPrincipal extends JFrame {
             btnSoporte.setText(I18n.t("boton.soporte"));
             for (MouseListener ml : btnSoporte.getMouseListeners())
                 btnSoporte.removeMouseListener(ml);
-            // MouseListener que NO cambia el color en ningún modo
             btnSoporte.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseEntered(MouseEvent e) {
@@ -267,7 +266,6 @@ public class MenuPrincipal extends JFrame {
         ajustarComponentes();
     }
 
-    // Recarga los textos de la interfaz tras cambiar el idioma
     private void recargarTextos() {
         setTitle(I18n.t("titulo.menu.principal") + " - " + I18n.t("app.nombre"));
         btnTema.setText(ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
