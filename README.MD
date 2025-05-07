@@ -12,7 +12,7 @@ Este es un **sistema de gestión de turismo** desarrollado en **Java (Swing) con
 ✅ Sistema de **Valoraciones** de rutas y restaurantes.  
 ✅ **Chat en tiempo real** entre usuarios y administradores.  
 ✅ Registro de **Historial de actividades** de los usuarios.  
-✅ **Exportación de datos** a **PDF y Excel**. --> Implementacion futura
+✅ **Exportación de datos** a **PDF y Excel**. --> Implementacion futura.  
 ✅ **Modo oscuro/claro** para la interfaz gráfica.  
 
 mejoras que hacer 
