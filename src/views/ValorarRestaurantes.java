@@ -5,13 +5,12 @@ import model.Restaurante;
 import model.Usuario;
 import java.awt.*;
 
-
 public class ValorarRestaurantes extends JFrame {
 
     private int idRestaurante;
     private Usuario usuario;
     private JTextArea txtComentario;
-    private int puntuacionSeleccionada = 0; // Por defecto ninguna
+    private int puntuacionSeleccionada = 0;
     private JLabel[] estrellas = new JLabel[5];
 
     public ValorarRestaurantes(String nombreRestaurante, Usuario usuario) {
@@ -32,7 +31,8 @@ public class ValorarRestaurantes extends JFrame {
         }
 
         setTitle("Valorar Restaurante");
-        setSize(420, 340);
+        setSize(700, 520);
+        setMinimumSize(new Dimension(550, 420));
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
@@ -46,36 +46,65 @@ public class ValorarRestaurantes extends JFrame {
         getContentPane().removeAll();
 
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-        Color fondo = dark ? new Color(44, 62, 80) : Color.WHITE;
-        Color texto = dark ? Color.WHITE : new Color(44, 62, 80);
+        Color bgGlobal = dark ? new Color(44, 62, 80) : new Color(236, 240, 241);
+        Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
 
         // Panel título
         JPanel panelTitulo = new JPanel();
-        panelTitulo.setBackground(dark ? new Color(44, 62, 80) : new Color(236, 240, 241));
+        panelTitulo.setBackground(new Color(44, 62, 80));
         JLabel lblTitulo = new JLabel("Valorar Restaurante");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 22));
-        lblTitulo.setForeground(texto);
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
+        lblTitulo.setForeground(Color.WHITE);
+        panelTitulo.setBorder(BorderFactory.createEmptyBorder(18, 0, 10, 0));
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        // Panel contenido central
-        JPanel panelContenido = new JPanel();
-        panelContenido.setLayout(new BoxLayout(panelContenido, BoxLayout.Y_AXIS));
-        panelContenido.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        panelContenido.setBackground(fondo);
+        // Panel central con fondo y borde redondeado
+        JPanel panelCentral = new JPanel(new GridBagLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(bgGlobal);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 32, 32);
+                g2.dispose();
+            }
+        };
+        panelCentral.setOpaque(false);
+        panelCentral.setBorder(BorderFactory.createEmptyBorder(24, 36, 24, 36));
 
-        // Puntuación con estrellas visuales
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Nombre restaurante
+        JLabel lblRestaurante;
+        try {
+            lblRestaurante = new JLabel("Restaurante: " + services.TurismoService.getInstance().obtenerRestaurantePorId(idRestaurante).getNombre());
+        } catch (ClassNotFoundException e) {
+            lblRestaurante = new JLabel("Restaurante: Información no disponible");
+            e.printStackTrace();
+        }
+        lblRestaurante.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblRestaurante.setForeground(fgPanel);
+        panelCentral.add(lblRestaurante, gbc);
+
+        // Puntuación con estrellas
+        gbc.gridy++;
         JPanel panelPuntuacion = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        panelPuntuacion.setBackground(fondo);
+        panelPuntuacion.setOpaque(false);
         JLabel lblPuntuacion = new JLabel("Puntuación:");
-        lblPuntuacion.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblPuntuacion.setForeground(texto);
+        lblPuntuacion.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        lblPuntuacion.setForeground(fgPanel);
         panelPuntuacion.add(lblPuntuacion);
 
-        // Estrellas visuales (todas vacías al inicio)
         for (int i = 0; i < 5; i++) {
             estrellas[i] = new JLabel("☆");
-            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 28)); 
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 32));
             estrellas[i].setForeground(new Color(241, 196, 15));
             final int estrellaIndex = i;
             estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -96,30 +125,33 @@ public class ValorarRestaurantes extends JFrame {
             });
             panelPuntuacion.add(estrellas[i]);
         }
-        panelContenido.add(panelPuntuacion);
-        panelContenido.add(Box.createVerticalStrut(18));
+        panelCentral.add(panelPuntuacion, gbc);
 
         // Comentario
+        gbc.gridy++;
         JLabel lblComentario = new JLabel("Comentario:");
-        lblComentario.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblComentario.setForeground(texto);
-        panelContenido.add(lblComentario);
+        lblComentario.setFont(new Font("Segoe UI", Font.PLAIN, 17));
+        lblComentario.setForeground(fgPanel);
+        panelCentral.add(lblComentario, gbc);
 
-        txtComentario = new JTextArea(4, 20);
-        txtComentario.setFont(new Font("Arial", Font.PLAIN, 15));
+        gbc.gridy++;
+        txtComentario = new JTextArea(3, 20);
+        txtComentario.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         txtComentario.setLineWrap(true);
         txtComentario.setWrapStyleWord(true);
         txtComentario.setBackground(dark ? new Color(52, 73, 94) : Color.WHITE);
-        txtComentario.setForeground(texto);
+        txtComentario.setForeground(fgPanel);
+        txtComentario.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
         JScrollPane scrollComentario = new JScrollPane(txtComentario);
         scrollComentario.setBorder(BorderFactory.createLineBorder(new Color(189, 195, 199)));
-        panelContenido.add(scrollComentario);
+        scrollComentario.setPreferredSize(new Dimension(320, 80));
+        panelCentral.add(scrollComentario, gbc);
 
-        add(panelContenido, BorderLayout.CENTER);
+        add(panelCentral, BorderLayout.CENTER);
 
         // Panel botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 15));
-        panelBotones.setBackground(dark ? new Color(44, 62, 80) : new Color(236, 240, 241));
+        panelBotones.setBackground(bgGlobal);
 
         JButton btnEnviar = new JButton("Enviar");
         btnEnviar.setBackground(new Color(46, 204, 113));
@@ -127,7 +159,7 @@ public class ValorarRestaurantes extends JFrame {
         btnEnviar.setFont(new Font("Arial", Font.BOLD, 16));
         btnEnviar.setFocusPainted(false);
         getRootPane().setDefaultButton(btnEnviar);
-        btnEnviar.setPreferredSize(new Dimension(110, 38));
+        btnEnviar.setPreferredSize(new Dimension(120, 40));
         btnEnviar.setBorder(BorderFactory.createLineBorder(new Color(39, 174, 96), 2, true));
         btnEnviar.addActionListener(e -> enviarValoracion());
 
@@ -136,7 +168,7 @@ public class ValorarRestaurantes extends JFrame {
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFont(new Font("Arial", Font.BOLD, 16));
         btnCancelar.setFocusPainted(false);
-        btnCancelar.setPreferredSize(new Dimension(110, 38));
+        btnCancelar.setPreferredSize(new Dimension(120, 40));
         btnCancelar.setBorder(BorderFactory.createLineBorder(new Color(192, 57, 43), 2, true));
         btnCancelar.addActionListener(e -> dispose());
 
@@ -162,15 +194,15 @@ public class ValorarRestaurantes extends JFrame {
             }
         }
     }
-    
+
     private void resaltarEstrellas(int hasta) {
         for (int i = 0; i < 5; i++) {
             if (i < hasta) {
-                estrellas[i].setFont(new Font("Dialog", Font.BOLD, 28));
+                estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 32));
                 estrellas[i].setText("★");
                 estrellas[i].setForeground(new Color(241, 196, 15));
             } else {
-                estrellas[i].setFont(new Font("Dialog", Font.BOLD, 28));
+                estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 32));
                 estrellas[i].setText("☆");
                 estrellas[i].setForeground(new Color(189, 195, 199));
             }

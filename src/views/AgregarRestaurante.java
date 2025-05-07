@@ -5,10 +5,10 @@ import services.TurismoService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.nio.file.Files;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
+import java.nio.file.Files;
 
 public class AgregarRestaurante extends JFrame {
     private JTextField txtNombre, txtUbicacion;
@@ -19,197 +19,260 @@ public class AgregarRestaurante extends JFrame {
     private JLabel[] estrellas = new JLabel[5];
 
     public AgregarRestaurante() {
-        setTitle("Nuevo Restaurante");
-        setSize(540, 700);
+        setTitle("Agregar Restaurante");
+        setSize(1100, 750);
+        setMinimumSize(new Dimension(900, 550));
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
-        Color bgPanel = theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : new Color(245, 247, 250);
+        Color bgGlobal = theme == ThemeManager.Theme.DARK ? new Color(34, 45, 65) : new Color(235, 241, 250);
         Color fgPanel = theme == ThemeManager.Theme.DARK ? Color.WHITE : new Color(44, 62, 80);
         Color borderColor = new Color(52, 152, 219);
 
-        JPanel panelPrincipal = new JPanel(new BorderLayout());
-        panelPrincipal.setBackground(bgPanel);
-        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(24, 32, 24, 32));
+        JPanel panelFondo = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(bgGlobal);
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        panelFondo.setOpaque(true);
 
-        // Título
-        JLabel lblTitulo = new JLabel("Nuevo Restaurante");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
-        lblTitulo.setForeground(fgPanel);
-        lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
-        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 0, 18, 0));
-        panelPrincipal.add(lblTitulo, BorderLayout.NORTH);
+        // Panel principal con esquinas redondeadas
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(bgGlobal);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
+                g2.dispose();
+            }
+        };
+        panel.setOpaque(false);
+        panel.setLayout(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(32, 48, 32, 48));
 
-        // Panel central con GridBagLayout para mejor organización
-        JPanel panelCentral = new JPanel(new GridBagLayout());
-        panelCentral.setBackground(bgPanel);
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+        gbc.insets = new Insets(12, 12, 12, 12);
+        gbc.fill = GridBagConstraints.BOTH;
 
-        // Nombre
+        // Panel info izquierda
+        JPanel panelInfo = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+                g2.dispose();
+            }
+        };
+        panelInfo.setOpaque(false);
+        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
+        panelInfo.setBorder(BorderFactory.createEmptyBorder(18, 24, 18, 24));
+
+        JLabel lblTitulo = new JLabel("Nuevo Restaurante");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        lblTitulo.setForeground(borderColor);
+        lblTitulo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
+        separator.setMaximumSize(new Dimension(260, 2));
+        separator.setForeground(borderColor);
+        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         JLabel lblNombre = new JLabel("Nombre:");
-        lblNombre.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblNombre.setForeground(fgPanel);
-        panelCentral.add(lblNombre, gbc);
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblNombre.setForeground(borderColor);
+        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        gbc.gridx = 1;
         txtNombre = new JTextField();
-        txtNombre.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtNombre.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         txtNombre.setForeground(fgPanel);
         txtNombre.setCaretColor(fgPanel);
         txtNombre.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(borderColor, 1, true),
+                BorderFactory.createLineBorder(borderColor, 2, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtNombre.setPreferredSize(new Dimension(220, 36));
-        panelCentral.add(txtNombre, gbc);
+        txtNombre.setMaximumSize(new Dimension(400, 36));
+        txtNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Ubicación
-        gbc.gridx = 0;
-        gbc.gridy++;
         JLabel lblUbicacion = new JLabel("Ubicación:");
-        lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblUbicacion.setForeground(fgPanel);
-        panelCentral.add(lblUbicacion, gbc);
+        lblUbicacion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblUbicacion.setForeground(borderColor);
+        lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        gbc.gridx = 1;
         txtUbicacion = new JTextField();
-        txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
+        txtUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtUbicacion.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
         txtUbicacion.setForeground(fgPanel);
         txtUbicacion.setCaretColor(fgPanel);
         txtUbicacion.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(borderColor, 1, true),
+                BorderFactory.createLineBorder(borderColor, 2, true),
                 BorderFactory.createEmptyBorder(8, 12, 8, 12)));
-        txtUbicacion.setPreferredSize(new Dimension(220, 36));
-        panelCentral.add(txtUbicacion, gbc);
+        txtUbicacion.setMaximumSize(new Dimension(400, 36));
+        txtUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Imagen
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2;
-        gbc.anchor = GridBagConstraints.CENTER;
-        lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
-        lblImagen.setPreferredSize(new Dimension(180, 120));
-        lblImagen.setFont(new Font("Arial", Font.ITALIC, 14));
-        lblImagen.setForeground(theme == ThemeManager.Theme.DARK ? new Color(120, 120, 120) : new Color(160, 160, 160));
-        lblImagen.setBorder(BorderFactory.createLineBorder(borderColor, 1, true));
-        lblImagen.setOpaque(true);
-        lblImagen.setBackground(theme == ThemeManager.Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
-        panelCentral.add(lblImagen, gbc);
-
-        // Botón seleccionar imagen
-        gbc.gridy++;
-        btnImagen = new JButton("Seleccionar Imagen");
-        btnImagen.setFont(new Font("Arial", Font.BOLD, 15));
-        btnImagen.setPreferredSize(new Dimension(220, 44));
-        btnImagen.setBorder(BorderFactory.createLineBorder(new Color(52, 152, 219), 2, true));
-        setButtonEffects(btnImagen, new Color(52, 152, 219), new Color(41, 128, 185), new Color(31, 97, 141));
-        btnImagen.addActionListener(e -> seleccionarImagen());
-        panelCentral.add(btnImagen, gbc);
-
-        // Valoración (estrellas)
-        gbc.gridy++;
-        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        panelEstrellas.setOpaque(false);
+        // Valoración inicial
         JLabel lblValoracion = new JLabel("Valoración inicial:");
-        lblValoracion.setFont(new Font("Arial", Font.PLAIN, 16));
-        lblValoracion.setForeground(fgPanel);
-        panelEstrellas.add(lblValoracion);
+        lblValoracion.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblValoracion.setForeground(borderColor);
+        lblValoracion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        panelEstrellas.setOpaque(false);
         for (int i = 0; i < 5; i++) {
             estrellas[i] = new JLabel("☆");
             estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 28));
             estrellas[i].setForeground(new Color(241, 196, 15));
             final int estrellaIndex = i;
             estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            estrellas[i].addMouseListener(new MouseAdapter() {
+            estrellas[i].addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
-                public void mouseClicked(MouseEvent e) {
+                public void mouseClicked(java.awt.event.MouseEvent e) {
                     valoracionSeleccionada = estrellaIndex + 1;
                     actualizarEstrellas();
                 }
                 @Override
-                public void mouseEntered(MouseEvent e) {
+                public void mouseEntered(java.awt.event.MouseEvent e) {
                     resaltarEstrellas(estrellaIndex + 1);
                 }
                 @Override
-                public void mouseExited(MouseEvent e) {
+                public void mouseExited(java.awt.event.MouseEvent e) {
                     actualizarEstrellas();
                 }
             });
             panelEstrellas.add(estrellas[i]);
         }
-        panelCentral.add(panelEstrellas, gbc);
+        panelEstrellas.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        panelPrincipal.add(panelCentral, BorderLayout.CENTER);
+        panelInfo.add(lblTitulo);
+        panelInfo.add(Box.createVerticalStrut(2));
+        panelInfo.add(separator);
+        panelInfo.add(Box.createVerticalStrut(10));
+        panelInfo.add(lblNombre);
+        panelInfo.add(txtNombre);
+        panelInfo.add(Box.createVerticalStrut(10));
+        panelInfo.add(lblUbicacion);
+        panelInfo.add(txtUbicacion);
+        panelInfo.add(Box.createVerticalStrut(10));
+        panelInfo.add(lblValoracion);
+        panelInfo.add(panelEstrellas);
 
-        // Panel de botones abajo
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 0));
+        // Imagen a la derecha en panel redondeado
+        JPanel panelImagen = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(theme == ThemeManager.Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 24, 24);
+                g2.dispose();
+            }
+        };
+        panelImagen.setOpaque(false);
+        panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
+        panelImagen.setBorder(BorderFactory.createEmptyBorder(18, 24, 18, 24));
+
+        lblImagen = new JLabel("Sin imagen", JLabel.CENTER);
+        lblImagen.setPreferredSize(new Dimension(210, 210));
+        lblImagen.setFont(new Font("Arial", Font.ITALIC, 16));
+        lblImagen.setForeground(theme == ThemeManager.Theme.DARK ? new Color(120, 120, 120) : new Color(160, 160, 160));
+        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        lblImagen.setVerticalAlignment(SwingConstants.CENTER);
+        lblImagen.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(borderColor, 3, true),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        btnImagen = new JButton("Seleccionar Imagen");
+        btnImagen.setBackground(borderColor);
+        btnImagen.setForeground(Color.WHITE);
+        btnImagen.setFocusPainted(false);
+        btnImagen.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnImagen.addActionListener(e -> seleccionarImagen());
+
+        panelImagen.add(lblImagen);
+        panelImagen.add(Box.createVerticalStrut(10));
+        panelImagen.add(btnImagen);
+
+        // Añadir a grid
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.6;
+        gbc.weighty = 1.0;
+        panel.add(panelInfo, gbc);
+
+        gbc.gridx = 1;
+        gbc.weightx = 0.4;
+        panel.add(panelImagen, gbc);
+
+        // Botones abajo
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10)) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(bgGlobal);
+                g.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
         panelBotones.setOpaque(false);
 
-        btnGuardar = new JButton("Guardar");
-        btnGuardar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnGuardar.setPreferredSize(new Dimension(170, 48));
-        btnGuardar.setBorder(BorderFactory.createLineBorder(new Color(46, 204, 113), 2, true));
-        setButtonEffects(btnGuardar, new Color(46, 204, 113), new Color(39, 174, 96), new Color(30, 132, 73));
-        btnGuardar.addActionListener(e -> agregarRestaurante());
-        panelBotones.add(btnGuardar);
+        btnGuardar = new JButton("Agregar");
+        btnGuardar.setBackground(new Color(46, 204, 113));
+        btnGuardar.setForeground(Color.WHITE);
+        btnGuardar.setFocusPainted(false);
+        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnGuardar.setPreferredSize(new Dimension(220, 38));
 
         btnCancelar = new JButton("Cancelar");
-        btnCancelar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnCancelar.setPreferredSize(new Dimension(170, 48));
-        btnCancelar.setBorder(BorderFactory.createLineBorder(new Color(231, 76, 60), 2, true));
-        setButtonEffects(btnCancelar, new Color(231, 76, 60), new Color(192, 57, 43), new Color(155, 34, 38));
-        btnCancelar.addActionListener(e -> dispose());
+        btnCancelar.setBackground(new Color(231, 76, 60));
+        btnCancelar.setForeground(Color.WHITE);
+        btnCancelar.setFocusPainted(false);
+        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCancelar.setPreferredSize(new Dimension(220, 38));
+
+        panelBotones.add(btnGuardar);
         panelBotones.add(btnCancelar);
 
-        panelPrincipal.add(panelBotones, BorderLayout.SOUTH);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.0;
+        gbc.insets = new Insets(32, 0, 0, 0);
+        panel.add(panelBotones, gbc);
 
-        add(panelPrincipal, BorderLayout.CENTER);
+        panelFondo.add(panel, BorderLayout.CENTER);
+        setContentPane(panelFondo);
 
-        setVisible(true);
-    }
+        btnGuardar.addActionListener(e -> agregarRestaurante());
+        btnCancelar.addActionListener(e -> dispose());
 
-    // Efectos visuales para los botones CRUD
-    private void setButtonEffects(JButton btn, Color normal, Color hover, Color pressed) {
-        btn.setBackground(normal);
-        btn.setForeground(Color.WHITE);
-        btn.setFocusPainted(false);
-        btn.setContentAreaFilled(true);
-        btn.setOpaque(true);
-
-        btn.addMouseListener(new MouseAdapter() {
+        // Responsividad: no dejar que los cuadros y campos se hagan demasiado pequeños
+        addComponentListener(new ComponentAdapter() {
             @Override
-            public void mouseEntered(MouseEvent e) {
-                btn.setBackground(hover);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                btn.setBackground(normal);
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                btn.setBackground(pressed);
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                Point p = e.getPoint();
-                if (p.x >= 0 && p.x < btn.getWidth() && p.y >= 0 && p.y < btn.getHeight()) {
-                    btn.setBackground(hover);
-                } else {
-                    btn.setBackground(normal);
-                }
+            public void componentResized(ComponentEvent e) {
+                int w = getWidth();
+                int minWidth = 900;
+                int minHeight = 550;
+                if (w < minWidth) setSize(minWidth, getHeight());
+                if (getHeight() < minHeight) setSize(getWidth(), minHeight);
             }
         });
+
+        setVisible(true);
     }
 
     private void seleccionarImagen() {
@@ -218,7 +281,7 @@ public class AgregarRestaurante extends JFrame {
         if (result == JFileChooser.APPROVE_OPTION) {
             imagenPerfil = fileChooser.getSelectedFile();
             ImageIcon icon = new ImageIcon(imagenPerfil.getAbsolutePath());
-            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(180, 120, Image.SCALE_SMOOTH)));
+            lblImagen.setIcon(new ImageIcon(icon.getImage().getScaledInstance(210, 210, Image.SCALE_SMOOTH)));
             lblImagen.setText("");
         }
     }

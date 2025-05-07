@@ -1,19 +1,19 @@
 package views;
 
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import model.Ruta;
 import model.Usuario;
 import services.TurismoService;
 import utils.I18n;
 import utils.UIUtils;
+import utils.WrapLayout;
 
 public class VistaRutas extends JFrame {
     private static VistaRutas instance;
@@ -21,6 +21,8 @@ public class VistaRutas extends JFrame {
     private JPanel panelTarjetas;
     private JButton btnAgregar, btnVolver;
     private Usuario usuario;
+    private JPanel contenedorCentral;
+    private final int margenLateral = 60;
 
     public static VistaRutas getInstance(Usuario usuario) {
         if (instance == null || !instance.isVisible()) {
@@ -62,11 +64,16 @@ public class VistaRutas extends JFrame {
         panelTitulo.add(lblTitulo);
         add(panelTitulo, BorderLayout.NORTH);
 
-        panelTarjetas = new JPanel();
-        panelTarjetas.setLayout(new GridBagLayout());
-        panelTarjetas.setBackground(bg);
+        contenedorCentral = new JPanel(new BorderLayout());
+        contenedorCentral.setBackground(bg);
+        contenedorCentral.setBorder(BorderFactory.createEmptyBorder(0, margenLateral, 0, margenLateral));
 
-        JScrollPane scroll = new JScrollPane(panelTarjetas,
+        panelTarjetas = new JPanel();
+        panelTarjetas.setBackground(bg);
+        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24));
+        contenedorCentral.add(panelTarjetas, BorderLayout.CENTER);
+
+        JScrollPane scroll = new JScrollPane(contenedorCentral,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setUnitIncrement(20);
@@ -77,11 +84,10 @@ public class VistaRutas extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         panelBotones.setBackground(bg);
 
-        // Botón Agregar - verde brillante y redondeado
         btnAgregar = new JButton(I18n.t("boton.agregar"));
         btnAgregar.setFont(new Font("Arial", Font.BOLD, 18));
         btnAgregar.setForeground(Color.WHITE);
-        btnAgregar.setBackground(new Color(39, 174, 96)); // Verde brillante
+        btnAgregar.setBackground(new Color(39, 174, 96));
         btnAgregar.setFocusPainted(false);
         btnAgregar.setBorder(BorderFactory.createLineBorder(new Color(39, 174, 96), 2, true));
         btnAgregar.setPreferredSize(new Dimension(170, 48));
@@ -90,11 +96,10 @@ public class VistaRutas extends JFrame {
         btnAgregar.setOpaque(true);
         panelBotones.add(btnAgregar);
 
-        // Botón Volver - azul brillante y redondeado
         btnVolver = new JButton(I18n.t("boton.volver"));
         btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
         btnVolver.setForeground(Color.WHITE);
-        btnVolver.setBackground(new Color(41, 128, 185)); // Azul brillante
+        btnVolver.setBackground(new Color(41, 128, 185));
         btnVolver.setFocusPainted(false);
         btnVolver.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185), 2, true));
         btnVolver.setPreferredSize(new Dimension(170, 48));
@@ -121,16 +126,6 @@ public class VistaRutas extends JFrame {
         panelTarjetas.removeAll();
         try {
             List<Ruta> rutas = TurismoService.getInstance().obtenerRutas();
-            int tarjetaAncho = 370;
-            int panelWidth = panelTarjetas.getParent().getWidth();
-            int tarjetasPorFila = Math.max(1, panelWidth / tarjetaAncho);
-
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.insets = new Insets(12, 12, 12, 12);
-            gbc.fill = GridBagConstraints.NONE;
-            gbc.anchor = GridBagConstraints.NORTHWEST;
-
-            int col = 0, row = 0;
             for (Ruta r : rutas) {
                 JPanel tarjeta = crearTarjetaRuta(r);
                 addClickListenerRecursivo(tarjeta, new MouseAdapter() {
@@ -139,20 +134,8 @@ public class VistaRutas extends JFrame {
                         mostrarDialogoDetalles(r);
                     }
                 });
-                gbc.gridx = col;
-                gbc.gridy = row;
-                panelTarjetas.add(tarjeta, gbc);
-                col++;
-                if (col >= tarjetasPorFila) {
-                    col = 0;
-                    row++;
-                }
+                panelTarjetas.add(tarjeta);
             }
-            gbc.gridx = 0;
-            gbc.gridy = row + 1;
-            gbc.weighty = 1.0;
-            panelTarjetas.add(Box.createVerticalGlue(), gbc);
-
         } catch (Exception ex) {
             UIUtils.mostrarError(this, "Error al cargar rutas: " + ex.getMessage());
         }
@@ -169,7 +152,6 @@ public class VistaRutas extends JFrame {
         }
     }
 
-    // TARJETA: imagen a la derecha, info a la izquierda, mismo formato que EditarRuta
     private JPanel crearTarjetaRuta(Ruta ruta) {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color borderColor = new Color(52, 152, 219);
@@ -177,7 +159,8 @@ public class VistaRutas extends JFrame {
         Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
 
         JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(370, 180));
+        tarjeta.setPreferredSize(new Dimension(320, 180));
+        tarjeta.setMaximumSize(new Dimension(320, 180));
         tarjeta.setBackground(bgTarjeta);
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 new ThemeManager.RoundedBorder(borderColor, 2, 24),
@@ -185,7 +168,6 @@ public class VistaRutas extends JFrame {
         tarjeta.setLayout(new BorderLayout(16, 0));
         tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Panel info a la IZQUIERDA
         JPanel panelInfo = new JPanel();
         panelInfo.setOpaque(false);
         panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
@@ -212,7 +194,7 @@ public class VistaRutas extends JFrame {
         txtDescripcion.setWrapStyleWord(true);
         txtDescripcion.setEditable(false);
         txtDescripcion.setOpaque(true);
-        txtDescripcion.setBackground(bgTarjeta); // Fondo igual al de la tarjeta
+        txtDescripcion.setBackground(bgTarjeta);
         txtDescripcion.setBorder(null);
         txtDescripcion.setForeground(dark ? Color.LIGHT_GRAY : Color.DARK_GRAY);
         txtDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -227,7 +209,6 @@ public class VistaRutas extends JFrame {
 
         tarjeta.add(panelInfo, BorderLayout.WEST);
 
-        // Imagen a la DERECHA
         JLabel lblImagen = new JLabel();
         lblImagen.setPreferredSize(new Dimension(120, 120));
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
@@ -273,6 +254,7 @@ public class VistaRutas extends JFrame {
         g2.dispose();
         return new ImageIcon(img);
     }
+
 
     private void mostrarDialogoDetalles(Ruta ruta) {
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();

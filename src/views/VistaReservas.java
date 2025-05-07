@@ -48,7 +48,7 @@ public class VistaReservas extends JFrame {
         add(panelTitulo, BorderLayout.NORTH);
 
         panelTarjetas = new JPanel();
-        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24));
+        panelTarjetas.setLayout(new FlowLayout(FlowLayout.LEFT, 24, 24));
         panelTarjetas.setBackground(new Color(236, 240, 241));
         JScrollPane scroll = new JScrollPane(panelTarjetas);
         scroll.setBorder(BorderFactory.createEmptyBorder());
