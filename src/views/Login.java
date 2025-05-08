@@ -19,13 +19,12 @@ public class Login extends JFrame {
     private JLabel lblLogo;
     private UsuarioDAO usuarioDAO;
     public static Usuario usuarioActual;
-    private JCheckBox chkMostrarContrasena;
     private JCheckBox chkRecordar;
 
     public Login() {
         setTitle("Inicio de Sesión");
-        setMinimumSize(new Dimension(320, 480));
-        setSize(450, 600);
+        setMinimumSize(new Dimension(400, 520));
+        setSize(520, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -58,19 +57,23 @@ public class Login extends JFrame {
         panelCentral.add(lblLogo);
         panelCentral.add(Box.createVerticalStrut(30));
 
+        Color placeHolderColor = new Color(150, 150, 150, 120);
+
+        Box boxCorreo = Box.createHorizontalBox();
+        boxCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // --- Correo ---
         JLabel lblCorreo = new JLabel("Correo:");
         lblCorreo.setForeground(Color.WHITE);
+        lblCorreo.setFont(new Font("Arial", Font.PLAIN, 16));
         lblCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCentral.add(lblCorreo);
-
-        Color placeHolderColor = new Color(150, 150, 150, 120);
 
         txtCorreo = new JTextField("Correo electrónico");
         txtCorreo.setForeground(placeHolderColor);
         txtCorreo.setMaximumSize(new Dimension(600, 40));
         txtCorreo.setPreferredSize(new Dimension(300, 32));
-        txtCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtCorreo.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtCorreo.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -88,20 +91,20 @@ public class Login extends JFrame {
                 }
             }
         });
-        panelCentral.add(txtCorreo);
 
         JLabel lblContraseña = new JLabel("Contraseña:");
         lblContraseña.setForeground(Color.WHITE);
+        lblContraseña.setFont(new Font("Arial", Font.PLAIN, 16));
         lblContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
-        panelCentral.add(lblContraseña);
 
         txtContraseña = new JPasswordField("Contraseña");
         txtContraseña.setForeground(placeHolderColor);
+        txtContraseña.setFont(new Font("Arial", Font.PLAIN, 18));
+        txtContraseña.setEchoChar((char) 0);
+        txtContraseña.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 8));
         txtContraseña.setMaximumSize(new Dimension(600, 40));
         txtContraseña.setPreferredSize(new Dimension(300, 32));
         txtContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
-        txtContraseña.setFont(new Font("Arial", Font.PLAIN, 18));
-        txtContraseña.setEchoChar((char) 0);
         txtContraseña.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent e) {
@@ -123,24 +126,54 @@ public class Login extends JFrame {
                 }
             }
         });
-        panelCentral.add(txtContraseña);
 
-        // Mostrar/ocultar contraseña
-        chkMostrarContrasena = new JCheckBox("Mostrar contraseña");
-        chkMostrarContrasena.setOpaque(false);
-        chkMostrarContrasena.setForeground(Color.WHITE);
-        chkMostrarContrasena.setAlignmentX(Component.CENTER_ALIGNMENT);
-        chkMostrarContrasena.addActionListener(e -> {
-            String pwd = new String(txtContraseña.getPassword());
-            if (chkMostrarContrasena.isSelected()) {
+        // OJO para mostrar/ocultar contraseña
+        JCheckBox chkMostrar = new JCheckBox();
+        chkMostrar.setOpaque(false);
+        chkMostrar.setFocusable(false);
+        chkMostrar.setBorderPainted(false);
+        chkMostrar.setContentAreaFilled(false);
+        chkMostrar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        ImageIcon iconOjo = new ImageIcon("assets/view.png");
+        ImageIcon iconOjoCerrado = new ImageIcon("assets/hide.png");
+        Image imgOjo = iconOjo.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+        Image imgOjoCerrado = iconOjoCerrado.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+        chkMostrar.setIcon(new ImageIcon(imgOjo));
+        chkMostrar.setSelectedIcon(new ImageIcon(imgOjoCerrado));
+        chkMostrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        chkMostrar.addActionListener(e -> {
+            if (chkMostrar.isSelected()) {
                 txtContraseña.setEchoChar((char) 0);
             } else {
+                String pwd = new String(txtContraseña.getPassword());
                 if (!pwd.equals("Contraseña")) {
                     txtContraseña.setEchoChar('•');
                 }
             }
         });
-        panelCentral.add(chkMostrarContrasena);
+
+        Dimension camposDimension = new Dimension(300, 32); // o usa el valor que prefieras
+txtCorreo.setPreferredSize(camposDimension);
+txtCorreo.setMaximumSize(camposDimension);
+txtContraseña.setPreferredSize(camposDimension);
+txtContraseña.setMaximumSize(camposDimension);
+
+// ...luego crea el boxPassword SIN el HorizontalGlue para que no se desplace a la derecha:
+Box boxPassword = Box.createHorizontalBox();
+boxPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+boxPassword.add(txtContraseña);
+boxPassword.add(Box.createHorizontalStrut(8));
+boxPassword.add(chkMostrar);
+boxPassword.setMaximumSize(new Dimension(camposDimension.width + 40, camposDimension.height));
+boxPassword.setPreferredSize(new Dimension(camposDimension.width + 40, camposDimension.height));
+
+// --- Añade los campos al panelCentral ---
+panelCentral.add(lblCorreo);
+panelCentral.add(txtCorreo);
+panelCentral.add(Box.createVerticalStrut(12));
+panelCentral.add(lblContraseña);
+panelCentral.add(Box.createVerticalStrut(2));
+panelCentral.add(boxPassword);
 
         // Recordar credenciales
         chkRecordar = new JCheckBox("Recordar credenciales");
@@ -233,6 +266,7 @@ public class Login extends JFrame {
 
         btnRegistro.setFont(new Font("Arial", Font.BOLD, fontSize + 2));
         btnRegistro.setPreferredSize(new Dimension(btnWidth, btnHeight));
+
     }
 
     private void iniciarSesion() {
@@ -241,7 +275,7 @@ public class Login extends JFrame {
             String contrasena = new String(txtContraseña.getPassword()).trim();
 
             if (correo.isEmpty() || contrasena.isEmpty() ||
-                correo.equals("Correo electrónico") || contrasena.equals("Contraseña")) {
+                    correo.equals("Correo electrónico") || contrasena.equals("Contraseña")) {
                 JOptionPane.showMessageDialog(this, "Introduce correo y contraseña.");
                 return;
             }

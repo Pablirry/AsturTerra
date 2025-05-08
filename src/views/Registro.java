@@ -20,6 +20,8 @@ public class Registro extends JFrame {
     private File imagenPerfil;
     private UsuarioDAO usuarioDAO;
     private JLabel lblImagenPreview;
+    private Box boxPassword;
+
 
     public Registro() {
         usuarioDAO = new UsuarioDAO();
@@ -35,7 +37,7 @@ public class Registro extends JFrame {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 try {
-                    Image img = new ImageIcon("assets/asturias.jfif").getImage();
+                    Image img = new ImageIcon("assets/asturias.png").getImage();
                     g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
                 } catch (Exception ex) {
                     g.setColor(new Color(52, 152, 219, 60));
@@ -77,7 +79,7 @@ public class Registro extends JFrame {
 
         JLabel lblTitulo = new JLabel("Crea tu cuenta");
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
-        lblTitulo.setForeground(new Color(44, 62, 80));
+        lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
         panelCentral.add(lblTitulo);
         panelCentral.add(Box.createVerticalStrut(18));
@@ -89,7 +91,7 @@ public class Registro extends JFrame {
         txtNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtNombre.addFocusListener(placeHolderListener(txtNombre, "Nombre completo"));
         panelCentral.add(txtNombre);
-        panelCentral.add(Box.createVerticalStrut(10));
+        panelCentral.add(Box.createVerticalStrut(4));
 
         txtCorreo = new JTextField("Correo electrónico");
         txtCorreo.setForeground(new Color(150, 150, 150, 120));
@@ -98,7 +100,11 @@ public class Registro extends JFrame {
         txtCorreo.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtCorreo.addFocusListener(placeHolderListener(txtCorreo, "Correo electrónico"));
         panelCentral.add(txtCorreo);
-        panelCentral.add(Box.createVerticalStrut(10));
+        panelCentral.add(Box.createVerticalStrut(4));
+
+        boxPassword = Box.createHorizontalBox();
+        boxPassword.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
 
         txtContraseña = new JPasswordField("Contraseña");
         txtContraseña.setForeground(new Color(150, 150, 150, 120));
@@ -107,8 +113,35 @@ public class Registro extends JFrame {
         txtContraseña.setAlignmentX(Component.CENTER_ALIGNMENT);
         txtContraseña.setEchoChar((char) 0);
         txtContraseña.addFocusListener(passwordPlaceHolderListener(txtContraseña, "Contraseña"));
-        panelCentral.add(txtContraseña);
-        panelCentral.add(Box.createVerticalStrut(10));
+
+        JCheckBox chkMostrar = new JCheckBox();
+        chkMostrar.setOpaque(false);
+        chkMostrar.setFocusable(false);
+        chkMostrar.setBorderPainted(false);
+        chkMostrar.setContentAreaFilled(false);
+        chkMostrar.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        ImageIcon iconOjo = new ImageIcon("assets/view.png");
+        ImageIcon iconOjoCerrado = new ImageIcon("assets/hide.png");
+        Image imgOjo = iconOjo.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+        Image imgOjoCerrado = iconOjoCerrado.getImage().getScaledInstance(22, 22, Image.SCALE_SMOOTH);
+        chkMostrar.setIcon(new ImageIcon(imgOjo));
+        chkMostrar.setSelectedIcon(new ImageIcon(imgOjoCerrado));
+        chkMostrar.addActionListener(e -> {
+            if (chkMostrar.isSelected()) {
+                txtContraseña.setEchoChar((char) 0);
+            } else {
+                String pwd = new String(txtContraseña.getPassword());
+                if (!pwd.equals("Contraseña")) {
+                    txtContraseña.setEchoChar('•');
+                }
+            }
+        });
+
+        boxPassword.add(txtContraseña);
+        boxPassword.add(Box.createHorizontalStrut(8));
+        boxPassword.add(chkMostrar);
+
+        panelCentral.add(boxPassword);
 
         JPanel panelAdmin = new JPanel();
         panelAdmin.setOpaque(false);
@@ -291,6 +324,8 @@ public class Registro extends JFrame {
         txtContraseña.setFont(new Font("Arial", Font.PLAIN, fontSize));
         txtContraseña.setPreferredSize(new Dimension(btnWidth, fieldHeight));
         txtContraseña.setMaximumSize(new Dimension(btnWidth, fieldHeight));
+
+        boxPassword.setMaximumSize(new Dimension(btnWidth, fieldHeight));
 
         txtAdminPass.setFont(new Font("Arial", Font.PLAIN, fontSize - 2));
         txtAdminPass.setPreferredSize(new Dimension(Math.max(120, btnWidth / 2), fieldHeight));

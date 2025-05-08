@@ -1,13 +1,19 @@
 package views;
 
 import javax.swing.*;
+
+import com.toedter.calendar.IDateEvaluator;
+import com.toedter.calendar.JCalendar;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import model.Reserva;
 import model.Ruta;
 import model.Usuario;
 import services.TurismoService;
@@ -255,7 +261,6 @@ public class VistaRutas extends JFrame {
         return new ImageIcon(img);
     }
 
-
     private void mostrarDialogoDetalles(Ruta ruta) {
         ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
         Color bgGlobal = theme == ThemeManager.Theme.DARK
@@ -333,7 +338,8 @@ public class VistaRutas extends JFrame {
         panelDatos.add(lblDificultad);
         panelDatos.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Descripción SIN borde ni fondo, scroll si es larga, alineada a la izquierda y color igual al fondo
+        // Descripción SIN borde ni fondo, scroll si es larga, alineada a la izquierda y
+        // color igual al fondo
         JTextArea txtDescripcion = new JTextArea(ruta.getDescripcion());
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         txtDescripcion.setLineWrap(true);
@@ -400,26 +406,149 @@ public class VistaRutas extends JFrame {
         btnReservar.setPreferredSize(btnSize);
         btnReservar.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnReservar.addActionListener(e -> {
-            String fechaStr = JOptionPane.showInputDialog(this, "Introduce la fecha de la reserva (YYYY-MM-DD):");
-            if (fechaStr == null || fechaStr.trim().isEmpty())
-                return;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date fecha = null;
             try {
-                fecha = sdf.parse(fechaStr.trim());
-            } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(this, "Formato de fecha incorrecto. Usa YYYY-MM-DD.");
-                return;
-            }
-            try {
-                boolean ok = TurismoService.getInstance().reservarRuta(usuario.getId(), ruta.getId(), fecha);
+                // 1. Obtener todas las reservas de la ruta
+                List<Reserva> reservas = TurismoService.getInstance().obtenerReservasRuta(ruta.getId());
+
+                // Mapear fechas a cantidad de reservas por fecha
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Map<String, Integer> reservasPorFecha = new java.util.HashMap<>();
+                for (Reserva reserva : reservas) {
+                    String fecha = sdf.format(reserva.getFecha());
+                    reservasPorFecha.put(fecha, reservasPorFecha.getOrDefault(fecha, 0) + 1);
+                }
+
+                // 2. Crear calendario y deshabilitar fechas ocupadas
+                JCalendar calendario = new JCalendar();
+                calendario.setMinSelectableDate(new Date());
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, 60);
+                calendario.setMaxSelectableDate(cal.getTime());
+
+                // Personalización visual del calendario y combos
+                calendario.setBackground(new Color(245, 247, 250));
+                calendario.setDecorationBackgroundColor(new Color(52, 152, 219, 30));
+                calendario.setSundayForeground(new Color(231, 76, 60));
+                calendario.setWeekdayForeground(new Color(52, 73, 94));
+                calendario.setTodayButtonText("Hoy");
+                calendario.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+                calendario.getDayChooser().setForeground(new Color(44, 62, 80));
+                calendario.getDayChooser().setFont(new Font("Segoe UI", Font.BOLD, 15));
+                calendario.getMonthChooser().setFont(new Font("Segoe UI", Font.BOLD, 16));
+                calendario.getYearChooser().setFont(new Font("Segoe UI", Font.BOLD, 16));
+
+                JComboBox<String> comboMes = (JComboBox<String>) calendario.getMonthChooser().getComboBox();
+
+                JSpinner spinnerAnio = (JSpinner) calendario.getYearChooser().getSpinner();
+
+                comboMes.revalidate();
+                comboMes.repaint();
+                spinnerAnio.revalidate();
+                spinnerAnio.repaint();
+                // Deshabilitar fechas con 6 o más reservas
+                calendario.getDayChooser().addDateEvaluator(new IDateEvaluator() {
+                    @Override
+                    public boolean isSpecial(Date date) {
+                        return false;
+                    }
+
+                    @Override
+                    public Color getSpecialForegroundColor() {
+                        return null;
+                    }
+
+                    @Override
+                    public Color getSpecialBackroundColor() {
+                        return null;
+                    }
+
+                    @Override
+                    public String getSpecialTooltip() {
+                        return null;
+                    }
+
+                    @Override
+                    public boolean isInvalid(Date date) {
+                        String fechaStr = sdf.format(date);
+                        return reservasPorFecha.getOrDefault(fechaStr, 0) >= 6;
+                    }
+
+                    @Override
+                    public Color getInvalidForegroundColor() {
+                        return Color.GRAY;
+                    }
+
+                    @Override
+                    public Color getInvalidBackroundColor() {
+                        return new Color(220, 220, 220);
+                    }
+
+                    @Override
+                    public String getInvalidTooltip() {
+                        return "Máximo de reservas alcanzado";
+                    }
+                });
+
+                // Panel moderno para el calendario
+                JPanel panelReserva = new JPanel(new BorderLayout(0, 16));
+                panelReserva.setBackground(new Color(245, 247, 250));
+                panelReserva.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createLineBorder(new Color(52, 152, 219), 2, true),
+                        BorderFactory.createEmptyBorder(24, 32, 24, 32)));
+
+                JLabel icono = new JLabel("\uD83D\uDCC5");
+                icono.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
+                icono.setForeground(new Color(52, 152, 219));
+                icono.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 12));
+
+                JLabel lbl = new JLabel("Selecciona una fecha disponible");
+                lbl.setFont(new Font("Segoe UI", Font.BOLD, 18));
+                lbl.setForeground(new Color(44, 62, 80));
+                lbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
+
+                JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+                panelTop.setOpaque(false);
+                panelTop.add(icono);
+                panelTop.add(lbl);
+
+                panelReserva.add(panelTop, BorderLayout.NORTH);
+                panelReserva.add(calendario, BorderLayout.CENTER);
+
+                int result = JOptionPane.showConfirmDialog(
+                        this,
+                        panelReserva,
+                        "Reservar Ruta",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.PLAIN_MESSAGE);
+
+                if (result != JOptionPane.OK_OPTION)
+                    return;
+
+                Date fechaSeleccionada = calendario.getDate();
+                String fechaStr = sdf.format(fechaSeleccionada);
+
+                List<Reserva> reservasUsuario = TurismoService.getInstance().obtenerReservasUsuario(usuario.getId());
+                boolean yaReservada = reservasUsuario.stream()
+                        .anyMatch(r -> r.getIdRuta() == ruta.getId() && sdf.format(r.getFecha()).equals(fechaStr));
+                if (yaReservada) {
+                    UIUtils.mostrarError(this, "Ya tienes una reserva para esta ruta en la fecha seleccionada.");
+                    return;
+                }
+
+                if (reservasPorFecha.getOrDefault(fechaStr, 0) >= 6) {
+                    UIUtils.mostrarError(this, "La fecha seleccionada ya tiene el máximo de usuarios.");
+                    return;
+                }
+
+                boolean ok = TurismoService.getInstance().reservarRuta(usuario.getId(), ruta.getId(),
+                        fechaSeleccionada);
                 if (ok) {
-                    JOptionPane.showMessageDialog(this, "Reserva realizada y pendiente de confirmación.");
+                    UIUtils.mostrarInfo(this, "¡Reserva realizada! Recibirás confirmación próximamente.");
                 } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo realizar la reserva.");
+                    UIUtils.mostrarError(this, "No se pudo realizar la reserva.");
                 }
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error al reservar: " + ex.getMessage());
+                UIUtils.mostrarError(this, "Error al reservar: " + ex.getMessage());
             }
             dialogo.dispose();
         });

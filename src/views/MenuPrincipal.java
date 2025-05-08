@@ -20,7 +20,7 @@ public class MenuPrincipal extends JFrame {
 
     private JPanel panelFondo;
     private JPanel panelRutas, panelReservas, panelRestaurantes, panelHistorial, panelChat;
-    private JLabel lblTitulo, lblImagenPerfil;
+    private JLabel lblImagenPerfil;
     private JLabel lblRutas, lblReservas, lblRestaurantes, lblHistorial, lblChat;
     private JButton btnTema, btnSoporte;
     private Timer timerNotificaciones;
@@ -97,43 +97,35 @@ public class MenuPrincipal extends JFrame {
             if (btnSoporte != null)
                 btnSoporte.setBackground(nuevoColor);
             panelFondo.setBackground(nuevoColor);
-            lblTitulo.setForeground(darkNow ? Color.WHITE : new Color(44, 62, 80));
             panelFondo.repaint();
         });
         panelFondo.add(btnTema);
 
-        // Título
-        lblTitulo = new JLabel(I18n.t("app.nombre"), SwingConstants.CENTER);
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
-        lblTitulo.setForeground(dark ? Color.WHITE : new Color(44, 62, 80));
-        lblTitulo.setBounds(150, 30, 400, 40);
-        panelFondo.add(lblTitulo);
+        JLabel lblLogo = new JLabel();
+        lblLogo.setOpaque(false);
+        ImageIcon iconLogo = new ImageIcon("assets/LogoAsturTerra.png");
 
-        // Imagen decorativa de fondo (por ejemplo, en la esquina inferior derecha)
-        JLabel lblDecorativo = new JLabel();
-        lblDecorativo.setOpaque(false);
-        ImageIcon iconDecorativo = new ImageIcon("assets/LogoAsturTerra.png"); // Usa tu logo o imagen decorativa
-        // Escalado responsivo según tamaño de ventana
-        int anchoImg = Math.max(120, getWidth() / 6);
-        int altoImg = anchoImg;
-        Image imgEscalada = iconDecorativo.getImage().getScaledInstance(anchoImg, altoImg, Image.SCALE_SMOOTH);
-        lblDecorativo.setIcon(new ImageIcon(imgEscalada));
-        // Posición absoluta en la esquina inferior derecha
-        lblDecorativo.setBounds(getWidth() - anchoImg - 30, getHeight() - altoImg - 80, anchoImg, altoImg);
-        lblDecorativo.setVisible(true);
-        panelFondo.add(lblDecorativo);
+        // Aumenta el tamaño máximo permitido
+        int maxAncho = 500;
+        int maxAlto = 200;
+        int anchoLogo = iconLogo.getIconWidth();
+        int altoLogo = iconLogo.getIconHeight();
 
-        // Actualiza la posición y tamaño de la imagen al redimensionar la ventana
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int anchoImg = Math.max(120, getWidth() / 6);
-                int altoImg = anchoImg;
-                Image imgEscalada = iconDecorativo.getImage().getScaledInstance(anchoImg, altoImg, Image.SCALE_SMOOTH);
-                lblDecorativo.setIcon(new ImageIcon(imgEscalada));
-                lblDecorativo.setBounds(getWidth() - anchoImg - 30, getHeight() - altoImg - 80, anchoImg, altoImg);
-            }
-        });
+        // Escala solo si es necesario y manteniendo la proporción
+        if (anchoLogo > maxAncho || altoLogo > maxAlto) {
+            double escala = Math.min((double) maxAncho / anchoLogo, (double) maxAlto / altoLogo);
+            anchoLogo = (int) (anchoLogo * escala);
+            altoLogo = (int) (altoLogo * escala);
+            Image imgEscalada = iconLogo.getImage().getScaledInstance(anchoLogo, altoLogo, Image.SCALE_SMOOTH);
+            lblLogo.setIcon(new ImageIcon(imgEscalada));
+        } else {
+            lblLogo.setIcon(iconLogo);
+        }
+
+        // Centrado y con margen superior suficiente
+        lblLogo.setBounds(getWidth() / 2 - anchoLogo / 2, 60, anchoLogo, altoLogo);
+        lblLogo.setVisible(true);
+        panelFondo.add(lblLogo);
 
         // Imagen de perfil
         lblImagenPerfil = new JLabel();
@@ -273,7 +265,6 @@ public class MenuPrincipal extends JFrame {
                 : I18n.t("boton.modo.oscuro"));
         if (btnSoporte != null)
             btnSoporte.setText(I18n.t("boton.soporte"));
-        lblTitulo.setText(I18n.t("app.nombre"));
         if (lblRutas != null)
             lblRutas.setText(I18n.t("titulo.rutas"));
         if (lblReservas != null)
@@ -431,27 +422,47 @@ public class MenuPrincipal extends JFrame {
 
         panelChat.setBounds(w / 2 - panelWidth / 2, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
-        lblTitulo.setBounds(w / 2 - 200, 30, 400, 40);
+        for (Component c : panelFondo.getComponents()) {
+            if (c instanceof JLabel && ((JLabel) c).getIcon() != null) {
+                int anchoLogo = ((JLabel) c).getIcon().getIconWidth();
+                int altoLogo = ((JLabel) c).getIcon().getIconHeight();
+                c.setBounds(w / 2 - anchoLogo / 2, 60, anchoLogo, altoLogo);
+            }
+        }
         lblImagenPerfil.setBounds(w - 100, 10, 80, 80);
     }
 
     private void cargarImagenPerfil() {
-        Image img;
-        if (usuario.getImagenPerfil() != null) {
-            try {
+        Image img = null;
+        try {
+            if (usuario.getImagenPerfil() != null) {
                 ByteArrayInputStream bais = new ByteArrayInputStream(usuario.getImagenPerfil());
                 BufferedImage bufferedImage = ImageIO.read(bais);
                 img = bufferedImage.getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(),
                         Image.SCALE_SMOOTH);
-            } catch (IOException e) {
-                img = new ImageIcon("assets/LogoAsturTerra.png").getImage()
-                        .getScaledInstance(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+            } else {
+                // Intenta cargar como recurso del classpath primero
+                java.net.URL url = getClass().getClassLoader().getResource("assets/usuario.png");
+                if (url != null) {
+                    img = new ImageIcon(url).getImage().getScaledInstance(lblImagenPerfil.getWidth(),
+                            lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+                } else {
+                    // Si no está en el classpath, intenta cargar desde el sistema de archivos
+                    img = new ImageIcon("assets/usuario.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(),
+                            lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+                }
             }
-        } else {
-            img = new ImageIcon("assets/LogoAsturTerra.png").getImage().getScaledInstance(lblImagenPerfil.getWidth(),
-                    lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+        } catch (Exception e) {
+            // Si hay error, intenta cargar la imagen por defecto
+            java.net.URL url = getClass().getClassLoader().getResource("assets/usuario.png");
+            if (url != null) {
+                img = new ImageIcon(url).getImage().getScaledInstance(lblImagenPerfil.getWidth(),
+                        lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
+            } else {
+                img = new BufferedImage(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            }
         }
-
+    
         int size = Math.min(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight());
         BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = circleBuffer.createGraphics();

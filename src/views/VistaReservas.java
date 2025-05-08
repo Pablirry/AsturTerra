@@ -6,6 +6,7 @@ import java.util.List;
 import model.Reserva;
 import model.Ruta;
 import model.Usuario;
+import utils.WrapLayout;
 import dao.ReservarDAO;
 import dao.RutaDAO;
 
@@ -48,7 +49,7 @@ public class VistaReservas extends JFrame {
         add(panelTitulo, BorderLayout.NORTH);
 
         panelTarjetas = new JPanel();
-        panelTarjetas.setLayout(new FlowLayout(FlowLayout.LEFT, 24, 24));
+        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24)); // Cambiado a WrapLayout
         panelTarjetas.setBackground(new Color(236, 240, 241));
         JScrollPane scroll = new JScrollPane(panelTarjetas);
         scroll.setBorder(BorderFactory.createEmptyBorder());
