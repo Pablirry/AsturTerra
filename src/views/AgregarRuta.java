@@ -1,6 +1,8 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
@@ -25,7 +27,7 @@ public class AgregarRuta extends JDialog {
     public AgregarRuta(VistaRutas padre) {
         super(padre, "Agregar Ruta", true);
         this.padre = padre;
-        setSize(480, 600);
+        setSize(520, 670);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -34,6 +36,8 @@ public class AgregarRuta extends JDialog {
     private void inicializarComponentes() {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color bg = dark ? new Color(44, 62, 80) : Color.WHITE;
+        Color fg = dark ? Color.WHITE : Color.BLACK;
+        Color fieldBg = dark ? new Color(44, 62, 80) : Color.WHITE;
 
         JPanel panel = new JPanel() {
             @Override
@@ -50,7 +54,7 @@ public class AgregarRuta extends JDialog {
         panel.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
 
         JLabel lblTitulo = new JLabel("Agregar Ruta");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitulo.setForeground(new Color(41, 128, 185));
         lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -59,109 +63,67 @@ public class AgregarRuta extends JDialog {
         separator.setForeground(new Color(41, 128, 185, 80));
         separator.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        // Nombre
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtNombre.setMaximumSize(new Dimension(360, 32));
-        txtNombre.setBorder(BorderFactory.createTitledBorder("Nombre"));
+        txtNombre.setMaximumSize(new Dimension(360, 36));
+        txtNombre.setBackground(fieldBg);
+        txtNombre.setForeground(fg);
+        txtNombre.setCaretColor(fg);
+        txtNombre.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(41, 128, 185, 90), 2, true),
+            "Nombre",
+            0, 0, new Font("Segoe UI", Font.PLAIN, 15), fg
+        ));
 
-        // Panel para la descripción con borde
-        JPanel panelDescripcion = new JPanel(new BorderLayout());
-        panelDescripcion.setOpaque(false);
-        panelDescripcion.setBorder(BorderFactory.createTitledBorder("Descripción"));
-
-        txtDescripcion = new JTextArea(3, 20);
+        // Descripción (más grande) con scroll DENTRO del área de texto
+        txtDescripcion = new JTextArea(7, 20);
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
         txtDescripcion.setOpaque(true);
-        txtDescripcion.setBackground(dark ? new Color(52, 73, 94) : new Color(245, 245, 250));
-        txtDescripcion.setBorder(BorderFactory.createEmptyBorder(4, 6, 4, 6));
+        txtDescripcion.setBackground(fieldBg);
+        txtDescripcion.setForeground(fg);
+        txtDescripcion.setCaretColor(fg);
+        txtDescripcion.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(41, 128, 185, 90), 2, true),
+            "Descripción",
+            0, 0, new Font("Segoe UI", Font.PLAIN, 15), fg
+        ));
 
-        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
-        scrollDesc.setPreferredSize(new Dimension(360, 70));
-        scrollDesc.setMaximumSize(new Dimension(360, 90));
-        scrollDesc.setBorder(BorderFactory.createEmptyBorder());
+        // El JScrollPane solo para el área interna, no para el borde
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion) {
+            @Override
+            public void setBorder(Border border) {
+                // No permitir cambiar el borde, lo mantiene el JTextArea
+            }
+        };
+        scrollDesc.setBorder(null);
         scrollDesc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        // Cambia la política para que el scroll siempre esté visible
-        scrollDesc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        scrollDesc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollDesc.setPreferredSize(new Dimension(360, 140));
+        scrollDesc.setMaximumSize(new Dimension(360, 160));
+        scrollDesc.getViewport().setOpaque(false);
+        scrollDesc.setOpaque(false);
 
-        // Personalización visual del scroll
-        JScrollBar verticalBar = scrollDesc.getVerticalScrollBar();
-        verticalBar.setUnitIncrement(16);
-        verticalBar.setOpaque(false);
-        verticalBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
-            private final Dimension d = new Dimension(10, 40);
-
-            @Override
-            protected void configureScrollBarColors() {
-                this.thumbColor = new Color(52, 152, 219, 220);
-                this.trackColor = new Color(236, 240, 241, 120);
-            }
-
-            @Override
-            protected JButton createDecreaseButton(int orientation) {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                button.setVisible(false);
-                return button;
-            }
-
-            @Override
-            protected JButton createIncreaseButton(int orientation) {
-                JButton button = new JButton();
-                button.setPreferredSize(new Dimension(0, 0));
-                button.setMinimumSize(new Dimension(0, 0));
-                button.setMaximumSize(new Dimension(0, 0));
-                button.setVisible(false);
-                return button;
-            }
-
-            @Override
-            protected Dimension getMaximumThumbSize() {
-                return d;
-            }
-
-            @Override
-            protected Dimension getMinimumThumbSize() {
-                return d;
-            }
-
-            @Override
-            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-                if (!c.isEnabled() || thumbBounds.width > thumbBounds.height) return;
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(thumbColor);
-                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 12, 12);
-                g2.setColor(new Color(41, 128, 185, 180));
-                g2.setStroke(new BasicStroke(2));
-                g2.drawRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width-1, thumbBounds.height-1, 12, 12);
-                g2.dispose();
-            }
-
-            @Override
-            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setColor(trackColor);
-                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 12, 12);
-                g2.dispose();
-            }
-        });
-
-        panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
-
+        // Precio
         txtPrecio = new JTextField();
         txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtPrecio.setMaximumSize(new Dimension(360, 32));
-        txtPrecio.setBorder(BorderFactory.createTitledBorder("Precio (€)"));
+        txtPrecio.setMaximumSize(new Dimension(360, 36));
+        txtPrecio.setBackground(fieldBg);
+        txtPrecio.setForeground(fg);
+        txtPrecio.setCaretColor(fg);
+        txtPrecio.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(41, 128, 185, 90), 2, true),
+            "Precio (€)",
+            0, 0, new Font("Segoe UI", Font.PLAIN, 15), fg
+        ));
 
-        // Panel dificultad
+        // Panel dificultad alineado a la izquierda
         JPanel panelDificultad = new JPanel();
         panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.X_AXIS));
         panelDificultad.setOpaque(false);
-        panelDificultad.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panelDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         JLabel lblDificultad = new JLabel("Dificultad:");
         lblDificultad.setFont(new Font("Segoe UI", Font.BOLD, 16));
@@ -172,7 +134,7 @@ public class AgregarRuta extends JDialog {
         panelEstrellas.setOpaque(false);
         for (int i = 0; i < 5; i++) {
             estrellas[i] = new JLabel("☆");
-            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 18));
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 26));
             final int estrellaIndex = i;
             estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             estrellas[i].setForeground(new Color(241, 196, 15));
@@ -186,6 +148,7 @@ public class AgregarRuta extends JDialog {
                 public void mouseEntered(MouseEvent e) {
                     for (int j = 0; j < 5; j++) {
                         estrellas[j].setText(j <= estrellaIndex ? "★" : "☆");
+                        estrellas[j].setFont(new Font("Segoe UI Symbol", Font.BOLD, j <= estrellaIndex ? 30 : 26));
                     }
                 }
                 @Override
@@ -195,17 +158,19 @@ public class AgregarRuta extends JDialog {
             });
             panelEstrellas.add(estrellas[i]);
         }
-        panelDificultad.add(Box.createHorizontalGlue());
         panelDificultad.add(lblDificultad);
         panelDificultad.add(Box.createHorizontalStrut(10));
         panelDificultad.add(panelEstrellas);
-        panelDificultad.add(Box.createHorizontalGlue());
 
         // Imagen circular
         lblImagen = new JLabel("Sin imagen") {
             @Override
             public Dimension getPreferredSize() {
-                return new Dimension(90, 90);
+                return new Dimension(100, 100);
+            }
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
             }
         };
         lblImagen.setFont(new Font("Segoe UI", Font.ITALIC, 15));
@@ -218,9 +183,18 @@ public class AgregarRuta extends JDialog {
         btnSeleccionarImagen.setFocusPainted(false);
         btnSeleccionarImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSeleccionarImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnSeleccionarImagen.setPreferredSize(new Dimension(180, 38));
+        btnSeleccionarImagen.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btnSeleccionarImagen.setBackground(new Color(31, 97, 141));
+            }
+            public void mouseExited(MouseEvent e) {
+                btnSeleccionarImagen.setBackground(new Color(41, 128, 185));
+            }
+        });
         btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
 
-        // Botones
+        // Botones modernos
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
         panelBotones.setOpaque(false);
 
@@ -228,18 +202,36 @@ public class AgregarRuta extends JDialog {
         btnGuardar.setBackground(new Color(52, 152, 219));
         btnGuardar.setForeground(Color.WHITE);
         btnGuardar.setFocusPainted(false);
-        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnGuardar.setPreferredSize(new Dimension(120, 38));
+        btnGuardar.setPreferredSize(new Dimension(160, 40));
+        btnGuardar.setBorder(BorderFactory.createEmptyBorder());
+        btnGuardar.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btnGuardar.setBackground(new Color(41, 128, 185));
+            }
+            public void mouseExited(MouseEvent e) {
+                btnGuardar.setBackground(new Color(52, 152, 219));
+            }
+        });
         btnGuardar.addActionListener(e -> guardarRuta());
 
         btnCancelar = new JButton("Cancelar");
         btnCancelar.setBackground(new Color(231, 76, 60));
         btnCancelar.setForeground(Color.WHITE);
         btnCancelar.setFocusPainted(false);
-        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btnCancelar.setPreferredSize(new Dimension(120, 38));
+        btnCancelar.setPreferredSize(new Dimension(140, 40));
+        btnCancelar.setBorder(BorderFactory.createEmptyBorder());
+        btnCancelar.addMouseListener(new MouseAdapter() {
+            public void mouseEntered(MouseEvent e) {
+                btnCancelar.setBackground(new Color(192, 57, 43));
+            }
+            public void mouseExited(MouseEvent e) {
+                btnCancelar.setBackground(new Color(231, 76, 60));
+            }
+        });
         btnCancelar.addActionListener(e -> dispose());
 
         panelBotones.add(btnGuardar);
@@ -252,7 +244,7 @@ public class AgregarRuta extends JDialog {
         panel.add(Box.createVerticalStrut(16));
         panel.add(txtNombre);
         panel.add(Box.createVerticalStrut(10));
-        panel.add(panelDescripcion);
+        panel.add(scrollDesc);
         panel.add(Box.createVerticalStrut(10));
         panel.add(txtPrecio);
         panel.add(Box.createVerticalStrut(10));
@@ -268,8 +260,10 @@ public class AgregarRuta extends JDialog {
     }
 
     private void actualizarEstrellas() {
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++) {
             estrellas[i].setText(i < dificultadSeleccionada ? "★" : "☆");
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, i < dificultadSeleccionada ? 30 : 26));
+        }
     }
 
     private void seleccionarImagen() {
@@ -278,7 +272,6 @@ public class AgregarRuta extends JDialog {
             File file = fc.getSelectedFile();
             try {
                 imagenBytes = Files.readAllBytes(file.toPath());
-                // Mostrar la imagen seleccionada en círculo
                 ImageIcon icon = getCircularImageIcon(imagenBytes, 90);
                 lblImagen.setText("");
                 lblImagen.setIcon(icon);
@@ -290,7 +283,6 @@ public class AgregarRuta extends JDialog {
         }
     }
 
-    // Utilidad para mostrar imagen circular
     private ImageIcon getCircularImageIcon(byte[] imgBytes, int size) {
         try {
             java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(imgBytes);
