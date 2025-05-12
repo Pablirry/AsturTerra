@@ -63,4 +63,5 @@ public class UIUtils {
     public static void mostrarInfo(Component parent, String mensaje) {
         JOptionPane.showMessageDialog(parent, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
     }
+
 }

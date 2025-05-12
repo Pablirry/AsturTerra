@@ -1,28 +1,27 @@
 package services;
 
-import dao.*;
-import model.*;
-import java.util.*;
+import dao.RutaDAO;
+import dao.UsuarioDAO;
+import dao.ReservarDAO;
+import dao.RestauranteDAO;
+import model.Ruta;
+import model.Usuario;
+import model.Reserva;
+import model.Restaurante;
+import java.util.List;
 
 public class TurismoService {
     private static TurismoService instance;
-    private final UsuarioDAO usuarioDAO;
     private final RutaDAO rutaDAO;
-    private final ValoracionDAO valoracionDAO;
     private final RestauranteDAO restauranteDAO;
-    private final ReservarDAO reservaDAO;
-    private final HistorialDAO historialDAO;
-    private final MensajeDAO mensajeDAO;
-    public static Usuario usuarioSesion;
+    private final ReservarDAO reservarDAO;
+    private final UsuarioDAO usuarioDAO;
 
     private TurismoService() {
-        usuarioDAO = new UsuarioDAO();
         rutaDAO = new RutaDAO();
-        valoracionDAO = new ValoracionDAO();
         restauranteDAO = new RestauranteDAO();
-        reservaDAO = new ReservarDAO();
-        historialDAO = new HistorialDAO();
-        mensajeDAO = new MensajeDAO();
+        this.reservarDAO = new ReservarDAO();
+        this.usuarioDAO = new UsuarioDAO();
     }
 
     public static TurismoService getInstance() {
@@ -30,23 +29,6 @@ public class TurismoService {
             instance = new TurismoService();
         }
         return instance;
-    }
-
-    // Usuario
-    public Usuario iniciarSesion(String correo, String contrasena) throws ClassNotFoundException {
-        return usuarioDAO.iniciarSesion(correo, contrasena);
-    }
-
-    public boolean registrarUsuario(Usuario usuario) throws ClassNotFoundException {
-        return usuarioDAO.registrarUsuario(usuario);
-    }
-
-    public boolean actualizarUsuario(Usuario usuario) throws ClassNotFoundException {
-        return usuarioDAO.actualizarUsuario(usuario);
-    }
-
-    public Usuario obtenerUsuarioPorId(int id) throws ClassNotFoundException {
-        return usuarioDAO.obtenerUsuarioPorId(id);
     }
 
     // Rutas
@@ -68,41 +50,6 @@ public class TurismoService {
 
     public boolean actualizarRuta(Ruta ruta) throws ClassNotFoundException {
         return rutaDAO.actualizarRuta(ruta);
-    }
-
-    // Valoraciones
-    public boolean valorarRuta(ValoracionRuta valoracion) throws ClassNotFoundException {
-        return valoracionDAO.registrarValoracionRuta(valoracion);
-    }
-
-    public boolean valorarRestaurante(ValoracionRestaurante valoracion) throws ClassNotFoundException {
-        return valoracionDAO.registrarValoracionRestaurante(valoracion);
-    }
-
-    public boolean valorarRestaurante(int idRestaurante, int idUsuario, int puntuacion, String comentario)
-            throws ClassNotFoundException {
-        ValoracionRestaurante valoracion = new ValoracionRestaurante();
-        valoracion.setIdRestaurante(idRestaurante);
-        valoracion.setIdUsuario(idUsuario);
-        valoracion.setPuntuacion(puntuacion);
-        valoracion.setComentario(comentario);
-        return valorarRestaurante(valoracion);
-    }
-
-    public List<ValoracionRuta> obtenerValoracionesRuta(int idRuta) throws ClassNotFoundException {
-        return valoracionDAO.obtenerValoracionesRuta(idRuta);
-    }
-
-    public List<ValoracionRestaurante> obtenerValoracionesRestaurante(int idRestaurante) throws ClassNotFoundException {
-        return valoracionDAO.obtenerValoracionesRestaurante(idRestaurante);
-    }
-
-    public double obtenerValoracionMediaRuta(int idRuta) throws ClassNotFoundException {
-        return valoracionDAO.obtenerValoracionMediaRuta(idRuta);
-    }
-
-    public double obtenerValoracionMediaRestaurante(int idRestaurante) throws ClassNotFoundException {
-        return valoracionDAO.obtenerValoracionMediaRestaurante(idRestaurante);
     }
 
     // Restaurantes
@@ -130,53 +77,19 @@ public class TurismoService {
         return restauranteDAO.actualizarRestaurante(restaurante);
     }
 
-    // Reservas
-    public boolean reservarRuta(int idUsuario, int idRuta, Date fecha) throws ClassNotFoundException {
-        return reservaDAO.reservarRuta(idUsuario, idRuta, fecha);
+    //Reservas
+    public List<Reserva> obtenerReservas() throws ClassNotFoundException {
+        return reservarDAO.listarReservas();
+    }
+    public boolean eliminarReserva(int idReserva) throws ClassNotFoundException {
+        return reservarDAO.eliminarReserva(idReserva);
+    }
+    public boolean confirmarReserva(int idReserva) throws ClassNotFoundException {
+        return reservarDAO.confirmarReserva(idReserva);
     }
 
-    public List<Reserva> obtenerReservasRuta(int idRuta) throws ClassNotFoundException {
-        return reservaDAO.obtenerReservasRuta(idRuta);
+    //Usuario
+    public Usuario obtenerUsuarioPorId(int idUsuario) throws ClassNotFoundException {
+        return usuarioDAO.obtenerUsuarioPorId(idUsuario);
     }
-
-    public List<Reserva> obtenerReservasUsuario(int idUsuario) throws ClassNotFoundException {
-        return reservaDAO.obtenerReservasUsuario(idUsuario);
-    }
-
-    public boolean cancelarReserva(int idReserva) throws ClassNotFoundException {
-        return reservaDAO.cancelarReserva(idReserva);
-    }
-
-    // Historial
-    public boolean registrarActividad(int idUsuario, String accion) {
-        try {
-            Historial historial = new Historial(0, idUsuario, accion, new Date());
-            return historialDAO.registrarActividad(historial);
-        } catch (Exception e) {
-            System.err.println("Error al registrar actividad: " + e.getMessage());
-            return false;
-        }
-    }
-
-    public List<Historial> obtenerHistorialUsuario(int idUsuario) throws ClassNotFoundException {
-        return historialDAO.obtenerHistorialUsuario(idUsuario);
-    }
-
-    // Mensajes
-    public boolean enviarMensaje(int idUsuario, Mensaje mensaje) throws ClassNotFoundException {
-        return mensajeDAO.enviarMensaje(idUsuario, mensaje);
-    }
-
-    public List<Mensaje> obtenerMensajesUsuario(int idUsuario) throws ClassNotFoundException {
-        return mensajeDAO.obtenerMensajesUsuario(idUsuario);
-    }
-
-    public List<Mensaje> obtenerConversacion(int idEmisor, int idReceptor) throws ClassNotFoundException {
-        return mensajeDAO.obtenerConversacion(idEmisor, idReceptor);
-    }
-
-    public boolean marcarMensajeComoLeido(int idMensaje) throws ClassNotFoundException {
-        return mensajeDAO.marcarMensajeComoLeido(idMensaje);
-    }
-
 }

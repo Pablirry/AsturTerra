@@ -23,7 +23,6 @@ public class RestauranteDAO {
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("ubicacion"),
-                        rs.getFloat("valoracion"),
                         rs.getBytes("imagen")));
             }
         } catch (SQLException e) {
@@ -38,7 +37,6 @@ public class RestauranteDAO {
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, restaurante.getNombre());
             ps.setString(2, restaurante.getUbicacion());
-            ps.setFloat(3, restaurante.getValoracion());
             ps.setBytes(4, restaurante.getImagen());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -70,7 +68,6 @@ public class RestauranteDAO {
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("ubicacion"),
-                        rs.getFloat("valoracion"),
                         rs.getBytes("imagen"));
             }
         } catch (SQLException e) {
@@ -90,7 +87,6 @@ public class RestauranteDAO {
                             rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("ubicacion"),
-                            rs.getFloat("valoracion"),
                             rs.getBytes("imagen"));
                 }
             }

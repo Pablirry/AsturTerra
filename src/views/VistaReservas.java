@@ -1,179 +1,103 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 import model.Reserva;
 import model.Ruta;
 import model.Usuario;
-import utils.WrapLayout;
-import dao.ReservarDAO;
-import dao.RutaDAO;
+import services.TurismoService;
 
 public class VistaReservas extends JFrame {
-
-    private static VistaReservas instance;
-
-    private JPanel panelTarjetas;
-    private JButton btnVolver;
+    private JTable tablaReservas;
+    private DefaultTableModel modeloTabla;
+    private JButton btnEliminar, btnConfirmar;
     private Usuario usuario;
-    private List<Reserva> reservas;
-
-    public static VistaReservas getInstance(Usuario usuario) {
-        if (instance == null || !instance.isVisible()) {
-            instance = new VistaReservas(usuario);
-        }
-        instance.toFront();
-        return instance;
-    }
 
     public VistaReservas(Usuario usuario) {
         this.usuario = usuario;
+        setTitle("Gestión de Reservas");
+        setSize(900, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inicializarComponentes();
         cargarReservas();
     }
 
     private void inicializarComponentes() {
-        setTitle("Gestión de Reservas");
-        setSize(900, 700);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Usuario", "Ruta", "Fecha", "Confirmada"}, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        tablaReservas = new JTable(modeloTabla);
+
+        JScrollPane scrollPane = new JScrollPane(tablaReservas);
+
+        btnEliminar = new JButton("Eliminar Reserva");
+        btnConfirmar = new JButton("Confirmar Reserva");
+
+        btnEliminar.addActionListener(e -> eliminarReservaSeleccionada());
+        btnConfirmar.addActionListener(e -> confirmarReservaSeleccionada());
+
+        JPanel panelBotones = new JPanel();
+        panelBotones.add(btnConfirmar);
+        panelBotones.add(btnEliminar);
+
         setLayout(new BorderLayout());
-
-        JPanel panelTitulo = new JPanel();
-        panelTitulo.setBackground(new Color(44, 62, 80));
-        JLabel lblTitulo = new JLabel("Gestión de Reservas");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 28));
-        lblTitulo.setForeground(Color.WHITE);
-        panelTitulo.add(lblTitulo);
-        add(panelTitulo, BorderLayout.NORTH);
-
-        panelTarjetas = new JPanel();
-        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24)); // Cambiado a WrapLayout
-        panelTarjetas.setBackground(new Color(236, 240, 241));
-        JScrollPane scroll = new JScrollPane(panelTarjetas);
-        scroll.setBorder(BorderFactory.createEmptyBorder());
-        add(scroll, BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(new Color(236, 240, 241));
-
-        btnVolver = new JButton("Volver al Menú");
-        btnVolver.setBackground(new Color(52, 152, 219));
-        btnVolver.setForeground(Color.WHITE);
-        btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
-        btnVolver.setPreferredSize(new Dimension(170, 48));
-        btnVolver.addActionListener(e -> {
-            new MenuPrincipal(usuario).setVisible(true);
-            dispose();
-        });
-        panelBotones.add(btnVolver);
-
+        add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
-
-        setVisible(true);
     }
 
-    private void cargarReservas() {
-        panelTarjetas.removeAll();
+    public void cargarReservas() {
+        modeloTabla.setRowCount(0);
         try {
-            ReservarDAO dao = new ReservarDAO();
-            reservas = dao.obtenerReservasUsuario(usuario.getId());
-            RutaDAO rutaDAO = new RutaDAO();
-
-            for (Reserva reserva : reservas) {
-                Ruta ruta = rutaDAO.obtenerRutaPorId(reserva.getIdRuta());
-                panelTarjetas.add(crearTarjetaReserva(reserva, ruta));
+            List<Reserva> reservas = TurismoService.getInstance().obtenerReservas();
+            for (Reserva r : reservas) {
+                Usuario usuario = TurismoService.getInstance().obtenerUsuarioPorId(r.getIdUsuario());
+                Ruta ruta = TurismoService.getInstance().obtenerRutaPorId(r.getIdRuta());
+                modeloTabla.addRow(new Object[]{
+                    r.getId(),
+                    usuario != null ? usuario.getNombre() : "Desconocido",
+                    ruta != null ? ruta.getNombre() : "Desconocida",
+                    r.getFecha(),
+                    r.isConfirmada() ? "Sí" : "No"
+                });
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar reservas: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al cargar reservas", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        panelTarjetas.revalidate();
-        panelTarjetas.repaint();
     }
 
-    private JPanel crearTarjetaReserva(Reserva reserva, Ruta ruta) {
-        JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(340, 140));
-        tarjeta.setBackground(Color.WHITE);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new ThemeManager.RoundedBorder(new Color(52, 152, 219), 2, 24),
-                BorderFactory.createEmptyBorder(16, 16, 16, 16)
-        ));
-        tarjeta.setLayout(new BorderLayout(12, 0));
-
-        JLabel lblRuta = new JLabel("Ruta: " + (ruta != null ? ruta.getNombre() : "Desconocida"));
-        lblRuta.setFont(new Font("Arial", Font.BOLD, 18));
-        lblRuta.setForeground(new Color(44, 62, 80));
-
-        JLabel lblFecha = new JLabel("Fecha: " + reserva.getFecha());
-        lblFecha.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblFecha.setForeground(new Color(100, 100, 100));
-
-        JLabel lblEstado = new JLabel("Estado: " + (reserva.isConfirmada() ? "CONFIRMADA" : "PENDIENTE"));
-        lblEstado.setFont(new Font("Arial", Font.BOLD, 15));
-        lblEstado.setForeground(reserva.isConfirmada() ? new Color(46, 204, 113) : new Color(241, 196, 15));
-
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-        panelInfo.add(lblRuta);
-        panelInfo.add(lblFecha);
-        panelInfo.add(lblEstado);
-
-        tarjeta.add(panelInfo, BorderLayout.CENTER);
-
-        JPanel panelAcciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
-        panelAcciones.setOpaque(false);
-
-        if (!reserva.isConfirmada()) {
-            JButton btnConfirmar = new JButton("Confirmar");
-            btnConfirmar.setBackground(new Color(46, 204, 113));
-            btnConfirmar.setForeground(Color.WHITE);
-            btnConfirmar.setFont(new Font("Arial", Font.BOLD, 14));
-            btnConfirmar.addActionListener(e -> confirmarReserva(reserva));
-            panelAcciones.add(btnConfirmar);
-
-            JButton btnCancelar = new JButton("Cancelar");
-            btnCancelar.setBackground(new Color(231, 76, 60));
-            btnCancelar.setForeground(Color.WHITE);
-            btnCancelar.setFont(new Font("Arial", Font.BOLD, 14));
-            btnCancelar.addActionListener(e -> cancelarReserva(reserva));
-            panelAcciones.add(btnCancelar);
+    private void eliminarReservaSeleccionada() {
+        int fila = tablaReservas.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una reserva para eliminar.");
+            return;
         }
-
-        tarjeta.add(panelAcciones, BorderLayout.SOUTH);
-
-        return tarjeta;
-    }
-
-    private void confirmarReserva(Reserva reserva) {
-        try {
-            ReservarDAO dao = new ReservarDAO();
-            boolean confirmado = dao.confirmarReserva(reserva.getId());
-            if (confirmado) {
-                JOptionPane.showMessageDialog(this, "Reserva confirmada. Proceda al pago.");
+        int id = (int) modeloTabla.getValueAt(fila, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar la reserva?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                TurismoService.getInstance().eliminarReserva(id);
                 cargarReservas();
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo confirmar la reserva.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar reserva", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al confirmar reserva: " + e.getMessage());
         }
     }
 
-    private void cancelarReserva(Reserva reserva) {
+    private void confirmarReservaSeleccionada() {
+        int fila = tablaReservas.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione una reserva para confirmar.");
+            return;
+        }
+        int id = (int) modeloTabla.getValueAt(fila, 0);
         try {
-            ReservarDAO dao = new ReservarDAO();
-            boolean cancelado = dao.cancelarReserva(reserva.getId());
-            if (cancelado) {
-                JOptionPane.showMessageDialog(this, "Reserva cancelada.");
-                cargarReservas();
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo cancelar la reserva.");
-            }
+            TurismoService.getInstance().confirmarReserva(id);
+            cargarReservas();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al cancelar reserva: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al confirmar reserva", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

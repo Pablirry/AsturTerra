@@ -1,58 +1,31 @@
 package views;
 
 import javax.swing.*;
-
-import com.toedter.calendar.IDateEvaluator;
-import com.toedter.calendar.JCalendar;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-
-import model.Reserva;
 import model.Ruta;
 import model.Usuario;
 import services.TurismoService;
 import utils.I18n;
-import utils.UIUtils;
 import utils.WrapLayout;
 
+/**
+ * Vista principal para mostrar, agregar, editar y eliminar rutas turísticas.
+ * Permite ver las rutas en tarjetas, ver detalles, editar y eliminar rutas.
+ * @author Pablo
+ */
 public class VistaRutas extends JFrame {
-    private static VistaRutas instance;
-
+    private final Usuario usuario;
     private JPanel panelTarjetas;
-    private JButton btnAgregar, btnVolver;
-    private Usuario usuario;
-    private JPanel contenedorCentral;
-    private final int margenLateral = 60;
 
-    public static VistaRutas getInstance(Usuario usuario) {
-        if (instance == null || !instance.isVisible()) {
-            instance = new VistaRutas(usuario);
-        }
-        instance.toFront();
-        return instance;
-    }
-
+    /**
+     * Crea la ventana principal de rutas para el usuario dado.
+     * @param usuario Usuario autenticado
+     */
     public VistaRutas(Usuario usuario) {
         this.usuario = usuario;
-        inicializarComponentes();
-        cargarRutas();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                cargarRutas();
-            }
-        });
-    }
-
-    private void inicializarComponentes() {
         setTitle(I18n.t("titulo.rutas"));
         setSize(1100, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -62,24 +35,41 @@ public class VistaRutas extends JFrame {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color bg = dark ? new Color(44, 62, 80) : new Color(236, 240, 241);
 
-        JPanel panelTitulo = new JPanel();
-        panelTitulo.setBackground(new Color(44, 62, 80));
+        // Panel superior con título y botón menú principal a la derecha
+        JPanel panelSuperior = new JPanel(new BorderLayout());
+        panelSuperior.setBackground(new Color(44, 62, 80));
+
         JLabel lblTitulo = new JLabel(I18n.t("titulo.rutas"));
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 32));
         lblTitulo.setForeground(Color.WHITE);
-        panelTitulo.add(lblTitulo);
-        add(panelTitulo, BorderLayout.NORTH);
+        lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        panelSuperior.add(lblTitulo, BorderLayout.WEST);
 
-        contenedorCentral = new JPanel(new BorderLayout());
-        contenedorCentral.setBackground(bg);
-        contenedorCentral.setBorder(BorderFactory.createEmptyBorder(0, margenLateral, 0, margenLateral));
+        JButton btnMenu = new JButton(I18n.t("boton.volver"));
+        btnMenu.setFont(new Font("Arial", Font.BOLD, 16));
+        btnMenu.setForeground(Color.WHITE);
+        btnMenu.setBackground(new Color(41, 128, 185));
+        btnMenu.setFocusPainted(false);
+        btnMenu.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185), 2, true));
+        btnMenu.setPreferredSize(new Dimension(140, 40));
+        btnMenu.addActionListener(e -> {
+            new MenuPrincipal(usuario).setVisible(true);
+            dispose();
+        });
+        btnMenu.setOpaque(true);
 
-        panelTarjetas = new JPanel();
+        JPanel panelMenu = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 10));
+        panelMenu.setOpaque(false);
+        panelMenu.add(btnMenu);
+        panelSuperior.add(panelMenu, BorderLayout.EAST);
+
+        add(panelSuperior, BorderLayout.NORTH);
+
+        // Panel tarjetas con WrapLayout centrado
+        panelTarjetas = new JPanel(new WrapLayout(FlowLayout.CENTER, 24, 24));
         panelTarjetas.setBackground(bg);
-        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24));
-        contenedorCentral.add(panelTarjetas, BorderLayout.CENTER);
 
-        JScrollPane scroll = new JScrollPane(contenedorCentral,
+        JScrollPane scroll = new JScrollPane(panelTarjetas,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setUnitIncrement(20);
@@ -87,77 +77,121 @@ public class VistaRutas extends JFrame {
         scroll.getViewport().setBackground(bg);
         add(scroll, BorderLayout.CENTER);
 
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(bg);
+        JScrollBar verticalBar = scroll.getVerticalScrollBar();
+        verticalBar.setUnitIncrement(16);
+        verticalBar.setOpaque(false);
+        verticalBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
+            private final Dimension d = new Dimension(10, 40);
 
-        btnAgregar = new JButton(I18n.t("boton.agregar"));
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(52, 152, 219, 220);
+                this.trackColor = new Color(236, 240, 241, 120);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                button.setVisible(false);
+                return button;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                button.setVisible(false);
+                return button;
+            }
+
+            @Override
+            protected Dimension getMaximumThumbSize() {
+                return d;
+            }
+
+            @Override
+            protected Dimension getMinimumThumbSize() {
+                return d;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                if (!c.isEnabled() || thumbBounds.width > thumbBounds.height) return;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 12, 12);
+                g2.setColor(new Color(41, 128, 185, 180));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width-1, thumbBounds.height-1, 12, 12);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(trackColor);
+                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 12, 12);
+                g2.dispose();
+            }
+        });
+
+        // Panel inferior con botón agregar siempre visible y moderno
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 30, 15));
+        panelInferior.setBackground(bg);
+
+        JButton btnAgregar = new JButton(I18n.t("boton.agregar"));
         btnAgregar.setFont(new Font("Arial", Font.BOLD, 18));
         btnAgregar.setForeground(Color.WHITE);
         btnAgregar.setBackground(new Color(39, 174, 96));
         btnAgregar.setFocusPainted(false);
         btnAgregar.setBorder(BorderFactory.createLineBorder(new Color(39, 174, 96), 2, true));
-        btnAgregar.setPreferredSize(new Dimension(170, 48));
-        btnAgregar.setVisible(usuario.isAdmin());
-        btnAgregar.addActionListener(e -> new AgregarRuta(this).setVisible(true));
+        btnAgregar.setPreferredSize(new Dimension(200, 45));
+        btnAgregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnAgregar.setOpaque(true);
-        panelBotones.add(btnAgregar);
+        btnAgregar.addActionListener(e -> new AgregarRuta(this).setVisible(true));
+        panelInferior.add(btnAgregar);
 
-        btnVolver = new JButton(I18n.t("boton.volver"));
-        btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
-        btnVolver.setForeground(Color.WHITE);
-        btnVolver.setBackground(new Color(41, 128, 185));
-        btnVolver.setFocusPainted(false);
-        btnVolver.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185), 2, true));
-        btnVolver.setPreferredSize(new Dimension(170, 48));
-        btnVolver.addActionListener(e -> {
-            new MenuPrincipal(usuario).setVisible(true);
-            dispose();
-        });
-        btnVolver.setOpaque(true);
-        panelBotones.add(btnVolver);
+        add(panelInferior, BorderLayout.SOUTH);
 
-        add(panelBotones, BorderLayout.SOUTH);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                instance = null;
-            }
-        });
-
+        cargarRutas();
         setVisible(true);
     }
 
+    /**
+     * Recarga las rutas en el panel de tarjetas.
+     */
     public void cargarRutas() {
         panelTarjetas.removeAll();
         try {
             List<Ruta> rutas = TurismoService.getInstance().obtenerRutas();
-            for (Ruta r : rutas) {
-                JPanel tarjeta = crearTarjetaRuta(r);
-                addClickListenerRecursivo(tarjeta, new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        mostrarDialogoDetalles(r);
-                    }
-                });
-                panelTarjetas.add(tarjeta);
+            if (rutas.isEmpty()) {
+                JLabel lblVacio = new JLabel("No hay rutas registradas.");
+                lblVacio.setFont(new Font("Arial", Font.ITALIC, 22));
+                lblVacio.setForeground(Color.GRAY);
+                panelTarjetas.add(lblVacio);
+            } else {
+                for (Ruta r : rutas) {
+                    panelTarjetas.add(crearTarjetaRuta(r));
+                }
             }
         } catch (Exception ex) {
-            UIUtils.mostrarError(this, "Error al cargar rutas: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al cargar rutas: " + ex.getMessage());
         }
         panelTarjetas.revalidate();
         panelTarjetas.repaint();
     }
 
-    private void addClickListenerRecursivo(Component comp, MouseListener listener) {
-        comp.addMouseListener(listener);
-        if (comp instanceof Container) {
-            for (Component child : ((Container) comp).getComponents()) {
-                addClickListenerRecursivo(child, listener);
-            }
-        }
-    }
-
+    /**
+     * Crea una tarjeta visual para una ruta.
+     * @param ruta Ruta a mostrar
+     * @return JPanel con la información de la ruta
+     */
     private JPanel crearTarjetaRuta(Ruta ruta) {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color borderColor = new Color(52, 152, 219);
@@ -165,8 +199,7 @@ public class VistaRutas extends JFrame {
         Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
 
         JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(320, 180));
-        tarjeta.setMaximumSize(new Dimension(320, 180));
+        tarjeta.setPreferredSize(new Dimension(370, 140));
         tarjeta.setBackground(bgTarjeta);
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 new ThemeManager.RoundedBorder(borderColor, 2, 24),
@@ -174,59 +207,19 @@ public class VistaRutas extends JFrame {
         tarjeta.setLayout(new BorderLayout(16, 0));
         tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        JLabel lblNombre = new JLabel(ruta.getNombre());
-        lblNombre.setFont(new Font("Arial", Font.BOLD, 20));
-        lblNombre.setForeground(fgPanel);
-        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblPrecio = new JLabel("Precio: $" + ruta.getPrecio());
-        lblPrecio.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblPrecio.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
-        lblPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblDificultad = new JLabel("Dificultad: " + ruta.getDificultad());
-        lblDificultad.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblDificultad.setForeground(new Color(52, 152, 219));
-        lblDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JTextArea txtDescripcion = new JTextArea(ruta.getDescripcion());
-        txtDescripcion.setFont(new Font("Arial", Font.PLAIN, 13));
-        txtDescripcion.setLineWrap(true);
-        txtDescripcion.setWrapStyleWord(true);
-        txtDescripcion.setEditable(false);
-        txtDescripcion.setOpaque(true);
-        txtDescripcion.setBackground(bgTarjeta);
-        txtDescripcion.setBorder(null);
-        txtDescripcion.setForeground(dark ? Color.LIGHT_GRAY : Color.DARK_GRAY);
-        txtDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
-        txtDescripcion.setMaximumSize(new Dimension(180, 60));
-
-        panelInfo.add(lblNombre);
-        panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(lblPrecio);
-        panelInfo.add(lblDificultad);
-        panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(txtDescripcion);
-
-        tarjeta.add(panelInfo, BorderLayout.WEST);
-
+        // Imagen de la ruta (círculo)
         JLabel lblImagen = new JLabel();
-        lblImagen.setPreferredSize(new Dimension(120, 120));
-        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
+        lblImagen.setPreferredSize(new Dimension(100, 100));
+        lblImagen.setHorizontalAlignment(SwingConstants.LEFT);
         if (ruta.getImagen() != null) {
             try {
                 java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(ruta.getImagen());
                 BufferedImage original = javax.imageio.ImageIO.read(bais);
-                Image img = original.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                BufferedImage circleBuffer = new BufferedImage(120, 120, BufferedImage.TYPE_INT_ARGB);
+                Image img = original.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                BufferedImage circleBuffer = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D g2 = circleBuffer.createGraphics();
-                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 120, 120));
-                g2.drawImage(img, 0, 0, 120, 120, null);
+                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 100, 100));
+                g2.drawImage(img, 0, 0, 100, 100, null);
                 g2.dispose();
                 lblImagen.setIcon(new ImageIcon(circleBuffer));
             } catch (Exception ex) {
@@ -235,13 +228,329 @@ public class VistaRutas extends JFrame {
         } else {
             lblImagen.setIcon(crearIconoSinImagen(dark));
         }
-        tarjeta.add(lblImagen, BorderLayout.EAST);
+        tarjeta.add(lblImagen, BorderLayout.WEST);
+
+        // Info principal alineada a la izquierda (sin descripción)
+        JPanel panelInfo = new JPanel();
+        panelInfo.setOpaque(false);
+        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
+        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
+        panelInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lblNombre = new JLabel(ruta.getNombre());
+        lblNombre.setFont(new Font("Arial", Font.BOLD, 20));
+        lblNombre.setForeground(fgPanel);
+        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lblPrecio = new JLabel("Precio: " + ruta.getPrecio() + " €");
+        lblPrecio.setFont(new Font("Arial", Font.PLAIN, 15));
+        lblPrecio.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
+        lblPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        // Panel horizontal para dificultad y estrellas (alineados verticalmente)
+        JPanel panelDificultad = new JPanel();
+        panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.X_AXIS));
+        panelDificultad.setOpaque(false);
+        panelDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lblDificultad = new JLabel("Dificultad:");
+        lblDificultad.setFont(new Font("Arial", Font.PLAIN, 15));
+        lblDificultad.setForeground(new Color(52, 152, 219));
+        lblDificultad.setAlignmentY(Component.CENTER_ALIGNMENT);
+
+        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panelEstrellas.setOpaque(false);
+        panelEstrellas.setAlignmentY(Component.CENTER_ALIGNMENT);
+        panelEstrellas.setMaximumSize(new Dimension(110, 24));
+        for (int i = 0; i < 5; i++) {
+            JLabel estrella = new JLabel(i < ruta.getDificultad() ? "★" : "☆");
+            estrella.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
+            estrella.setForeground(new Color(241, 196, 15));
+            estrella.setAlignmentY(Component.CENTER_ALIGNMENT);
+            panelEstrellas.add(estrella);
+        }
+
+        // Usar un Box para alinear perfectamente
+        Box boxDificultad = Box.createHorizontalBox();
+        boxDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
+        boxDificultad.add(lblDificultad);
+        boxDificultad.add(Box.createHorizontalStrut(6));
+        boxDificultad.add(panelEstrellas);
+
+        panelInfo.add(lblNombre);
+        panelInfo.add(Box.createVerticalStrut(6));
+        panelInfo.add(lblPrecio);
+        panelInfo.add(boxDificultad);
+
+        tarjeta.add(panelInfo, BorderLayout.CENTER);
+
+        // Mostrar detalles al hacer clic (toda la info, descripción, editar, eliminar)
+        tarjeta.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mostrarDetallesRuta(ruta);
+            }
+        });
 
         return tarjeta;
     }
 
+    /**
+     * Muestra un diálogo con los detalles completos de la ruta.
+     * @param ruta Ruta a mostrar
+     */
+    private void mostrarDetallesRuta(Ruta ruta) {
+        boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
+        JDialog dialog = new JDialog(this, "Detalles de la Ruta", true);
+        dialog.setSize(560, 670);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+
+        // Panel principal con fondo y borde redondeado
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(dark ? new Color(44, 62, 80) : new Color(245, 245, 250));
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 32, 32);
+            }
+        };
+        panel.setOpaque(false);
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
+
+        // Nombre con icono y sombra
+        JLabel lblNombre = new JLabel("  " + ruta.getNombre());
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblNombre.setForeground(new Color(41, 128, 185));
+        lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
+        lblNombre.setIcon(UIManager.getIcon("FileView.directoryIcon"));
+
+        // Línea decorativa
+        JSeparator separator = new JSeparator();
+        separator.setMaximumSize(new Dimension(400, 2));
+        separator.setForeground(new Color(41, 128, 185, 80));
+        separator.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Precio destacado
+        JLabel lblPrecio = new JLabel("Precio: " + ruta.getPrecio() + " €");
+        lblPrecio.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblPrecio.setForeground(new Color(39, 174, 96));
+        lblPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Panel dificultad perfectamente alineado y centrado
+        JPanel panelDificultad = new JPanel();
+        panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.Y_AXIS));
+        panelDificultad.setOpaque(false);
+        panelDificultad.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Panel horizontal para etiqueta y estrellas, centrado y alineado verticalmente
+        JPanel panelDificultadContenido = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        panelDificultadContenido.setOpaque(false);
+
+        JLabel lblDificultad = new JLabel("Dificultad:");
+        lblDificultad.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblDificultad.setForeground(new Color(52, 152, 219));
+        lblDificultad.setVerticalAlignment(SwingConstants.CENTER);
+
+        JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panelEstrellas.setOpaque(false);
+        for (int i = 0; i < 5; i++) {
+            JLabel estrella = new JLabel(i < ruta.getDificultad() ? "★" : "☆");
+            estrella.setFont(new Font("Segoe UI Symbol", Font.BOLD, 24));
+            estrella.setForeground(i < ruta.getDificultad() ? new Color(241, 196, 15) : new Color(200, 200, 200));
+            estrella.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+            estrella.setVerticalAlignment(SwingConstants.CENTER);
+            panelEstrellas.add(estrella);
+        }
+
+        panelDificultadContenido.add(lblDificultad);
+        panelDificultadContenido.add(panelEstrellas);
+
+        panelDificultad.add(panelDificultadContenido);
+
+        panel.add(lblNombre);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(separator);
+        panel.add(Box.createVerticalStrut(12));
+        panel.add(lblPrecio);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(panelDificultad); // Dificultad centrada
+        panel.add(Box.createVerticalStrut(18));
+
+        JLabel lblImagen = new JLabel();
+        lblImagen.setPreferredSize(new Dimension(160, 160));
+        lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (ruta.getImagen() != null) {
+            try {
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(ruta.getImagen());
+                BufferedImage original = javax.imageio.ImageIO.read(bais);
+                Image img = original.getScaledInstance(160, 160, Image.SCALE_SMOOTH);
+                BufferedImage circleBuffer = new BufferedImage(160, 160, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g2 = circleBuffer.createGraphics();
+                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 160, 160));
+                g2.drawImage(img, 0, 0, 160, 160, null);
+                g2.dispose();
+                lblImagen.setIcon(new ImageIcon(circleBuffer));
+            } catch (Exception ex) {
+                lblImagen.setIcon(crearIconoSinImagen(dark));
+            }
+        } else {
+            lblImagen.setIcon(crearIconoSinImagen(dark));
+        }
+
+        panel.add(lblImagen);
+        panel.add(Box.createVerticalStrut(18));
+
+        JTextArea txtDescripcion = new JTextArea(ruta.getDescripcion());
+        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        txtDescripcion.setEditable(false);
+        txtDescripcion.setHighlighter(null);
+        txtDescripcion.setFocusable(false);
+        txtDescripcion.setOpaque(true);
+        txtDescripcion.setBorder(null);
+        txtDescripcion.setBackground(dark ? new Color(44, 62, 80) : new Color(245, 245, 250));
+
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setPreferredSize(new Dimension(420, 120));
+        scrollDesc.setMaximumSize(new Dimension(420, 160));
+        scrollDesc.setBorder(BorderFactory.createEmptyBorder());
+        scrollDesc.getViewport().setOpaque(false);
+        scrollDesc.setOpaque(false);
+        scrollDesc.setBackground(new Color(0, 0, 0, 0));
+        scrollDesc.getViewport().setBackground(new Color(0, 0, 0, 0));
+
+        JScrollBar verticalBar = scrollDesc.getVerticalScrollBar();
+        verticalBar.setUnitIncrement(16);
+        verticalBar.setOpaque(false);
+        verticalBar.setUI(new javax.swing.plaf.basic.BasicScrollBarUI() {
+            private final Dimension d = new Dimension(10, 40);
+
+            @Override
+            protected void configureScrollBarColors() {
+                this.thumbColor = new Color(52, 152, 219, 220);
+                this.trackColor = new Color(236, 240, 241, 120);
+            }
+
+            @Override
+            protected JButton createDecreaseButton(int orientation) {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                button.setVisible(false);
+                return button;
+            }
+
+            @Override
+            protected JButton createIncreaseButton(int orientation) {
+                JButton button = new JButton();
+                button.setPreferredSize(new Dimension(0, 0));
+                button.setMinimumSize(new Dimension(0, 0));
+                button.setMaximumSize(new Dimension(0, 0));
+                button.setVisible(false);
+                return button;
+            }
+
+            @Override
+            protected Dimension getMaximumThumbSize() {
+                return d;
+            }
+
+            @Override
+            protected Dimension getMinimumThumbSize() {
+                return d;
+            }
+
+            @Override
+            protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
+                if (!c.isEnabled() || thumbBounds.width > thumbBounds.height) return;
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(thumbColor);
+                g2.fillRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width, thumbBounds.height, 12, 12);
+                g2.setColor(new Color(41, 128, 185, 180));
+                g2.setStroke(new BasicStroke(2));
+                g2.drawRoundRect(thumbBounds.x, thumbBounds.y, thumbBounds.width-1, thumbBounds.height-1, 12, 12);
+                g2.dispose();
+            }
+
+            @Override
+            protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setColor(trackColor);
+                g2.fillRoundRect(trackBounds.x, trackBounds.y, trackBounds.width, trackBounds.height, 12, 12);
+                g2.dispose();
+            }
+        });
+
+        panel.add(scrollDesc);
+        panel.add(Box.createVerticalStrut(18));
+
+        // Botones modernos con iconos y colores
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
+        panelBotones.setOpaque(false);
+
+        JButton btnEditar = new JButton("🖊️ " + I18n.t("boton.editar"));
+        btnEditar.setBackground(new Color(52, 152, 219));
+        btnEditar.setForeground(Color.WHITE);
+        btnEditar.setFocusPainted(false);
+        btnEditar.setFont(new Font("Dialog", Font.BOLD, 15));
+        btnEditar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnEditar.setPreferredSize(new Dimension(120, 38));
+        btnEditar.addActionListener(e -> {
+            dialog.dispose();
+            new EditarRuta(this, ruta).setVisible(true);
+        });
+
+        JButton btnEliminar = new JButton("✘ " + I18n.t("boton.eliminar"));
+        btnEliminar.setBackground(new Color(231, 76, 60));
+        btnEliminar.setForeground(Color.WHITE);
+        btnEliminar.setFocusPainted(false);
+        btnEliminar.setFont(new Font("Dialog", Font.BOLD, 15));
+        btnEliminar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnEliminar.setPreferredSize(new Dimension(130, 38));
+        btnEliminar.addActionListener(e -> {
+            dialog.dispose();
+            eliminarRuta(ruta);
+        });
+
+        panelBotones.add(btnEditar);
+        panelBotones.add(btnEliminar);
+
+        // Botón cerrar
+        JButton btnCerrar = new JButton("Cerrar");
+        btnCerrar.setBackground(new Color(189, 195, 199));
+        btnCerrar.setForeground(Color.DARK_GRAY);
+        btnCerrar.setFocusPainted(false);
+        btnCerrar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCerrar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        btnCerrar.setPreferredSize(new Dimension(100, 34));
+        btnCerrar.addActionListener(e -> dialog.dispose());
+
+        JPanel panelCerrar = new JPanel();
+        panelCerrar.setOpaque(false);
+        panelCerrar.add(btnCerrar);
+
+        panel.add(panelBotones);
+
+        dialog.add(panel, BorderLayout.CENTER);
+        dialog.add(panelCerrar, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
+    }
+
+    /**
+     * Crea un icono circular de "Sin imagen" para rutas sin imagen.
+     * @param dark Si el tema es oscuro
+     * @return Icono generado
+     */
     private Icon crearIconoSinImagen(boolean dark) {
-        int size = 120;
+        int size = 100;
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -250,7 +559,7 @@ public class VistaRutas extends JFrame {
         g2.setColor(dark ? new Color(120, 120, 120) : new Color(160, 160, 160));
         g2.setStroke(new BasicStroke(2));
         g2.drawOval(1, 1, size - 2, size - 2);
-        g2.setFont(new Font("Arial", Font.BOLD, 14));
+        g2.setFont(new Font("Arial", Font.BOLD, 12));
         FontMetrics fm = g2.getFontMetrics();
         String texto = "Sin imagen";
         int textWidth = fm.stringWidth(texto);
@@ -261,450 +570,10 @@ public class VistaRutas extends JFrame {
         return new ImageIcon(img);
     }
 
-    private void mostrarDialogoDetalles(Ruta ruta) {
-        ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
-        Color bgGlobal = theme == ThemeManager.Theme.DARK
-                ? new Color(34, 45, 65)
-                : new Color(235, 241, 250);
-        Color fgPanel = theme == ThemeManager.Theme.DARK
-                ? Color.WHITE
-                : new Color(44, 62, 80);
-        Color borderColor = new Color(52, 152, 219);
-
-        int minWidth = 800;
-        int minHeight = 500;
-        int prefWidth = 1000;
-        int prefHeight = 700;
-
-        JDialog dialogo = new JDialog(this, ruta.getNombre(), true);
-        dialogo.setSize(prefWidth, prefHeight);
-        dialogo.setMinimumSize(new Dimension(minWidth, minHeight));
-        dialogo.setLocationRelativeTo(this);
-        dialogo.setLayout(new BorderLayout());
-
-        JPanel panelFondo = new JPanel(new GridBagLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.setColor(bgGlobal);
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        panelFondo.setOpaque(true);
-
-        // Panel principal con GridBagLayout para responsividad
-        JPanel panel = new JPanel(new GridBagLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(bgGlobal);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-                g2.dispose();
-            }
-        };
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createEmptyBorder(32, 48, 32, 48));
-
-        // Panel info a la IZQUIERDA
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        // Título y barra decorativa alineados a la izquierda
-        JLabel lblNombre = new JLabel(ruta.getNombre());
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 30));
-        lblNombre.setForeground(fgPanel);
-        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setMaximumSize(new Dimension(260, 2));
-        separator.setForeground(borderColor);
-        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Precio y dificultad en una sola línea
-        JPanel panelDatos = new JPanel();
-        panelDatos.setOpaque(false);
-        panelDatos.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        JLabel lblPrecio = new JLabel("Precio: $" + ruta.getPrecio() + "   ");
-        lblPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        lblPrecio.setForeground(theme == ThemeManager.Theme.DARK ? Color.LIGHT_GRAY : new Color(100, 100, 100));
-        JLabel lblDificultad = new JLabel("Dificultad: " + ruta.getDificultad());
-        lblDificultad.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        lblDificultad.setForeground(new Color(52, 152, 219));
-        panelDatos.add(lblPrecio);
-        panelDatos.add(lblDificultad);
-        panelDatos.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Descripción SIN borde ni fondo, scroll si es larga, alineada a la izquierda y
-        // color igual al fondo
-        JTextArea txtDescripcion = new JTextArea(ruta.getDescripcion());
-        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 15));
-        txtDescripcion.setLineWrap(true);
-        txtDescripcion.setWrapStyleWord(true);
-        txtDescripcion.setEditable(false);
-        txtDescripcion.setOpaque(true);
-        txtDescripcion.setBackground(bgGlobal); // Fondo igual al fondo global
-        txtDescripcion.setBorder(null);
-        txtDescripcion.setForeground(theme == ThemeManager.Theme.DARK ? Color.LIGHT_GRAY : Color.DARK_GRAY);
-        txtDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
-        scrollDesc.setBorder(null);
-        scrollDesc.setOpaque(false);
-        scrollDesc.getViewport().setOpaque(false);
-        scrollDesc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollDesc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollDesc.setAlignmentX(Component.LEFT_ALIGNMENT);
-        scrollDesc.setPreferredSize(new Dimension(320, 100));
-        scrollDesc.setMinimumSize(new Dimension(220, 60));
-        scrollDesc.setMaximumSize(new Dimension(Short.MAX_VALUE, 200));
-
-        panelInfo.add(lblNombre);
-        panelInfo.add(Box.createVerticalStrut(2));
-        panelInfo.add(separator);
-        panelInfo.add(Box.createVerticalStrut(10));
-        panelInfo.add(panelDatos);
-        panelInfo.add(Box.createVerticalStrut(18));
-        panelInfo.add(scrollDesc);
-
-        // --- Botones en columna, rectangulares y uno debajo de otro ---
-        JPanel panelBotones = new JPanel();
-        panelBotones.setOpaque(false);
-        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
-
-        Dimension btnSize = new Dimension(220, 38);
-        int btnGap = 12;
-
-        JButton btnValorar = new JButton(I18n.t("boton.valorar"));
-        btnValorar.setBackground(new Color(241, 196, 15));
-        btnValorar.setForeground(Color.BLACK);
-        btnValorar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btnValorar.setFocusPainted(false);
-        btnValorar.setContentAreaFilled(true);
-        btnValorar.setOpaque(true);
-        btnValorar.setMaximumSize(btnSize);
-        btnValorar.setPreferredSize(btnSize);
-        btnValorar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnValorar.addActionListener(e -> {
-            dialogo.dispose();
-            VistaValoraciones.getInstance(this, ruta.getId(), ruta.getNombre(), usuario);
-        });
-        panelBotones.add(btnValorar);
-        panelBotones.add(Box.createVerticalStrut(btnGap));
-
-        JButton btnReservar = new JButton("Reservar");
-        btnReservar.setBackground(new Color(52, 152, 219));
-        btnReservar.setForeground(Color.WHITE);
-        btnReservar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btnReservar.setFocusPainted(false);
-        btnReservar.setContentAreaFilled(true);
-        btnReservar.setOpaque(true);
-        btnReservar.setMaximumSize(btnSize);
-        btnReservar.setPreferredSize(btnSize);
-        btnReservar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnReservar.addActionListener(e -> {
-            try {
-                // 1. Obtener todas las reservas de la ruta
-                List<Reserva> reservas = TurismoService.getInstance().obtenerReservasRuta(ruta.getId());
-
-                // Mapear fechas a cantidad de reservas por fecha
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                java.util.Map<String, Integer> reservasPorFecha = new java.util.HashMap<>();
-                for (Reserva reserva : reservas) {
-                    String fecha = sdf.format(reserva.getFecha());
-                    reservasPorFecha.put(fecha, reservasPorFecha.getOrDefault(fecha, 0) + 1);
-                }
-
-                // 2. Crear calendario y deshabilitar fechas ocupadas
-                JCalendar calendario = new JCalendar();
-                calendario.setMinSelectableDate(new Date());
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, 60);
-                calendario.setMaxSelectableDate(cal.getTime());
-
-                // Personalización visual del calendario y combos
-                calendario.setBackground(new Color(245, 247, 250));
-                calendario.setDecorationBackgroundColor(new Color(52, 152, 219, 30));
-                calendario.setSundayForeground(new Color(231, 76, 60));
-                calendario.setWeekdayForeground(new Color(52, 73, 94));
-                calendario.setTodayButtonText("Hoy");
-                calendario.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-                calendario.getDayChooser().setForeground(new Color(44, 62, 80));
-                calendario.getDayChooser().setFont(new Font("Segoe UI", Font.BOLD, 15));
-                calendario.getMonthChooser().setFont(new Font("Segoe UI", Font.BOLD, 16));
-                calendario.getYearChooser().setFont(new Font("Segoe UI", Font.BOLD, 16));
-
-                JComboBox<String> comboMes = (JComboBox<String>) calendario.getMonthChooser().getComboBox();
-
-                JSpinner spinnerAnio = (JSpinner) calendario.getYearChooser().getSpinner();
-
-                comboMes.revalidate();
-                comboMes.repaint();
-                spinnerAnio.revalidate();
-                spinnerAnio.repaint();
-                // Deshabilitar fechas con 6 o más reservas
-                calendario.getDayChooser().addDateEvaluator(new IDateEvaluator() {
-                    @Override
-                    public boolean isSpecial(Date date) {
-                        return false;
-                    }
-
-                    @Override
-                    public Color getSpecialForegroundColor() {
-                        return null;
-                    }
-
-                    @Override
-                    public Color getSpecialBackroundColor() {
-                        return null;
-                    }
-
-                    @Override
-                    public String getSpecialTooltip() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isInvalid(Date date) {
-                        String fechaStr = sdf.format(date);
-                        return reservasPorFecha.getOrDefault(fechaStr, 0) >= 6;
-                    }
-
-                    @Override
-                    public Color getInvalidForegroundColor() {
-                        return Color.GRAY;
-                    }
-
-                    @Override
-                    public Color getInvalidBackroundColor() {
-                        return new Color(220, 220, 220);
-                    }
-
-                    @Override
-                    public String getInvalidTooltip() {
-                        return "Máximo de reservas alcanzado";
-                    }
-                });
-
-                // Panel moderno para el calendario
-                JPanel panelReserva = new JPanel(new BorderLayout(0, 16));
-                panelReserva.setBackground(new Color(245, 247, 250));
-                panelReserva.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(new Color(52, 152, 219), 2, true),
-                        BorderFactory.createEmptyBorder(24, 32, 24, 32)));
-
-                JLabel icono = new JLabel("\uD83D\uDCC5");
-                icono.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
-                icono.setForeground(new Color(52, 152, 219));
-                icono.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 12));
-
-                JLabel lbl = new JLabel("Selecciona una fecha disponible");
-                lbl.setFont(new Font("Segoe UI", Font.BOLD, 18));
-                lbl.setForeground(new Color(44, 62, 80));
-                lbl.setBorder(BorderFactory.createEmptyBorder(0, 0, 8, 0));
-
-                JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-                panelTop.setOpaque(false);
-                panelTop.add(icono);
-                panelTop.add(lbl);
-
-                panelReserva.add(panelTop, BorderLayout.NORTH);
-                panelReserva.add(calendario, BorderLayout.CENTER);
-
-                int result = JOptionPane.showConfirmDialog(
-                        this,
-                        panelReserva,
-                        "Reservar Ruta",
-                        JOptionPane.OK_CANCEL_OPTION,
-                        JOptionPane.PLAIN_MESSAGE);
-
-                if (result != JOptionPane.OK_OPTION)
-                    return;
-
-                Date fechaSeleccionada = calendario.getDate();
-                String fechaStr = sdf.format(fechaSeleccionada);
-
-                List<Reserva> reservasUsuario = TurismoService.getInstance().obtenerReservasUsuario(usuario.getId());
-                boolean yaReservada = reservasUsuario.stream()
-                        .anyMatch(r -> r.getIdRuta() == ruta.getId() && sdf.format(r.getFecha()).equals(fechaStr));
-                if (yaReservada) {
-                    UIUtils.mostrarError(this, "Ya tienes una reserva para esta ruta en la fecha seleccionada.");
-                    return;
-                }
-
-                if (reservasPorFecha.getOrDefault(fechaStr, 0) >= 6) {
-                    UIUtils.mostrarError(this, "La fecha seleccionada ya tiene el máximo de usuarios.");
-                    return;
-                }
-
-                boolean ok = TurismoService.getInstance().reservarRuta(usuario.getId(), ruta.getId(),
-                        fechaSeleccionada);
-                if (ok) {
-                    UIUtils.mostrarInfo(this, "¡Reserva realizada! Recibirás confirmación próximamente.");
-                } else {
-                    UIUtils.mostrarError(this, "No se pudo realizar la reserva.");
-                }
-            } catch (Exception ex) {
-                UIUtils.mostrarError(this, "Error al reservar: " + ex.getMessage());
-            }
-            dialogo.dispose();
-        });
-        panelBotones.add(btnReservar);
-        panelBotones.add(Box.createVerticalStrut(btnGap));
-
-        if (usuario.isAdmin()) {
-            JButton btnEditar = new JButton(I18n.t("boton.editar"));
-            btnEditar.setBackground(new Color(52, 152, 219));
-            btnEditar.setForeground(Color.WHITE);
-            btnEditar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-            btnEditar.setFocusPainted(false);
-            btnEditar.setContentAreaFilled(true);
-            btnEditar.setOpaque(true);
-            btnEditar.setMaximumSize(btnSize);
-            btnEditar.setPreferredSize(btnSize);
-            btnEditar.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btnEditar.addActionListener(e -> {
-                new EditarRuta(this, ruta).setVisible(true);
-                dialogo.dispose();
-            });
-            panelBotones.add(btnEditar);
-            panelBotones.add(Box.createVerticalStrut(btnGap));
-
-            JButton btnEliminar = new JButton(I18n.t("boton.eliminar"));
-            btnEliminar.setBackground(new Color(231, 76, 60));
-            btnEliminar.setForeground(Color.WHITE);
-            btnEliminar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-            btnEliminar.setFocusPainted(false);
-            btnEliminar.setContentAreaFilled(true);
-            btnEliminar.setOpaque(true);
-            btnEliminar.setMaximumSize(btnSize);
-            btnEliminar.setPreferredSize(btnSize);
-            btnEliminar.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btnEliminar.addActionListener(e -> {
-                eliminarRuta(ruta);
-                dialogo.dispose();
-            });
-            panelBotones.add(btnEliminar);
-            panelBotones.add(Box.createVerticalStrut(btnGap));
-        }
-
-        JButton btnCerrar = new JButton(I18n.t("boton.cancelar"));
-        btnCerrar.setBackground(new Color(189, 195, 199));
-        btnCerrar.setForeground(Color.BLACK);
-        btnCerrar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btnCerrar.setFocusPainted(false);
-        btnCerrar.setContentAreaFilled(true);
-        btnCerrar.setOpaque(true);
-        btnCerrar.setMaximumSize(btnSize);
-        btnCerrar.setPreferredSize(btnSize);
-        btnCerrar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnCerrar.addActionListener(e -> dialogo.dispose());
-        panelBotones.add(btnCerrar);
-
-        JPanel panelImagen = new JPanel(new GridBagLayout());
-        panelImagen.setOpaque(false);
-        JLabel lblImagen = new JLabel();
-        lblImagen.setPreferredSize(new Dimension(210, 210));
-        lblImagen.setMaximumSize(new Dimension(210, 210));
-        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        lblImagen.setVerticalAlignment(SwingConstants.CENTER);
-        lblImagen.setBorder(null); // Sin borde rectangular
-
-        if (ruta.getImagen() != null) {
-            try {
-                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(ruta.getImagen());
-                BufferedImage original = javax.imageio.ImageIO.read(bais);
-                // Recorta la imagen en círculo
-                int size = 210;
-                BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2 = circleBuffer.createGraphics();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, size, size));
-                Image img = original.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-                g2.drawImage(img, 0, 0, size, size, null);
-                g2.setClip(null);
-                g2.setStroke(new BasicStroke(4));
-                g2.setColor(borderColor);
-                g2.drawOval(2, 2, size - 4, size - 4);
-                g2.dispose();
-                lblImagen.setIcon(new ImageIcon(circleBuffer));
-                lblImagen.setText("");
-            } catch (Exception ex) {
-                lblImagen.setText("Sin imagen");
-            }
-        } else {
-            // Círculo gris o azul oscuro según modo
-            int size = 210;
-            BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = img.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-            Color fondoCirculo = dark ? new Color(52, 73, 94) : new Color(200, 200, 200);
-            g2.setColor(fondoCirculo);
-            g2.fillOval(0, 0, size, size);
-            g2.setColor(borderColor);
-            g2.setStroke(new BasicStroke(4));
-            g2.drawOval(2, 2, size - 4, size - 4);
-            g2.setFont(new Font("Arial", Font.BOLD, 18));
-            FontMetrics fm = g2.getFontMetrics();
-            String texto = "Sin imagen";
-            int textWidth = fm.stringWidth(texto);
-            int textHeight = fm.getHeight();
-            g2.setColor(new Color(120, 120, 120));
-            g2.drawString(texto, (size - textWidth) / 2, size / 2 + textHeight / 4);
-            g2.dispose();
-            lblImagen.setIcon(new ImageIcon(img));
-            lblImagen.setText("");
-        }
-        panelImagen.add(lblImagen);
-
-        // --- GridBagLayout para responsividad ---
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 0, 0, 0);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.0;
-        gbc.weightx = 0.6;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(panelInfo, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.4;
-        panel.add(panelImagen, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.insets = new Insets(32, 0, 0, 0);
-        panel.add(panelBotones, gbc);
-
-        panelFondo.add(panel, new GridBagConstraints());
-
-        dialogo.setContentPane(panelFondo);
-
-        // Responsividad: mantener proporciones y separación al redimensionar
-        dialogo.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int w = dialogo.getWidth();
-                int h = dialogo.getHeight();
-                int descWidth = Math.max(220, (int) (w * 0.38));
-                int descHeight = Math.max(100, (int) (h * 0.18));
-                scrollDesc.setPreferredSize(new Dimension(descWidth, descHeight));
-                scrollDesc.setMaximumSize(new Dimension(descWidth, descHeight * 2));
-                panelInfo.revalidate();
-                panelInfo.repaint();
-            }
-        });
-
-        dialogo.setVisible(true);
-    }
-
+    /**
+     * Elimina una ruta tras confirmación del usuario.
+     * @param ruta Ruta a eliminar
+     */
     private void eliminarRuta(Ruta ruta) {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres eliminar esta ruta?",
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION);

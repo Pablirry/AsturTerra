@@ -6,6 +6,7 @@ import java.util.List;
 
 import dao.MensajeDAO;
 import model.Mensaje;
+import model.Usuario;
 
 import java.awt.*;
 
@@ -14,9 +15,11 @@ public class VistaSoporteAdmin extends JFrame {
     private JTable tablaMensajes;
     private JTextArea txtRespuesta;
     private JButton btnResponder;
+    private Usuario usuario;
     private MensajeDAO mensajeDAO = new MensajeDAO();
 
-    public VistaSoporteAdmin() {
+    public VistaSoporteAdmin(Usuario usuario) {
+        this.usuario = usuario;
         setTitle("Soporte - responder Mensajes");
         setSize(700, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

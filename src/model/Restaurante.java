@@ -7,14 +7,12 @@ public class Restaurante {
     private int id;
     private String nombre;
     private String ubicacion;
-    private float valoracion;
     private byte[] imagen;
     
-    public Restaurante(int id, String nombre, String ubicacion, float valoracion, byte[] imagen) {
+    public Restaurante(int id, String nombre, String ubicacion, byte[] imagen) {
         this.id = id;
         this.nombre = nombre;
         this.ubicacion = ubicacion;
-        this.valoracion = valoracion;
         this.imagen = imagen;
     }
 
@@ -42,14 +40,6 @@ public class Restaurante {
         this.ubicacion = ubicacion;
     }
 
-    public float getValoracion() {
-        return valoracion;
-    }
-
-    public void setValoracion(float valoracion) {
-        this.valoracion = valoracion;
-    }
-
     public byte[] getImagen() {
         return imagen;
     }
@@ -60,8 +50,8 @@ public class Restaurante {
 
     @Override
     public String toString() {
-        return "Restaurante [id=" + id + ", nombre=" + nombre + ", ubicacion=" + ubicacion + ", valoracion="
-                + valoracion + ", imagen=" + Arrays.toString(imagen) + "]";
+        return "Restaurante [id=" + id + ", nombre=" + nombre + ", ubicacion=" + ubicacion + 
+        ", imagen=" + Arrays.toString(imagen) + "]";
     }
     
 }

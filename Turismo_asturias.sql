@@ -19,7 +19,7 @@ CREATE TABLE rutas (
     descripcion TEXT,
     imagen LONGBLOB,
     precio DECIMAL(10,2),
-    dificultad ENUM('Fácil', 'Media', 'Difícil')
+    dificultad INT CHECK(dificultad BETWEEN 1 AND 5)
 );
 
 -- Tabla de reservas
@@ -28,7 +28,7 @@ CREATE TABLE reservas (
     id_usuario INT,
     id_ruta INT,
     fecha DATE,
-    confirmada TINYINT(1) NOT NULL DEFAULT 0,
+    confirmada BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_ruta) REFERENCES rutas(id)
 );

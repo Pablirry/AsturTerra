@@ -1,520 +1,101 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.util.List;
 import model.Restaurante;
 import model.Usuario;
 import services.TurismoService;
-import utils.I18n;
-import utils.UIUtils;
-import utils.WrapLayout;
 
 public class VistaRestaurantes extends JFrame {
-    private static VistaRestaurantes instance;
-
-    private JPanel panelTarjetas;
-    private JButton btnAgregar, btnVolver;
+    private JTable tablaRestaurantes;
+    private DefaultTableModel modeloTabla;
+    private JButton btnAgregar, btnEditar, btnEliminar;
     private Usuario usuario;
-    private JPanel contenedorCentral;
-    private final int margenLateral = 60;
-
-    public static VistaRestaurantes getInstance(Usuario usuario) {
-        if (instance == null || !instance.isVisible()) {
-            instance = new VistaRestaurantes(usuario);
-        }
-        instance.toFront();
-        return instance;
-    }
 
     public VistaRestaurantes(Usuario usuario) {
         this.usuario = usuario;
+        setTitle("Gestión de Restaurantes");
+        setSize(800, 400);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         inicializarComponentes();
         cargarRestaurantes();
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                cargarRestaurantes();
-            }
-        });
     }
 
     private void inicializarComponentes() {
-        setTitle(I18n.t("titulo.restaurantes"));
-        setSize(1100, 700);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+        modeloTabla = new DefaultTableModel(new Object[]{"ID", "Nombre", "Ubicación"}, 0) {
+            public boolean isCellEditable(int row, int column) { return false; }
+        };
+        tablaRestaurantes = new JTable(modeloTabla);
 
-        boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-        Color bg = dark ? new Color(44, 62, 80) : new Color(236, 240, 241);
+        JScrollPane scrollPane = new JScrollPane(tablaRestaurantes);
 
-        JPanel panelTitulo = new JPanel();
-        panelTitulo.setBackground(new Color(44, 62, 80));
-        JLabel lblTitulo = new JLabel(I18n.t("titulo.restaurantes"));
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 32));
-        lblTitulo.setForeground(Color.WHITE);
-        panelTitulo.add(lblTitulo);
-        add(panelTitulo, BorderLayout.NORTH);
+        btnAgregar = new JButton("Agregar Restaurante");
+        btnEditar = new JButton("Editar Restaurante");
+        btnEliminar = new JButton("Eliminar Restaurante");
 
-        contenedorCentral = new JPanel(new BorderLayout());
-        contenedorCentral.setBackground(bg);
-        contenedorCentral.setBorder(BorderFactory.createEmptyBorder(0, margenLateral, 0, margenLateral));
+        btnAgregar.addActionListener(e -> {
+            AgregarRestaurante ventana = new AgregarRestaurante(this);
+            ventana.setVisible(true);
+        });
 
-        panelTarjetas = new JPanel();
-        panelTarjetas.setBackground(bg);
-        panelTarjetas.setLayout(new WrapLayout(FlowLayout.LEFT, 24, 24));
-        contenedorCentral.add(panelTarjetas, BorderLayout.CENTER);
+        btnEditar.addActionListener(e -> editarRestauranteSeleccionado());
+        btnEliminar.addActionListener(e -> eliminarRestauranteSeleccionado());
 
-        JScrollPane scroll = new JScrollPane(contenedorCentral,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.getVerticalScrollBar().setUnitIncrement(20);
-        scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.getViewport().setBackground(bg);
-        add(scroll, BorderLayout.CENTER);
-
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        panelBotones.setBackground(bg);
-
-        btnAgregar = new JButton(I18n.t("boton.agregar"));
-        btnAgregar.setFont(new Font("Arial", Font.BOLD, 18));
-        btnAgregar.setForeground(Color.WHITE);
-        btnAgregar.setBackground(new Color(39, 174, 96));
-        btnAgregar.setFocusPainted(false);
-        btnAgregar.setBorder(BorderFactory.createLineBorder(new Color(39, 174, 96), 2, true));
-        btnAgregar.setPreferredSize(new Dimension(170, 48));
-        btnAgregar.setVisible(usuario.isAdmin());
-        btnAgregar.addActionListener(e -> new AgregarRestaurante().setVisible(true));
-        btnAgregar.setOpaque(true);
+        JPanel panelBotones = new JPanel();
         panelBotones.add(btnAgregar);
+        panelBotones.add(btnEditar);
+        panelBotones.add(btnEliminar);
 
-        btnVolver = new JButton(I18n.t("boton.volver"));
-        btnVolver.setFont(new Font("Arial", Font.BOLD, 18));
-        btnVolver.setForeground(Color.WHITE);
-        btnVolver.setBackground(new Color(41, 128, 185));
-        btnVolver.setFocusPainted(false);
-        btnVolver.setBorder(BorderFactory.createLineBorder(new Color(41, 128, 185), 2, true));
-        btnVolver.setPreferredSize(new Dimension(170, 48));
-        btnVolver.addActionListener(e -> {
-            new MenuPrincipal(usuario).setVisible(true);
-            dispose();
-        });
-        btnVolver.setOpaque(true);
-        panelBotones.add(btnVolver);
-
+        setLayout(new BorderLayout());
+        add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                instance = null;
-            }
-        });
-
-        setVisible(true);
-    }
-
-    private void addClickListenerRecursivo(Component comp, MouseListener listener) {
-        comp.addMouseListener(listener);
-        if (comp instanceof Container) {
-            for (Component child : ((Container) comp).getComponents()) {
-                addClickListenerRecursivo(child, listener);
-            }
-        }
-    }
-
-    private JPanel crearTarjetaRestaurante(Restaurante restaurante) {
-        boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-        Color borderColor = new Color(52, 152, 219);
-        Color bgTarjeta = dark ? new Color(52, 73, 94) : Color.WHITE;
-        Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
-
-        JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(320, 180));
-        tarjeta.setMaximumSize(new Dimension(320, 180));
-        tarjeta.setBackground(bgTarjeta);
-        tarjeta.setBorder(BorderFactory.createCompoundBorder(
-                new ThemeManager.RoundedBorder(borderColor, 2, 24),
-                BorderFactory.createEmptyBorder(16, 16, 16, 16)));
-        tarjeta.setLayout(new BorderLayout(16, 0));
-        tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        JLabel lblNombre = new JLabel(restaurante.getNombre());
-        lblNombre.setFont(new Font("Arial", Font.BOLD, 20));
-        lblNombre.setForeground(fgPanel);
-        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblUbicacion = new JLabel("Ubicación: " + restaurante.getUbicacion());
-        lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblUbicacion.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
-        lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblValoracion = new JLabel("Valoración: " + String.format("%.1f", restaurante.getValoracion()));
-        lblValoracion.setFont(new Font("Arial", Font.BOLD, 16));
-        lblValoracion.setForeground(new Color(241, 196, 15));
-        lblValoracion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panelInfo.add(lblNombre);
-        panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(lblUbicacion);
-        panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(lblValoracion);
-
-        tarjeta.add(panelInfo, BorderLayout.WEST);
-
-        JLabel lblImagen = new JLabel();
-        lblImagen.setPreferredSize(new Dimension(120, 120));
-        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        if (restaurante.getImagen() != null) {
-            try {
-                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
-                BufferedImage original = javax.imageio.ImageIO.read(bais);
-                Image img = original.getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                BufferedImage circleBuffer = new BufferedImage(120, 120, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2 = circleBuffer.createGraphics();
-                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, 120, 120));
-                g2.drawImage(img, 0, 0, 120, 120, null);
-                g2.dispose();
-                lblImagen.setIcon(new ImageIcon(circleBuffer));
-            } catch (Exception ex) {
-                lblImagen.setIcon(crearIconoSinImagen(dark));
-            }
-        } else {
-            lblImagen.setIcon(crearIconoSinImagen(dark));
-        }
-        tarjeta.add(lblImagen, BorderLayout.EAST);
-
-        return tarjeta;
-    }
-
-    private Icon crearIconoSinImagen(boolean dark) {
-        int size = 120;
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(dark ? new Color(80, 80, 80) : new Color(220, 220, 220));
-        g2.fillOval(0, 0, size, size);
-        g2.setColor(dark ? new Color(120, 120, 120) : new Color(160, 160, 160));
-        g2.setStroke(new BasicStroke(2));
-        g2.drawOval(1, 1, size - 2, size - 2);
-        g2.setFont(new Font("Arial", Font.BOLD, 14));
-        FontMetrics fm = g2.getFontMetrics();
-        String texto = "Sin imagen";
-        int textWidth = fm.stringWidth(texto);
-        int textHeight = fm.getHeight();
-        g2.setColor(dark ? new Color(180, 180, 180) : new Color(120, 120, 120));
-        g2.drawString(texto, (size - textWidth) / 2, size / 2 + textHeight / 4);
-        g2.dispose();
-        return new ImageIcon(img);
     }
 
     public void cargarRestaurantes() {
-        panelTarjetas.removeAll();
+        modeloTabla.setRowCount(0);
         try {
             List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
             for (Restaurante r : restaurantes) {
-                JPanel tarjeta = crearTarjetaRestaurante(r);
-                addClickListenerRecursivo(tarjeta, new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        mostrarDialogoDetalles(r);
-                    }
+                modeloTabla.addRow(new Object[]{
+                    r.getId(),
+                    r.getNombre(),
+                    r.getUbicacion()
                 });
-                panelTarjetas.add(tarjeta);
             }
-        } catch (Exception ex) {
-            UIUtils.mostrarError(this, "Error al cargar restaurantes: " + ex.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar restaurantes", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        panelTarjetas.revalidate();
-        panelTarjetas.repaint();
     }
 
-    private void mostrarDialogoDetalles(Restaurante restaurante) {
-        ThemeManager.Theme theme = ThemeManager.getCurrentTheme();
-        Color bgGlobal = theme == ThemeManager.Theme.DARK
-                ? new Color(34, 45, 65)
-                : new Color(235, 241, 250);
-        Color fgPanel = theme == ThemeManager.Theme.DARK
-                ? Color.WHITE
-                : new Color(44, 62, 80);
-        Color borderColor = new Color(52, 152, 219);
-
-        int minWidth = 800;
-        int minHeight = 500;
-        int prefWidth = 1000;
-        int prefHeight = 700;
-
-        JDialog dialogo = new JDialog(this, restaurante.getNombre(), true);
-        dialogo.setSize(prefWidth, prefHeight);
-        dialogo.setMinimumSize(new Dimension(minWidth, minHeight));
-        dialogo.setLocationRelativeTo(this);
-        dialogo.setLayout(new BorderLayout());
-
-        JPanel panelFondo = new JPanel(new GridBagLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                g.setColor(bgGlobal);
-                g.fillRect(0, 0, getWidth(), getHeight());
-            }
-        };
-        panelFondo.setOpaque(true);
-
-        JPanel panel = new JPanel(new GridBagLayout()) {
-            @Override
-            protected void paintComponent(Graphics g) {
-                super.paintComponent(g);
-                Graphics2D g2 = (Graphics2D) g.create();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setColor(bgGlobal);
-                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 36, 36);
-                g2.dispose();
-            }
-        };
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createEmptyBorder(32, 48, 32, 48));
-
-        // Panel info a la IZQUIERDA
-        JPanel panelInfo = new JPanel();
-        panelInfo.setOpaque(false);
-        panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
-        panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
-
-        JLabel lblNombre = new JLabel(restaurante.getNombre());
-        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 30));
-        lblNombre.setForeground(fgPanel);
-        lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JSeparator separator = new JSeparator(SwingConstants.HORIZONTAL);
-        separator.setMaximumSize(new Dimension(260, 2));
-        separator.setForeground(borderColor);
-        separator.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblUbicacion = new JLabel("Ubicación: " + restaurante.getUbicacion());
-        lblUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 17));
-        lblUbicacion.setForeground(theme == ThemeManager.Theme.DARK ? Color.LIGHT_GRAY : new Color(100, 100, 100));
-        lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblValoracion = new JLabel("Valoración: " + String.format("%.1f", restaurante.getValoracion()));
-        lblValoracion.setFont(new Font("Arial", Font.BOLD, 18));
-        lblValoracion.setForeground(new Color(241, 196, 15));
-        lblValoracion.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        panelInfo.add(lblNombre);
-        panelInfo.add(Box.createVerticalStrut(2));
-        panelInfo.add(separator);
-        panelInfo.add(Box.createVerticalStrut(10));
-        panelInfo.add(lblUbicacion);
-        panelInfo.add(Box.createVerticalStrut(18));
-        panelInfo.add(lblValoracion); // Valoración debajo de ubicación
-
-        // --- Botones en columna, rectangulares y uno debajo de otro ---
-        JPanel panelBotones = new JPanel();
-        panelBotones.setOpaque(false);
-        panelBotones.setLayout(new BoxLayout(panelBotones, BoxLayout.Y_AXIS));
-
-        Dimension btnSize = new Dimension(220, 38);
-        int btnGap = 12;
-
-        JButton btnValorar = new JButton(I18n.t("boton.valorar"));
-        btnValorar.setBackground(new Color(241, 196, 15));
-        btnValorar.setForeground(Color.BLACK);
-        btnValorar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btnValorar.setFocusPainted(false);
-        btnValorar.setContentAreaFilled(true);
-        btnValorar.setOpaque(true);
-        btnValorar.setMaximumSize(btnSize);
-        btnValorar.setPreferredSize(btnSize);
-        btnValorar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnValorar.addActionListener(e -> {
-            dialogo.dispose();
-            new ValorarRestaurantes(restaurante.getNombre(), usuario);
-        });
-        panelBotones.add(btnValorar);
-        panelBotones.add(Box.createVerticalStrut(btnGap));
-
-        if (usuario.isAdmin()) {
-            JButton btnEditar = new JButton(I18n.t("boton.editar"));
-            btnEditar.setBackground(new Color(52, 152, 219));
-            btnEditar.setForeground(Color.WHITE);
-            btnEditar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-            btnEditar.setFocusPainted(false);
-            btnEditar.setContentAreaFilled(true);
-            btnEditar.setOpaque(true);
-            btnEditar.setMaximumSize(btnSize);
-            btnEditar.setPreferredSize(btnSize);
-            btnEditar.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btnEditar.addActionListener(e -> {
-                dialogo.dispose();
-                new EditarRestaurante(this, restaurante);
-            });
-            panelBotones.add(btnEditar);
-            panelBotones.add(Box.createVerticalStrut(btnGap));
-
-            JButton btnEliminar = new JButton(I18n.t("boton.eliminar"));
-            btnEliminar.setBackground(new Color(231, 76, 60));
-            btnEliminar.setForeground(Color.WHITE);
-            btnEliminar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-            btnEliminar.setFocusPainted(false);
-            btnEliminar.setContentAreaFilled(true);
-            btnEliminar.setOpaque(true);
-            btnEliminar.setMaximumSize(btnSize);
-            btnEliminar.setPreferredSize(btnSize);
-            btnEliminar.setAlignmentX(Component.CENTER_ALIGNMENT);
-            btnEliminar.addActionListener(e -> {
-                eliminarRestaurante(restaurante);
-                dialogo.dispose();
-            });
-            panelBotones.add(btnEliminar);
-            panelBotones.add(Box.createVerticalStrut(btnGap));
-        }
-
-        JButton btnCerrar = new JButton(I18n.t("boton.cancelar"));
-        btnCerrar.setBackground(new Color(189, 195, 199));
-        btnCerrar.setForeground(Color.BLACK);
-        btnCerrar.setFont(new Font("Segoe UI", Font.BOLD, 15));
-        btnCerrar.setFocusPainted(false);
-        btnCerrar.setContentAreaFilled(true);
-        btnCerrar.setOpaque(true);
-        btnCerrar.setMaximumSize(btnSize);
-        btnCerrar.setPreferredSize(btnSize);
-        btnCerrar.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnCerrar.addActionListener(e -> dialogo.dispose());
-        panelBotones.add(btnCerrar);
-
-        JPanel panelImagen = new JPanel(new GridBagLayout());
-        panelImagen.setOpaque(false);
-        JLabel lblImagen = new JLabel();
-        lblImagen.setPreferredSize(new Dimension(210, 210));
-        lblImagen.setMaximumSize(new Dimension(210, 210));
-        lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
-        lblImagen.setVerticalAlignment(SwingConstants.CENTER);
-        lblImagen.setBorder(null);
-
-        if (restaurante.getImagen() != null) {
-            try {
-                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
-                BufferedImage original = javax.imageio.ImageIO.read(bais);
-                int size = 210;
-                BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-                Graphics2D g2 = circleBuffer.createGraphics();
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, size, size));
-                Image img = original.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-                g2.drawImage(img, 0, 0, size, size, null);
-                g2.setClip(null);
-                g2.setStroke(new BasicStroke(4));
-                g2.setColor(borderColor);
-                g2.drawOval(2, 2, size - 4, size - 4);
-                g2.dispose();
-                lblImagen.setIcon(new ImageIcon(circleBuffer));
-                lblImagen.setText("");
-            } catch (Exception ex) {
-                lblImagen.setText("Sin imagen");
-            }
-        } else {
-            int size = 210;
-            BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = img.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            boolean darkMode = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-            Color fondoCirculo = darkMode ? new Color(52, 73, 94) : new Color(200, 200, 200);
-            g2.setColor(fondoCirculo);
-            g2.fillOval(0, 0, size, size);
-            g2.setColor(borderColor);
-            g2.setStroke(new BasicStroke(4));
-            g2.drawOval(2, 2, size - 4, size - 4);
-            g2.setFont(new Font("Arial", Font.BOLD, 18));
-            FontMetrics fm = g2.getFontMetrics();
-            String texto = "Sin imagen";
-            int textWidth = fm.stringWidth(texto);
-            int textHeight = fm.getHeight();
-            g2.setColor(new Color(120, 120, 120));
-            g2.drawString(texto, (size - textWidth) / 2, size / 2 + textHeight / 4);
-            g2.dispose();
-            lblImagen.setIcon(new ImageIcon(img));
-            lblImagen.setText("");
-        }
-        panelImagen.add(lblImagen);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(0, 0, 0, 0);
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.weighty = 1.0;
-        gbc.weightx = 0.6;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        panel.add(panelInfo, gbc);
-
-        gbc.gridx = 1;
-        gbc.weightx = 0.4;
-        gbc.insets = new Insets(0, 48, 0, 0); // <-- Aumenta separación a la derecha
-        panel.add(panelImagen, gbc);
-
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 2;
-        gbc.weightx = 1.0;
-        gbc.weighty = 0.0;
-        gbc.insets = new Insets(32, 0, 0, 0);
-        panel.add(panelBotones, gbc);
-
-        panelFondo.add(panel, new GridBagConstraints());
-
-        dialogo.setContentPane(panelFondo);
-
-        // Responsividad: mantener proporciones y separación al redimensionar
-        dialogo.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int w = dialogo.getWidth();
-                int h = dialogo.getHeight();
-                int leftPad = Math.max(48, w / 20);
-                int topPad = Math.max(48, h / 20);
-                panel.setBorder(BorderFactory.createEmptyBorder(topPad, leftPad, topPad, leftPad));
-                lblImagen.setPreferredSize(new Dimension(Math.max(180, w / 4), Math.max(180, h / 3)));
-                lblImagen.setMaximumSize(lblImagen.getPreferredSize());
-                // Aumenta separación al redimensionar también
-                GridBagLayout layout = (GridBagLayout) panel.getLayout();
-                GridBagConstraints c = layout.getConstraints(panelImagen);
-                c.insets = new Insets(0, 48, 0, 0);
-                layout.setConstraints(panelImagen, c);
-
-                panelInfo.revalidate();
-                panelInfo.repaint();
-                panelImagen.revalidate();
-                panelImagen.repaint();
-            }
-        });
-
-        dialogo.setVisible(true);
-    }
-
-    private void eliminarRestaurante(Restaurante restaurante) {
-        int confirm = JOptionPane.showConfirmDialog(this, "¿Seguro que quieres eliminar este restaurante?",
-                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-        if (confirm != JOptionPane.YES_OPTION)
+    private void editarRestauranteSeleccionado() {
+        int fila = tablaRestaurantes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un restaurante para editar.");
             return;
-        try {
-            boolean eliminado = TurismoService.getInstance().eliminarRestaurante(restaurante.getId());
-            if (eliminado) {
+        }
+        int id = (int) modeloTabla.getValueAt(fila, 0);
+        EditarRestaurante ventana = new EditarRestaurante(this, id);
+        ventana.setVisible(true);
+    }
+
+    private void eliminarRestauranteSeleccionado() {
+        int fila = tablaRestaurantes.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un restaurante para eliminar.");
+            return;
+        }
+        int id = (int) modeloTabla.getValueAt(fila, 0);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar el restaurante?", "Confirmar", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                TurismoService.getInstance().eliminarRestaurante(id);
                 cargarRestaurantes();
-                JOptionPane.showMessageDialog(this, "Restaurante eliminado.");
-            } else {
-                JOptionPane.showMessageDialog(this, "No se pudo eliminar el restaurante.");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Error al eliminar restaurante", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }
     }
 }
