@@ -49,7 +49,6 @@ CREATE TABLE restaurantes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     ubicacion VARCHAR(255),
-    valoracion FLOAT,
     imagen LONGBLOB
 );
 

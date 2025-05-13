@@ -32,12 +32,12 @@ public class RestauranteDAO {
     }
 
     public boolean agregarRestaurante(Restaurante restaurante) throws ClassNotFoundException {
-        String sql = "INSERT INTO restaurantes (nombre, ubicacion, valoracion, imagen) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO restaurantes (nombre, ubicacion, imagen) VALUES (?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
                 PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, restaurante.getNombre());
             ps.setString(2, restaurante.getUbicacion());
-            ps.setBytes(4, restaurante.getImagen());
+            ps.setBytes(3, restaurante.getImagen());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error agregarRestaurante: " + e.getMessage());
