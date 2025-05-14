@@ -36,6 +36,7 @@ public class MensajeDAO {
                 mensajes.add(new Mensaje(
                         rs.getInt("id"),
                         rs.getInt("id_usuario"),
+                        rs.getString("usuarioNombre"),
                         rs.getString("mensaje"),
                         rs.getString("respuesta"),
                         rs.getTimestamp("fecha")));
@@ -59,6 +60,7 @@ public class MensajeDAO {
                 conversacion.add(new Mensaje(
                         rs.getInt("id"),
                         rs.getInt("id_usuario"),
+                        rs.getString("usuarioNombre"),
                         rs.getString("mensaje"),
                         rs.getString("respuesta"),
                         rs.getTimestamp("fecha")));
@@ -91,6 +93,7 @@ public class MensajeDAO {
                 mensajes.add(new Mensaje(
                         rs.getInt("id"),
                         rs.getInt("id_usuario"),
+                        rs.getString("usuarioNombre"),
                         rs.getString("mensaje"),
                         rs.getString("respuesta"),
                         rs.getTimestamp("fecha")));
@@ -112,5 +115,26 @@ public class MensajeDAO {
             System.err.println("Error responderMensaje: " + e.getMessage());
             return false;
         }
+    }
+
+    public List<Mensaje> obtenerTodosMensajes() throws ClassNotFoundException {
+        List<Mensaje> mensajes = new ArrayList<>();
+        String sql = "SELECT * FROM mensajes ORDER BY fecha ASC";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                mensajes.add(new Mensaje(
+                        rs.getInt("id"),
+                        rs.getInt("id_usuario"),
+                        rs.getString("usuarioNombre"),
+                        rs.getString("mensaje"),
+                        rs.getString("respuesta"),
+                        rs.getTimestamp("fecha")));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error obtenerTodosMensajes: " + e.getMessage());
+        }
+        return mensajes;
     }
 }

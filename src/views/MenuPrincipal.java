@@ -275,7 +275,7 @@ public class MenuPrincipal extends JFrame {
         panelSoporte.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                new VistaSoporteAdmin(usuario).setVisible(true);
+                new VistaSoporteAdmin().setVisible(true);
             }
         });
     }

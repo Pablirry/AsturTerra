@@ -76,6 +76,7 @@ CREATE TABLE historial (
 CREATE TABLE mensajes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT,
+    usuarioNombre VARCHAR(50),
     mensaje TEXT,
     respuesta TEXT,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

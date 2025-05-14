@@ -2,10 +2,12 @@ package services;
 
 import dao.RutaDAO;
 import dao.UsuarioDAO;
+import dao.MensajeDAO;
 import dao.ReservarDAO;
 import dao.RestauranteDAO;
 import model.Ruta;
 import model.Usuario;
+import model.Mensaje;
 import model.Reserva;
 import model.Restaurante;
 import java.util.List;
@@ -16,12 +18,14 @@ public class TurismoService {
     private final RestauranteDAO restauranteDAO;
     private final ReservarDAO reservarDAO;
     private final UsuarioDAO usuarioDAO;
+    private final MensajeDAO mensajeDAO;
 
     private TurismoService() {
         rutaDAO = new RutaDAO();
         restauranteDAO = new RestauranteDAO();
         this.reservarDAO = new ReservarDAO();
         this.usuarioDAO = new UsuarioDAO();
+        this.mensajeDAO = new MensajeDAO();
     }
 
     public static TurismoService getInstance() {
@@ -92,4 +96,25 @@ public class TurismoService {
     public Usuario obtenerUsuarioPorId(int idUsuario) throws ClassNotFoundException {
         return usuarioDAO.obtenerUsuarioPorId(idUsuario);
     }
+
+    public List<Mensaje> obtenerMensajesSoporte() {
+        try {
+            // Cambia a obtener TODOS los mensajes, no solo los sin respuesta
+            return mensajeDAO.obtenerTodosMensajes();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    public boolean responderMensajeSoporte(int idMensaje, String respuesta) {
+        try {
+            return mensajeDAO.responderMensaje(idMensaje, respuesta);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
 }
