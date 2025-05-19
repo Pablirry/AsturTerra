@@ -6,9 +6,9 @@ import java.sql.SQLException;
 
 public class ConexionDB {
 
-    private static final String URL = "jdbc:mysql://usrshnydk2vnkzsm:jrbyBVqDOaUSMx0BXjMq@be6i3twqn0pieiochkud-mysql.services.clever-cloud.com:3306/be6i3twqn0pieiochkud";
+    private static final String URL = "jdbc:mysql://usrshnydk2vnkzsm:HJAlziOv2B3LyzsRSt2T@be6i3twqn0pieiochkud-mysql.services.clever-cloud.com:3306/be6i3twqn0pieiochkud";
     private static final String USER = "usrshnydk2vnkzsm";
-    private static final String PASSWORD = "jrbyBVqDOaUSMx0BXjMq";
+    private static final String PASSWORD = "HJAlziOv2B3LyzsRSt2T";
 
     public static Connection getConection() throws ClassNotFoundException {
         Connection con = null;
