@@ -43,34 +43,12 @@ public class ValoracionDAO {
         }
     }
 
-    public List<ValoracionRuta> obtenerValoracionesRuta(int idRuta) throws ClassNotFoundException {
-        List<ValoracionRuta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM valoraciones_rutas WHERE id_ruta = ?";
-        try (Connection con = ConexionDB.getConection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idRuta);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                lista.add(new ValoracionRuta(
-                        rs.getInt("id"),
-                        rs.getInt("id_usuario"),
-                        rs.getInt("id_ruta"),
-                        rs.getInt("puntuacion"),
-                        rs.getString("comentario")));
-            }
-        } catch (SQLException e) {
-            System.err.println("Error obtenerValoracionesRuta: " + e.getMessage());
-        }
-        return lista;
-    }
-
-    public List<ValoracionRestaurante> obtenerValoracionesRestaurante(int idRestaurante) throws ClassNotFoundException {
+    public List<ValoracionRestaurante> obtenerTodasValoracionesRestaurante() throws ClassNotFoundException {
         List<ValoracionRestaurante> lista = new ArrayList<>();
-        String sql = "SELECT * FROM valoraciones_restaurantes WHERE id_restaurante = ?";
+        String sql = "SELECT * FROM valoraciones_restaurantes";
         try (Connection con = ConexionDB.getConection();
-                PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idRestaurante);
-            ResultSet rs = ps.executeQuery();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 lista.add(new ValoracionRestaurante(
                         rs.getInt("id"),
@@ -80,9 +58,53 @@ public class ValoracionDAO {
                         rs.getString("comentario")));
             }
         } catch (SQLException e) {
-            System.err.println("Error obtenerValoracionesRestaurante: " + e.getMessage());
+            System.err.println("Error obtenerTodasValoracionesRestaurante: " + e.getMessage());
         }
         return lista;
+    }
+
+    public List<ValoracionRuta> obtenerTodasValoracionesRuta() throws ClassNotFoundException {
+        List<ValoracionRuta> lista = new ArrayList<>();
+        String sql = "SELECT * FROM valoraciones_rutas";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                lista.add(new ValoracionRuta(
+                        rs.getInt("id"),
+                        rs.getInt("id_usuario"),
+                        rs.getInt("id_ruta"),
+                        rs.getInt("puntuacion"),
+                        rs.getString("comentario")));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error obtenerTodasValoracionesRuta: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    public boolean eliminarValoracionRestaurante(int id) throws ClassNotFoundException {
+        String sql = "DELETE FROM valoraciones_restaurantes WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error eliminarValoracionRestaurante: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean eliminarValoracionRuta(int id) throws ClassNotFoundException {
+        String sql = "DELETE FROM valoraciones_rutas WHERE id = ?";
+        try (Connection con = ConexionDB.getConection();
+                PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            System.err.println("Error eliminarValoracionRuta: " + e.getMessage());
+            return false;
+        }
     }
 
     public double obtenerValoracionMediaRuta(int idRuta) throws ClassNotFoundException {
@@ -114,4 +136,5 @@ public class ValoracionDAO {
         }
         return 0.0;
     }
+
 }

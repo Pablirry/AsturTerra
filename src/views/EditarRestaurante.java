@@ -8,11 +8,12 @@ import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.image.BufferedImage;
+import java.awt.event.MouseAdapter;
 
 public class EditarRestaurante extends JDialog {
-    private JTextField txtNombre, txtUbicacion;
+    private JTextField txtNombre, txtUbicacion, txtEspecialidadOtra;
+    private JComboBox<String> comboEspecialidad;
     private JLabel lblImagen;
     private JButton btnSeleccionarImagen, btnGuardar, btnCancelar;
     private byte[] imagenBytes = null;
@@ -23,7 +24,7 @@ public class EditarRestaurante extends JDialog {
         super(padre, "Editar Restaurante", true);
         this.padre = padre;
         this.idRestaurante = idRestaurante;
-        setSize(520, 370);
+        setSize(520, 400);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -62,10 +63,9 @@ public class EditarRestaurante extends JDialog {
         txtNombre.setForeground(fg);
         txtNombre.setCaretColor(fg);
         txtNombre.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-            "Nombre",
-            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)
-        ));
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Nombre",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
 
         txtUbicacion = new JTextField();
         txtUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 15));
@@ -74,15 +74,65 @@ public class EditarRestaurante extends JDialog {
         txtUbicacion.setForeground(fg);
         txtUbicacion.setCaretColor(fg);
         txtUbicacion.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-            "Ubicación",
-            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)
-        ));
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Ubicación",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+
+        comboEspecialidad = new JComboBox<>(new String[] {
+                "Asturiano", "Americano", "Español", "Italiano", "Mexicano", "Otro"
+        });
+        comboEspecialidad.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        comboEspecialidad.setMaximumSize(new Dimension(260, 32));
+        comboEspecialidad.setBackground(fieldBg);
+        comboEspecialidad.setForeground(fg);
+        comboEspecialidad.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Especialidad",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+
+        // Renderer para fondo personalizado
+        comboEspecialidad.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                c.setBackground(isSelected ? new Color(41, 128, 185) : fieldBg);
+                c.setForeground(fg);
+                if (c instanceof JComponent) {
+                    ((JComponent) c).setOpaque(true);
+                }
+                return c;
+            }
+        });
+
+        txtEspecialidadOtra = new JTextField();
+        txtEspecialidadOtra.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        txtEspecialidadOtra.setMaximumSize(new Dimension(260, 32));
+        txtEspecialidadOtra.setBackground(fieldBg);
+        txtEspecialidadOtra.setForeground(fg);
+        txtEspecialidadOtra.setCaretColor(fg);
+        txtEspecialidadOtra.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Especifique cuál",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+        txtEspecialidadOtra.setVisible(false);
+
+        comboEspecialidad.addActionListener(e -> {
+            boolean esOtro = "Otro".equals(comboEspecialidad.getSelectedItem());
+            txtEspecialidadOtra.setVisible(esOtro);
+            if (esOtro) {
+                txtEspecialidadOtra.requestFocus();
+            }
+            comboEspecialidad.getParent().revalidate();
+            comboEspecialidad.getParent().repaint();
+        });
 
         panelCampos.add(Box.createVerticalStrut(8));
         panelCampos.add(txtNombre);
         panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(txtUbicacion);
+        panelCampos.add(Box.createVerticalStrut(10));
+        panelCampos.add(comboEspecialidad);
+        panelCampos.add(txtEspecialidadOtra); // Justo después del combo
         panelCampos.add(Box.createVerticalGlue());
 
         JPanel panelImagen = new JPanel();
@@ -196,7 +246,7 @@ public class EditarRestaurante extends JDialog {
     private ImageIcon getCircularImageIcon(byte[] imgBytes, int size) {
         try {
             java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(imgBytes);
-            java.awt.image.BufferedImage original = javax.imageio.ImageIO.read(bais);
+            BufferedImage original = javax.imageio.ImageIO.read(bais);
             Image img = original.getScaledInstance(size, size, Image.SCALE_SMOOTH);
             BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics2D g2 = circleBuffer.createGraphics();
@@ -219,6 +269,25 @@ public class EditarRestaurante extends JDialog {
             }
             txtNombre.setText(restaurante.getNombre());
             txtUbicacion.setText(restaurante.getUbicacion());
+
+            // Si la especialidad no está en el combo, selecciona "Otro" y muestra el campo
+            boolean found = false;
+            for (int i = 0; i < comboEspecialidad.getItemCount(); i++) {
+                if (restaurante.getEspecialidad().equals(comboEspecialidad.getItemAt(i))) {
+                    comboEspecialidad.setSelectedIndex(i);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                comboEspecialidad.setSelectedItem("Otro");
+                txtEspecialidadOtra.setVisible(true);
+                txtEspecialidadOtra.setText(restaurante.getEspecialidad());
+            } else {
+                txtEspecialidadOtra.setVisible(false);
+                txtEspecialidadOtra.setText("");
+            }
+
             imagenBytes = restaurante.getImagen();
             if (imagenBytes != null) {
                 lblImagen.setText("");
@@ -236,11 +305,15 @@ public class EditarRestaurante extends JDialog {
     private void guardarCambios() {
         String nombre = txtNombre.getText().trim();
         String ubicacion = txtUbicacion.getText().trim();
-        if (nombre.isEmpty() || ubicacion.isEmpty()) {
+        String especialidad = (String) comboEspecialidad.getSelectedItem();
+        if (nombre.isEmpty() || ubicacion.isEmpty() || especialidad == null) {
             JOptionPane.showMessageDialog(this, "Complete todos los campos.");
             return;
         }
-        Restaurante restaurante = new Restaurante(idRestaurante, nombre, ubicacion, imagenBytes);
+        if ("Otro".equals(especialidad)) {
+            especialidad = txtEspecialidadOtra.getText().trim();
+        }
+        Restaurante restaurante = new Restaurante(idRestaurante, nombre, ubicacion, imagenBytes, especialidad);
         try {
             TurismoService.getInstance().actualizarRestaurante(restaurante);
             padre.cargarRestaurantes();

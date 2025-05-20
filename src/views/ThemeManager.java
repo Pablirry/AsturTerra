@@ -204,7 +204,7 @@ public class ThemeManager {
             // Borde más grueso y radio más grande para más redondeo
             Border rounded = new RoundedBorder(
                     theme == Theme.DARK ? colorBase : new Color(44, 62, 80),
-                    3, 24 // grosor 3, radio 24
+                    3, 24
             );
             btn.setBorder(rounded);
 
@@ -212,8 +212,8 @@ public class ThemeManager {
             btn.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
             btn.setFont(new Font("Dialog", Font.BOLD, 18));
             btn.setMargin(new Insets(12, 24, 12, 24));
-            btn.setContentAreaFilled(true); // Fondo sólido
-            btn.setOpaque(true); // Fondo sólido
+            btn.setContentAreaFilled(true);
+            btn.setOpaque(true);
 
             for (MouseListener ml : btn.getMouseListeners()) {
                 btn.removeMouseListener(ml);

@@ -8,12 +8,14 @@ public class Restaurante {
     private String nombre;
     private String ubicacion;
     private byte[] imagen;
-    
-    public Restaurante(int id, String nombre, String ubicacion, byte[] imagen) {
+    private String especialidad;
+
+    public Restaurante(int id, String nombre, String ubicacion, byte[] image, String especialidad) {
         this.id = id;
         this.nombre = nombre;
         this.ubicacion = ubicacion;
-        this.imagen = imagen;
+        this.imagen = image;
+        this.especialidad = especialidad;
     }
 
     public int getId() {
@@ -48,10 +50,18 @@ public class Restaurante {
         this.imagen = imagen;
     }
 
+    public String getEspecialidad() {
+        return especialidad;
+    }
+
+    public void setEspecialidad(String especialidad) {
+        this.especialidad = especialidad;
+    }
+
     @Override
     public String toString() {
         return "Restaurante [id=" + id + ", nombre=" + nombre + ", ubicacion=" + ubicacion + 
-        ", imagen=" + Arrays.toString(imagen) + "]";
+        ", imagen=" + Arrays.toString(imagen) + ", especialidad=" + especialidad + "]";
     }
-    
+
 }

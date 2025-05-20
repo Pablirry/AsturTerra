@@ -124,7 +124,7 @@ public class VistaRestaurantes extends JFrame {
         Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
 
         JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(370, 140));
+        tarjeta.setPreferredSize(new Dimension(370, 160));
         tarjeta.setBackground(bgTarjeta);
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 new ThemeManager.RoundedBorder(borderColor, 2, 24),
@@ -172,9 +172,16 @@ public class VistaRestaurantes extends JFrame {
         lblUbicacion.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
         lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
+        JLabel lblEspecialidad = new JLabel("Especialidad: " + restaurante.getEspecialidad());
+        lblEspecialidad.setFont(new Font("Arial", Font.PLAIN, 15));
+        lblEspecialidad.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
+        lblEspecialidad.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         panelInfo.add(lblNombre);
         panelInfo.add(Box.createVerticalStrut(8));
         panelInfo.add(lblUbicacion);
+        panelInfo.add(Box.createVerticalStrut(8));
+        panelInfo.add(lblEspecialidad);
 
         tarjeta.add(panelInfo, BorderLayout.CENTER);
 
@@ -230,11 +237,18 @@ public class VistaRestaurantes extends JFrame {
         lblUbicacion.setForeground(new Color(39, 174, 96));
         lblUbicacion.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JLabel lblEspecialidad = new JLabel("Especialidad: " + restaurante.getEspecialidad());
+        lblEspecialidad.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        lblEspecialidad.setForeground(new Color(142, 68, 173));
+        lblEspecialidad.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         panel.add(lblNombre);
         panel.add(Box.createVerticalStrut(8));
         panel.add(separator);
         panel.add(Box.createVerticalStrut(12));
         panel.add(lblUbicacion);
+        panel.add(Box.createVerticalStrut(8));
+        panel.add(lblEspecialidad);
         panel.add(Box.createVerticalStrut(18));
 
         JLabel lblImagen = new JLabel();
@@ -314,11 +328,6 @@ public class VistaRestaurantes extends JFrame {
         dialog.setVisible(true);
     }
 
-    /**
-     * Crea un icono circular de "Sin imagen" para restaurantes sin imagen.
-     * @param dark Si el tema es oscuro
-     * @return Icono generado
-     */
     private Icon crearIconoSinImagen(boolean dark) {
         int size = 100;
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -340,10 +349,6 @@ public class VistaRestaurantes extends JFrame {
         return new ImageIcon(img);
     }
 
-    /**
-     * Elimina un restaurante tras confirmación del usuario.
-     * @param restaurante Restaurante a eliminar
-     */
     private void eliminarRestaurante(Restaurante restaurante) {
         int confirm = JOptionPane.showConfirmDialog(this, I18n.t("mensaje.confirmar.eliminar.restaurante"),
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION);

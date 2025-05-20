@@ -16,11 +16,10 @@ public class MenuPrincipal extends JFrame {
 
     private static MenuPrincipal instance;
 
-
     private JPanel panelFondo;
-    private JPanel panelRutas, panelReservas, panelRestaurantes, panelSoporte;
+    private JPanel panelRutas, panelReservas, panelRestaurantes, panelSoporte, panelValoraciones;
     private JLabel lblImagenPerfil;
-    private JLabel lblRutas, lblReservas, lblRestaurantes, lblSoporte;
+    private JLabel lblRutas, lblReservas, lblRestaurantes, lblSoporte, lblValoraciones;
     private JButton btnTema;
     private Usuario usuario;
 
@@ -144,10 +143,14 @@ public class MenuPrincipal extends JFrame {
         panelSoporte = crearPanel(0, 0, I18n.t("boton.soporte"), "assets/chat.png");
         lblSoporte = getPanelLabel(panelSoporte);
 
+        panelValoraciones = crearPanel(0, 0, I18n.t("titulo.valoraciones"), "assets/valoracion.png");
+        lblValoraciones = getPanelLabel(panelValoraciones);
+
         panelFondo.add(panelRutas);
         panelFondo.add(panelReservas);
         panelFondo.add(panelRestaurantes);
         panelFondo.add(panelSoporte);
+        panelFondo.add(panelValoraciones);
 
         agregarEventos();
 
@@ -198,9 +201,17 @@ public class MenuPrincipal extends JFrame {
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         ImageIcon icon = new ImageIcon(rutaImagen);
+        JLabel lblImagen = null;
         if (icon.getIconWidth() != -1) {
-            JLabel lblImagen = new JLabel(icon);
-            lblImagen.setBounds(80, 10, 100, 50);
+            if (texto.equals(I18n.t("titulo.valoraciones"))) {
+                // Redimensionar la imagen de valoraciones a 48x48
+                Image imgEscalada = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+                lblImagen = new JLabel(new ImageIcon(imgEscalada));
+                lblImagen.setBounds(100, 10, 48, 48);
+            } else {
+                lblImagen = new JLabel(icon);
+                lblImagen.setBounds(80, 10, 100, 50);
+            }
             panel.add(lblImagen);
         }
 
@@ -278,6 +289,14 @@ public class MenuPrincipal extends JFrame {
                 new VistaSoporteAdmin().setVisible(true);
             }
         });
+
+        panelValoraciones.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                new VistaValoraciones(usuario).setVisible(true);
+            }
+        });
     }
 
     private void ajustarComponentes() {
@@ -290,11 +309,16 @@ public class MenuPrincipal extends JFrame {
         int sepY = 40;
         int top = h / 5;
 
+        // Primera fila
         panelRutas.setBounds(sepX, top, panelWidth, panelHeight);
         panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
 
+        // Segunda fila
         panelRestaurantes.setBounds(sepX, top + panelHeight + sepY, panelWidth, panelHeight);
         panelSoporte.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
+
+        // Tercera fila (valoraciones alineado abajo a la derecha)
+        panelValoraciones.setBounds(2 * sepX + panelWidth, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
         for (Component c : panelFondo.getComponents()) {
             if (c instanceof JLabel && ((JLabel) c).getIcon() != null) {
@@ -330,7 +354,8 @@ public class MenuPrincipal extends JFrame {
                 img = new ImageIcon(url).getImage().getScaledInstance(lblImagenPerfil.getWidth(),
                         lblImagenPerfil.getHeight(), Image.SCALE_SMOOTH);
             } else {
-                img = new BufferedImage(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                img = new BufferedImage(lblImagenPerfil.getWidth(), lblImagenPerfil.getHeight(),
+                        BufferedImage.TYPE_INT_ARGB);
             }
         }
 
@@ -355,14 +380,11 @@ public class MenuPrincipal extends JFrame {
         btnTema.setText(ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK
                 ? I18n.t("boton.modo.claro")
                 : I18n.t("boton.modo.oscuro"));
-        panelRutas.setToolTipText(I18n.t("titulo.rutas"));
         lblRutas.setText(I18n.t("titulo.rutas"));
-        panelReservas.setToolTipText(I18n.t("titulo.reservas"));
         lblReservas.setText(I18n.t("titulo.reservas"));
-        panelRestaurantes.setToolTipText(I18n.t("titulo.restaurantes"));
         lblRestaurantes.setText(I18n.t("titulo.restaurantes"));
-        panelSoporte.setToolTipText(I18n.t("boton.soporte"));
         lblSoporte.setText(I18n.t("boton.soporte"));
+        lblValoraciones.setText(I18n.t("titulo.valoraciones"));
         repaint();
     }
 }

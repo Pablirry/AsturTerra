@@ -2,11 +2,14 @@ package services;
 
 import dao.RutaDAO;
 import dao.UsuarioDAO;
+import dao.ValoracionDAO;
 import dao.MensajeDAO;
 import dao.ReservarDAO;
 import dao.RestauranteDAO;
 import model.Ruta;
 import model.Usuario;
+import model.ValoracionRestaurante;
+import model.ValoracionRuta;
 import model.Mensaje;
 import model.Reserva;
 import model.Restaurante;
@@ -18,6 +21,7 @@ public class TurismoService {
     private final RestauranteDAO restauranteDAO;
     private final ReservarDAO reservarDAO;
     private final UsuarioDAO usuarioDAO;
+    private final ValoracionDAO valoracionDAO;
     private final MensajeDAO mensajeDAO;
 
     private TurismoService() {
@@ -26,6 +30,7 @@ public class TurismoService {
         this.reservarDAO = new ReservarDAO();
         this.usuarioDAO = new UsuarioDAO();
         this.mensajeDAO = new MensajeDAO();
+        this.valoracionDAO = new ValoracionDAO();
     }
 
     public static TurismoService getInstance() {
@@ -81,18 +86,20 @@ public class TurismoService {
         return restauranteDAO.actualizarRestaurante(restaurante);
     }
 
-    //Reservas
+    // Reservas
     public List<Reserva> obtenerReservas() throws ClassNotFoundException {
         return reservarDAO.listarReservas();
     }
+
     public boolean eliminarReserva(int idReserva) throws ClassNotFoundException {
         return reservarDAO.eliminarReserva(idReserva);
     }
+
     public boolean confirmarReserva(int idReserva) throws ClassNotFoundException {
         return reservarDAO.confirmarReserva(idReserva);
     }
 
-    //Usuario
+    // Usuario
     public Usuario obtenerUsuarioPorId(int idUsuario) throws ClassNotFoundException {
         return usuarioDAO.obtenerUsuarioPorId(idUsuario);
     }
@@ -116,5 +123,21 @@ public class TurismoService {
         }
     }
 
+    // Valoraciones
+    public List<ValoracionRestaurante> obtenerValoracionesRestaurante() throws ClassNotFoundException {
+        return valoracionDAO.obtenerTodasValoracionesRestaurante();
+    }
+
+    public List<ValoracionRuta> obtenerValoracionesRuta() throws ClassNotFoundException {
+        return valoracionDAO.obtenerTodasValoracionesRuta();
+    }
+
+    public boolean eliminarValoracionRestaurante(int id) throws ClassNotFoundException {
+        return valoracionDAO.eliminarValoracionRestaurante(id);
+    }
+
+    public boolean eliminarValoracionRuta(int id) throws ClassNotFoundException {
+        return valoracionDAO.eliminarValoracionRuta(id);
+    }
 
 }
