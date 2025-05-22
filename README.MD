@@ -21,7 +21,6 @@
 - **Modo oscuro/claro** para la interfaz gráfica
 - **Evita reservas duplicadas** para la misma ruta/evento y usuario
 - **Visualización de medias y comentarios** en valoraciones
-- **Permite modificar/cancelar valoraciones propias**
 - **Manual de usuario**
 
 ---
