@@ -109,7 +109,7 @@ CREATE TABLE valoraciones_eventos (
 );
 
 -- Tabla reservas eventos
-CREATE TABLE reservas_evento (
+CREATE TABLE reservas_eventos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     usuario_id INT NOT NULL,
     evento_id INT NOT NULL,

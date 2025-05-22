@@ -9,11 +9,13 @@ import dao.ReservarDAO;
 import dao.RestauranteDAO;
 import model.Ruta;
 import model.Usuario;
+import model.ValoracionEvento;
 import model.ValoracionRestaurante;
 import model.ValoracionRuta;
 import model.Evento;
 import model.Mensaje;
 import model.Reserva;
+import model.ReservaEvento;
 import model.Restaurante;
 import java.util.List;
 
@@ -103,6 +105,22 @@ public class TurismoService {
         return reservarDAO.confirmarReserva(idReserva);
     }
 
+    public List<ReservaEvento> obtenerReservasEvento() throws ClassNotFoundException {
+        return reservarDAO.listarReservasEvento();
+    }
+
+    public boolean agregarReservaEvento(ReservaEvento reserva) throws Exception {
+        return reservarDAO.agregarReservaEvento(reserva);
+    }
+
+    public boolean eliminarReservaEvento(int idReserva) throws ClassNotFoundException {
+        return reservarDAO.eliminarReservaEvento(idReserva);
+    }
+
+    public boolean confirmarReservaEvento(int idReserva) throws ClassNotFoundException {
+        return reservarDAO.confirmarReservaEvento(idReserva);
+    }
+
     // Usuario
     public Usuario obtenerUsuarioPorId(int idUsuario) throws ClassNotFoundException {
         return usuarioDAO.obtenerUsuarioPorId(idUsuario);
@@ -110,7 +128,6 @@ public class TurismoService {
 
     public List<Mensaje> obtenerMensajesSoporte() {
         try {
-            // Cambia a obtener TODOS los mensajes, no solo los sin respuesta
             return mensajeDAO.obtenerTodosMensajes();
         } catch (Exception e) {
             e.printStackTrace();
@@ -144,23 +161,32 @@ public class TurismoService {
         return valoracionDAO.eliminarValoracionRuta(id);
     }
 
+     public List<ValoracionEvento> obtenerValoracionesEvento() {
+        try {
+            return valoracionDAO.obtenerTodasValoracionesEvento();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    public boolean eliminarValoracionEvento(int id) throws ClassNotFoundException {
+        return valoracionDAO.eliminarValoracionEvento(id);
+    }
+
     // Eventos
-    // Obtener lista de eventos
     public List<Evento> obtenerEventos() throws ClassNotFoundException {
         return eventoDAO.listarEventos();
     }
 
-    // Agregar evento
     public boolean agregarEvento(Evento evento) throws ClassNotFoundException {
         return eventoDAO.agregarEvento(evento);
     }
 
-    // Eliminar evento
     public boolean eliminarEvento(int idEvento) throws ClassNotFoundException {
         return eventoDAO.eliminarEvento(idEvento);
     }
 
-    // Actualizar evento
     public boolean actualizarEvento(Evento evento) throws ClassNotFoundException {
         return eventoDAO.actualizarEvento(evento);
     }
