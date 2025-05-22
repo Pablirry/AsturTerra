@@ -22,8 +22,7 @@
 - **Evita reservas duplicadas** para la misma ruta/evento y usuario
 - **Visualización de medias y comentarios** en valoraciones
 - **Permite modificar/cancelar valoraciones propias**
-- **Manual de usuario** y tooltips en la interfaz
-- (Próximamente) Exportación de datos a PDF y Excel
+- **Manual de usuario**
 
 ---
 
