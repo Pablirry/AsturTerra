@@ -120,4 +120,13 @@ public class UsuarioDAO {
         }
         return null;
     }
+
+        public boolean eliminarUsuarioPorCorreo(String correo) throws Exception {
+        String sql = "DELETE FROM usuarios WHERE correo = ?";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, correo);
+            return ps.executeUpdate() > 0;
+        }
+    }
 }

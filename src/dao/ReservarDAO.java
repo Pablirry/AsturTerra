@@ -51,4 +51,16 @@ public class ReservarDAO {
             return false;
         }
     }
+
+    public boolean agregarReserva(Reserva reserva) throws Exception {
+    String sql = "INSERT INTO reservas (id_usuario, id_ruta, fecha, confirmada) VALUES (?, ?, ?, ?)";
+    try (Connection con = ConexionDB.getConection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, reserva.getIdUsuario());
+        ps.setInt(2, reserva.getIdRuta());
+        ps.setTimestamp(3, new java.sql.Timestamp(reserva.getFecha().getTime()));
+        ps.setBoolean(4, reserva.isConfirmada());
+        return ps.executeUpdate() > 0;
+    }
+}
 }

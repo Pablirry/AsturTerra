@@ -49,7 +49,9 @@ CREATE TABLE restaurantes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     ubicacion VARCHAR(255),
-    imagen LONGBLOB
+    especialidad VARCHAR(100),
+    imagen LONGBLOB,
+    descripcion TEXT
 );
 
 -- Tabla de valoraciones de restaurantes
@@ -109,8 +111,8 @@ CREATE TABLE valoraciones_eventos (
 -- Tabla reservas eventos
 CREATE TABLE reservas_evento (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    id_usuario INT NOT NULL,
-    id_evento INT NOT NULL,
-    fecha TIMESTAMP NOT NULL,
+    usuario_id INT NOT NULL,
+    evento_id INT NOT NULL,
+    fecha_reserva TIMESTAMP NOT NULL,
     confirmada BOOLEAN DEFAULT FALSE
 );
