@@ -2,7 +2,6 @@ package views;
 
 import java.awt.*;
 import java.awt.event.MouseListener;
-
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.table.JTableHeader;
@@ -28,6 +27,7 @@ public class ThemeManager {
         try {
             if (theme == Theme.DARK) {
                 UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+                // Colores base para modo oscuro
                 UIManager.put("control", new Color(44, 62, 80));
                 UIManager.put("info", new Color(44, 62, 80));
                 UIManager.put("nimbusBase", new Color(44, 62, 80));
@@ -35,6 +35,25 @@ public class ThemeManager {
                 UIManager.put("nimbusLightBackground", new Color(52, 73, 94));
                 UIManager.put("text", Color.WHITE);
                 UIManager.put("nimbusFocus", new Color(52, 152, 219));
+                // Igualar bordes y fuentes al modo claro
+                UIManager.put("Button.font", FUENTE_NORMAL);
+                UIManager.put("Label.font", FUENTE_NORMAL);
+                UIManager.put("TextField.font", FUENTE_NORMAL);
+                UIManager.put("TextArea.font", FUENTE_NORMAL);
+                UIManager.put("ComboBox.font", FUENTE_NORMAL);
+                UIManager.put("TitledBorder.font", FUENTE_NORMAL);
+                UIManager.put("Panel.background", new Color(44, 62, 80));
+                UIManager.put("Button.background", COLOR_PRIMARIO);
+                UIManager.put("Button.foreground", Color.WHITE);
+                UIManager.put("TextField.background", new Color(52, 73, 94));
+                UIManager.put("TextField.foreground", Color.WHITE);
+                UIManager.put("TextArea.background", new Color(52, 73, 94));
+                UIManager.put("TextArea.foreground", Color.WHITE);
+                UIManager.put("ComboBox.background", new Color(52, 73, 94));
+                UIManager.put("ComboBox.foreground", Color.WHITE);
+                UIManager.put("ScrollPane.background", new Color(44, 62, 80));
+                UIManager.put("ScrollPane.foreground", Color.WHITE);
+                UIManager.put("TitledBorder.titleColor", COLOR_PRIMARIO);
             } else {
                 UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                 UIManager.put("control", Color.WHITE);
@@ -44,6 +63,24 @@ public class ThemeManager {
                 UIManager.put("nimbusLightBackground", Color.WHITE);
                 UIManager.put("text", Color.BLACK);
                 UIManager.put("nimbusFocus", new Color(52, 152, 219));
+                UIManager.put("Button.font", FUENTE_NORMAL);
+                UIManager.put("Label.font", FUENTE_NORMAL);
+                UIManager.put("TextField.font", FUENTE_NORMAL);
+                UIManager.put("TextArea.font", FUENTE_NORMAL);
+                UIManager.put("ComboBox.font", FUENTE_NORMAL);
+                UIManager.put("TitledBorder.font", FUENTE_NORMAL);
+                UIManager.put("Panel.background", Color.WHITE);
+                UIManager.put("Button.background", COLOR_PRIMARIO);
+                UIManager.put("Button.foreground", Color.WHITE);
+                UIManager.put("TextField.background", Color.WHITE);
+                UIManager.put("TextField.foreground", Color.BLACK);
+                UIManager.put("TextArea.background", Color.WHITE);
+                UIManager.put("TextArea.foreground", Color.BLACK);
+                UIManager.put("ComboBox.background", Color.WHITE);
+                UIManager.put("ComboBox.foreground", Color.BLACK);
+                UIManager.put("ScrollPane.background", Color.WHITE);
+                UIManager.put("ScrollPane.foreground", Color.BLACK);
+                UIManager.put("TitledBorder.titleColor", COLOR_PRIMARIO);
             }
         } catch (Exception ignored) {
         }
@@ -122,95 +159,63 @@ public class ThemeManager {
     }
 
     public static void setComponentTheme(Component comp, Theme theme) {
+        // Paneles
         if (comp instanceof JPanel) {
-            if (theme == Theme.DARK) {
-                comp.setBackground(new Color(52, 73, 94));
-            } else {
-                comp.setBackground(new Color(236, 240, 241));
-            }
-            // Borde redondeado para ambos modos
+            comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
             Border rounded = new RoundedBorder(
-                    theme == Theme.DARK ? new Color(33, 47, 60) : new Color(44, 62, 80),
-                    3, 18);
+                    theme == Theme.DARK ? new Color(41, 128, 185, 120) : new Color(41, 128, 185, 120),
+                    2, 18);
             ((JPanel) comp).setBorder(rounded);
         }
+        // Labels
         if (comp instanceof JLabel) {
-            Color bg = comp.getBackground();
             if (theme == Theme.DARK) {
                 ((JLabel) comp).setForeground(Color.WHITE);
             } else {
-                if (bg != null && (bg.equals(Color.WHITE) || bg.equals(new Color(236, 240, 241)))) {
-                    ((JLabel) comp).setForeground(new Color(44, 62, 80));
-                } else {
-                    ((JLabel) comp).setForeground(Color.BLACK);
-                }
+                ((JLabel) comp).setForeground(new Color(44, 62, 80));
             }
         }
+        // Sliders
         if (comp instanceof JSlider) {
             JSlider slider = (JSlider) comp;
-            if (theme == Theme.DARK) {
-                slider.setBackground(new Color(52, 73, 94));
-                slider.setForeground(Color.WHITE);
-                slider.setOpaque(true);
-                UIManager.put("Slider.trackColor", new Color(44, 62, 80));
-                UIManager.put("Slider.thumb", new Color(189, 195, 199));
-                UIManager.put("Slider.tickColor", Color.WHITE);
-            } else {
-                slider.setBackground(new Color(236, 240, 241));
-                slider.setForeground(new Color(44, 62, 80));
-                slider.setOpaque(true);
-                UIManager.put("Slider.trackColor", new Color(189, 195, 199));
-                UIManager.put("Slider.thumb", new Color(52, 152, 219));
-                UIManager.put("Slider.tickColor", new Color(44, 62, 80));
-            }
-            SwingUtilities.updateComponentTreeUI(slider);
+            slider.setBackground(theme == Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
+            slider.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+            slider.setOpaque(true);
         }
+        // Tablas
         if (comp instanceof JTable) {
             JTable table = (JTable) comp;
-            if (theme == Theme.DARK) {
-                table.setBackground(new Color(52, 73, 94));
-                table.setForeground(Color.WHITE);
-                table.setSelectionBackground(new Color(33, 47, 60));
-                table.setSelectionForeground(Color.WHITE);
-                table.setGridColor(new Color(44, 62, 80));
-            } else {
-                table.setBackground(Color.WHITE);
-                table.setForeground(Color.BLACK);
-                table.setSelectionBackground(new Color(52, 152, 219));
-                table.setSelectionForeground(Color.WHITE);
-                table.setGridColor(new Color(236, 240, 241));
-            }
+            table.setBackground(theme == Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
+            table.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+            table.setSelectionBackground(theme == Theme.DARK ? new Color(33, 47, 60) : new Color(52, 152, 219));
+            table.setSelectionForeground(Color.WHITE);
+            table.setGridColor(theme == Theme.DARK ? new Color(44, 62, 80) : new Color(236, 240, 241));
             JTableHeader header = table.getTableHeader();
             if (header != null) {
-                if (theme == Theme.DARK) {
-                    header.setBackground(new Color(44, 62, 80));
-                    header.setForeground(Color.WHITE);
-                } else {
-                    header.setBackground(new Color(236, 240, 241));
-                    header.setForeground(new Color(44, 62, 80));
-                }
+                header.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : new Color(236, 240, 241));
+                header.setForeground(theme == Theme.DARK ? Color.WHITE : new Color(44, 62, 80));
             }
         }
+        // Botones
         if (comp instanceof JButton) {
             JButton btn = (JButton) comp;
             Color colorBase = (Color) btn.getClientProperty("colorBase");
             if (colorBase == null) {
-                colorBase = theme == Theme.DARK ? new Color(52, 152, 219) : new Color(52, 152, 219);
+                colorBase = COLOR_PRIMARIO;
             }
             Color normalBg = colorBase;
             Color hoverBg = colorBase.brighter();
             Color pressedBg = colorBase.darker();
 
-            // Borde más grueso y radio más grande para más redondeo
             Border rounded = new RoundedBorder(
                     theme == Theme.DARK ? colorBase : new Color(44, 62, 80),
-                    3, 24
+                    2, 24
             );
             btn.setBorder(rounded);
 
             btn.setBackground(normalBg);
-            btn.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
-            btn.setFont(new Font("Dialog", Font.BOLD, 18));
+            btn.setForeground(Color.WHITE);
+            btn.setFont(FUENTE_NORMAL);
             btn.setMargin(new Insets(12, 24, 12, 24));
             btn.setContentAreaFilled(true);
             btn.setOpaque(true);
@@ -251,17 +256,25 @@ public class ThemeManager {
                 }
             });
         }
+        // Campos de texto
         if (comp instanceof JTextField || comp instanceof JTextArea || comp instanceof JPasswordField) {
-            comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
+            comp.setBackground(theme == Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
             comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
             if (comp instanceof JTextComponent) {
                 ((JTextComponent) comp).setCaretColor(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
             }
         }
+        // ComboBox
+        if (comp instanceof JComboBox) {
+            comp.setBackground(theme == Theme.DARK ? new Color(52, 73, 94) : Color.WHITE);
+            comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
+        }
+        // ScrollPane
         if (comp instanceof JScrollPane) {
             comp.setBackground(theme == Theme.DARK ? new Color(44, 62, 80) : Color.WHITE);
             comp.setForeground(theme == Theme.DARK ? Color.WHITE : Color.BLACK);
         }
+        // Recursivo para hijos
         if (comp instanceof Container) {
             for (Component child : ((Container) comp).getComponents()) {
                 setComponentTheme(child, theme);

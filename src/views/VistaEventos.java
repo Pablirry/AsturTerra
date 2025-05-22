@@ -5,18 +5,18 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import model.Restaurante;
+import model.Evento;
 import model.Usuario;
 import services.TurismoService;
 import utils.I18n;
 
-public class VistaRestaurantes extends JFrame {
+public class VistaEventos extends JFrame {
     private final Usuario usuario;
     private JPanel panelTarjetas;
 
-    public VistaRestaurantes(Usuario usuario) {
+    public VistaEventos(Usuario usuario) {
         this.usuario = usuario;
-        setTitle(I18n.t("titulo.restaurantes"));
+        setTitle(I18n.t("titulo.eventos"));
         setSize(1100, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -29,7 +29,7 @@ public class VistaRestaurantes extends JFrame {
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.setBackground(new Color(44, 62, 80));
 
-        JLabel lblTitulo = new JLabel(I18n.t("titulo.restaurantes"));
+        JLabel lblTitulo = new JLabel(I18n.t("titulo.eventos"));
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 32));
         lblTitulo.setForeground(Color.WHITE);
         lblTitulo.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
@@ -79,50 +79,40 @@ public class VistaRestaurantes extends JFrame {
         btnAgregar.setPreferredSize(new Dimension(200, 45));
         btnAgregar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnAgregar.setOpaque(true);
-        btnAgregar.addActionListener(e -> new AgregarRestaurante(this).setVisible(true));
+        btnAgregar.addActionListener(e -> new AgregarEvento(this).setVisible(true));
         panelInferior.add(btnAgregar);
 
         add(panelInferior, BorderLayout.SOUTH);
 
-        cargarRestaurantes();
+        cargarEventos();
         setVisible(true);
     }
 
-    /**
-     * Recarga los restaurantes en el panel de tarjetas.
-     */
-    public void cargarRestaurantes() {
+    public void cargarEventos() {
         panelTarjetas.removeAll();
         try {
-            List<Restaurante> restaurantes = TurismoService.getInstance().obtenerRestaurantes();
-            if (restaurantes.isEmpty()) {
-                JLabel lblVacio = new JLabel(I18n.t("mensaje.vacio.restaurantes"));
+            List<Evento> eventos = TurismoService.getInstance().obtenerEventos();
+            if (eventos.isEmpty()) {
+                JLabel lblVacio = new JLabel(I18n.t("mensaje.vacio.eventos"));
                 lblVacio.setFont(new Font("Arial", Font.ITALIC, 22));
                 lblVacio.setForeground(Color.GRAY);
                 panelTarjetas.add(lblVacio);
             } else {
-                for (Restaurante r : restaurantes) {
-                    panelTarjetas.add(crearTarjetaRestaurante(r));
+                for (Evento e : eventos) {
+                    panelTarjetas.add(crearTarjetaEvento(e));
                 }
             }
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, I18n.t("mensaje.error.cargar.restaurantes") + ex.getMessage());
+            JOptionPane.showMessageDialog(this, I18n.t("mensaje.error.cargar.eventos") + ex.getMessage());
         }
         panelTarjetas.revalidate();
         panelTarjetas.repaint();
     }
 
-    /**
-     * Crea una tarjeta visual para un restaurante.
-     * 
-     * @param restaurante Restaurante a mostrar
-     * @return JPanel con la información del restaurante
-     */
-    private JPanel crearTarjetaRestaurante(Restaurante restaurante) {
+    private JPanel crearTarjetaEvento(Evento evento) {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color borderColor = new Color(52, 152, 219);
         Color bgTarjeta = dark ? new Color(52, 73, 94) : Color.WHITE;
-        Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
 
         JPanel tarjeta = new JPanel() {
             @Override
@@ -142,13 +132,13 @@ public class VistaRestaurantes extends JFrame {
         tarjeta.setLayout(new BorderLayout(18, 0));
         tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        // Imagen del restaurante (círculo)
+        // Imagen del evento (círculo)
         JLabel lblImagen = new JLabel();
         lblImagen.setPreferredSize(new Dimension(100, 100));
         lblImagen.setHorizontalAlignment(SwingConstants.LEFT);
-        if (restaurante.getImagen() != null) {
+        if (evento.getImagen() != null) {
             try {
-                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(evento.getImagen());
                 BufferedImage original = javax.imageio.ImageIO.read(bais);
                 Image img = original.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 BufferedImage circleBuffer = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
@@ -172,24 +162,41 @@ public class VistaRestaurantes extends JFrame {
         panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
         panelInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblNombre = new JLabel(restaurante.getNombre());
+        JLabel lblNombre = new JLabel(evento.getNombre());
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblNombre.setForeground(new Color(41, 128, 185));
         lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblUbicacion = new JLabel(I18n.t("label.ubicacion") + ": " + restaurante.getUbicacion());
-        lblUbicacion.setFont(new Font("Arial", Font.PLAIN, 15));
+        JLabel lblTipo = new JLabel(I18n.t("label.tipo") + ": " + evento.getTipo());
+        lblTipo.setFont(new Font("Dialog", Font.BOLD, 15));
+        lblTipo.setForeground(new Color(39, 174, 96));
+        lblTipo.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lblUbicacion = new JLabel(I18n.t("label.ubicacion") + ": " + evento.getUbicacion());
+        lblUbicacion.setFont(new Font("Dialog", Font.PLAIN, 15));
         lblUbicacion.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
         lblUbicacion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel lblEspecialidad = new JLabel("Especialidad: " + restaurante.getEspecialidad());
-        lblEspecialidad.setFont(new Font("Arial", Font.BOLD, 15));
-        lblEspecialidad.setForeground(new Color(39, 174, 96));
-        lblEspecialidad.setAlignmentX(Component.LEFT_ALIGNMENT);
+        JLabel lblPrecio = new JLabel("Precio: ");
+        lblPrecio.setFont(new Font("Dialog", Font.BOLD, 15));
+        lblPrecio.setForeground(new Color(52, 152, 219));
+        lblPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JLabel lblPrecioValor = new JLabel(String.format("%.2f €", evento.getPrecio()));
+        lblPrecioValor.setFont(new Font("Dialog", Font.BOLD, 15));
+        lblPrecioValor.setForeground(new Color(230, 126, 34));
+        lblPrecioValor.setAlignmentX(Component.LEFT_ALIGNMENT);
+
+        JPanel panelPrecio = new JPanel();
+        panelPrecio.setOpaque(false);
+        panelPrecio.setLayout(new BoxLayout(panelPrecio, BoxLayout.X_AXIS));
+        panelPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panelPrecio.add(lblPrecio);
+        panelPrecio.add(lblPrecioValor);
 
         // Descripción
         JLabel lblDescripcion = new JLabel(
-                "<html><div style='width:270px;'>" + restaurante.getDescripcion() + "</div></html>");
+                "<html><div style='width:270px;'>" + evento.getDescripcion() + "</div></html>");
         lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         lblDescripcion.setForeground(dark ? new Color(200, 200, 200) : new Color(120, 120, 120));
         lblDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -197,9 +204,11 @@ public class VistaRestaurantes extends JFrame {
 
         panelInfo.add(lblNombre);
         panelInfo.add(Box.createVerticalStrut(6));
+        panelInfo.add(lblTipo);
+        panelInfo.add(Box.createVerticalStrut(6));
         panelInfo.add(lblUbicacion);
         panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(lblEspecialidad);
+        panelInfo.add(panelPrecio);
         panelInfo.add(lblDescripcion);
 
         // Alinear todo arriba a la izquierda
@@ -213,22 +222,17 @@ public class VistaRestaurantes extends JFrame {
         tarjeta.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                mostrarDetallesRestaurante(restaurante);
+                mostrarDetallesEvento(evento);
             }
         });
 
         return tarjeta;
     }
 
-    /**
-     * Muestra un diálogo con los detalles completos del restaurante.
-     * 
-     * @param restaurante Restaurante a mostrar
-     */
-    private void mostrarDetallesRestaurante(Restaurante restaurante) {
+    private void mostrarDetallesEvento(Evento evento) {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
-        JDialog dialog = new JDialog(this, I18n.t("titulo.detalles.restaurante"), true);
-        dialog.setSize(540, 550);
+        JDialog dialog = new JDialog(this, I18n.t("titulo.detalles.evento"), true);
+        dialog.setSize(550, 680);
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
 
@@ -246,43 +250,48 @@ public class VistaRestaurantes extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
 
-        JLabel lblNombre = new JLabel("  " + restaurante.getNombre());
+        JLabel lblNombre = new JLabel("  " + evento.getNombre());
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblNombre.setForeground(new Color(41, 128, 185));
         lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblNombre.setIcon(UIManager.getIcon("FileView.directoryIcon"));
 
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(400, 2));
         separator.setForeground(new Color(41, 128, 185, 80));
         separator.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblUbicacion = new JLabel(I18n.t("label.ubicacion") + ": " + restaurante.getUbicacion());
-        lblUbicacion.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblUbicacion.setForeground(new Color(39, 174, 96));
+        JLabel lblTipo = new JLabel(I18n.t("label.tipo") + ": " + evento.getTipo());
+        lblTipo.setFont(new Font("Arial", Font.BOLD, 20));
+        lblTipo.setForeground(new Color(39, 174, 96));
+        lblTipo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel lblUbicacion = new JLabel(I18n.t("label.ubicacion") + ": " + evento.getUbicacion());
+        lblUbicacion.setFont(new Font("Arial", Font.BOLD, 20));
+        lblUbicacion.setForeground(new Color(142, 68, 173));
         lblUbicacion.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel lblEspecialidad = new JLabel("Especialidad: " + restaurante.getEspecialidad());
-        lblEspecialidad.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblEspecialidad.setForeground(new Color(142, 68, 173));
-        lblEspecialidad.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JLabel lblPrecio = new JLabel("Precio: " + evento.getPrecio() + " €");
+        lblPrecio.setFont(new Font("Arial", Font.BOLD, 20));
+        lblPrecio.setForeground(new Color(52, 152, 219));
+        lblPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         panel.add(lblNombre);
         panel.add(Box.createVerticalStrut(8));
         panel.add(separator);
         panel.add(Box.createVerticalStrut(12));
+        panel.add(lblTipo);
+        panel.add(Box.createVerticalStrut(8));
         panel.add(lblUbicacion);
         panel.add(Box.createVerticalStrut(8));
-        panel.add(lblEspecialidad);
+        panel.add(lblPrecio);
         panel.add(Box.createVerticalStrut(18));
-        
 
         JLabel lblImagen = new JLabel();
         lblImagen.setPreferredSize(new Dimension(160, 160));
         lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
-        if (restaurante.getImagen() != null) {
+        if (evento.getImagen() != null) {
             try {
-                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(restaurante.getImagen());
+                java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(evento.getImagen());
                 BufferedImage original = javax.imageio.ImageIO.read(bais);
                 Image img = original.getScaledInstance(160, 160, Image.SCALE_SMOOTH);
                 BufferedImage circleBuffer = new BufferedImage(160, 160, BufferedImage.TYPE_INT_ARGB);
@@ -301,13 +310,27 @@ public class VistaRestaurantes extends JFrame {
         panel.add(lblImagen);
         panel.add(Box.createVerticalStrut(18));
 
-        JLabel lblDescripcion = new JLabel(
-                "<html><div style='width:370px;'>" + restaurante.getDescripcion() + "</div></html>");
-        lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        lblDescripcion.setForeground(dark ? new Color(200, 200, 200) : new Color(120, 120, 120));
-        lblDescripcion.setAlignmentX(Component.CENTER_ALIGNMENT);
-        lblDescripcion.setBorder(BorderFactory.createEmptyBorder(12, 0, 0, 0));
-        panel.add(lblDescripcion);
+        JTextArea txtDescripcion = new JTextArea(evento.getDescripcion());
+        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        txtDescripcion.setEditable(false);
+        txtDescripcion.setHighlighter(null);
+        txtDescripcion.setFocusable(false);
+        txtDescripcion.setOpaque(true);
+        txtDescripcion.setBorder(null);
+        txtDescripcion.setBackground(dark ? new Color(44, 62, 80) : new Color(245, 245, 250));
+
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setPreferredSize(new Dimension(420, 120));
+        scrollDesc.setMaximumSize(new Dimension(420, 160));
+        scrollDesc.setBorder(BorderFactory.createEmptyBorder());
+        scrollDesc.getViewport().setOpaque(false);
+        scrollDesc.setOpaque(false);
+        scrollDesc.setBackground(new Color(0, 0, 0, 0));
+        scrollDesc.getViewport().setBackground(new Color(0, 0, 0, 0));
+
+        panel.add(scrollDesc);
         panel.add(Box.createVerticalStrut(18));
 
         // Botones modernos con iconos y colores
@@ -323,7 +346,7 @@ public class VistaRestaurantes extends JFrame {
         btnEditar.setPreferredSize(new Dimension(120, 38));
         btnEditar.addActionListener(e -> {
             dialog.dispose();
-            new EditarRestaurante(this, restaurante.getId()).setVisible(true);
+            new EditarEvento(this, evento).setVisible(true);
         });
 
         JButton btnEliminar = new JButton("✘ " + I18n.t("boton.eliminar"));
@@ -335,7 +358,7 @@ public class VistaRestaurantes extends JFrame {
         btnEliminar.setPreferredSize(new Dimension(130, 38));
         btnEliminar.addActionListener(e -> {
             dialog.dispose();
-            eliminarRestaurante(restaurante);
+            eliminarEvento(evento);
         });
 
         panelBotones.add(btnEditar);
@@ -384,15 +407,19 @@ public class VistaRestaurantes extends JFrame {
         return new ImageIcon(img);
     }
 
-    private void eliminarRestaurante(Restaurante restaurante) {
-        int confirm = JOptionPane.showConfirmDialog(this, I18n.t("mensaje.confirmar.eliminar.restaurante"),
+    private void eliminarEvento(Evento evento) {
+        int confirm = JOptionPane.showConfirmDialog(this, I18n.t("mensaje.confirmar.eliminar.evento"),
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION)
             return;
         try {
-            TurismoService.getInstance().eliminarRestaurante(restaurante.getId());
-            cargarRestaurantes();
-            JOptionPane.showMessageDialog(this, I18n.t("mensaje.restaurante.eliminado"));
+            boolean eliminado = TurismoService.getInstance().eliminarEvento(evento.getId());
+            if (eliminado) {
+                cargarEventos();
+                JOptionPane.showMessageDialog(this, I18n.t("mensaje.evento.eliminado"));
+            } else {
+                JOptionPane.showMessageDialog(this, I18n.t("mensaje.evento.noeliminado"));
+            }
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
         }

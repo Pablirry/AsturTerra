@@ -3,6 +3,7 @@ package services;
 import dao.RutaDAO;
 import dao.UsuarioDAO;
 import dao.ValoracionDAO;
+import dao.EventoDAO;
 import dao.MensajeDAO;
 import dao.ReservarDAO;
 import dao.RestauranteDAO;
@@ -10,6 +11,7 @@ import model.Ruta;
 import model.Usuario;
 import model.ValoracionRestaurante;
 import model.ValoracionRuta;
+import model.Evento;
 import model.Mensaje;
 import model.Reserva;
 import model.Restaurante;
@@ -23,6 +25,7 @@ public class TurismoService {
     private final UsuarioDAO usuarioDAO;
     private final ValoracionDAO valoracionDAO;
     private final MensajeDAO mensajeDAO;
+    private final EventoDAO eventoDAO;
 
     private TurismoService() {
         rutaDAO = new RutaDAO();
@@ -31,6 +34,7 @@ public class TurismoService {
         this.usuarioDAO = new UsuarioDAO();
         this.mensajeDAO = new MensajeDAO();
         this.valoracionDAO = new ValoracionDAO();
+        this.eventoDAO = new EventoDAO();
     }
 
     public static TurismoService getInstance() {
@@ -138,6 +142,27 @@ public class TurismoService {
 
     public boolean eliminarValoracionRuta(int id) throws ClassNotFoundException {
         return valoracionDAO.eliminarValoracionRuta(id);
+    }
+
+    // Eventos
+    // Obtener lista de eventos
+    public List<Evento> obtenerEventos() throws ClassNotFoundException {
+        return eventoDAO.listarEventos();
+    }
+
+    // Agregar evento
+    public boolean agregarEvento(Evento evento) throws ClassNotFoundException {
+        return eventoDAO.agregarEvento(evento);
+    }
+
+    // Eliminar evento
+    public boolean eliminarEvento(int idEvento) throws ClassNotFoundException {
+        return eventoDAO.eliminarEvento(idEvento);
+    }
+
+    // Actualizar evento
+    public boolean actualizarEvento(Evento evento) throws ClassNotFoundException {
+        return eventoDAO.actualizarEvento(evento);
     }
 
 }

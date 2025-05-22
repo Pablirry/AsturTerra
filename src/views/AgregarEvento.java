@@ -1,30 +1,24 @@
 package views;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.nio.file.Files;
-import model.Ruta;
+import model.Evento;
 import services.TurismoService;
 
-/**
- * Diálogo para agregar una nueva ruta turística.
- */
-public class AgregarRuta extends JDialog {
-    private JTextField txtNombre, txtPrecio, txtUbicacion, txtTipo;
+import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.nio.file.Files;
+
+public class AgregarEvento extends JDialog {
+    private JTextField txtNombre, txtUbicacion, txtPrecio, txtTipoOtro;
     private JTextArea txtDescripcion;
     private JLabel lblImagen;
     private JButton btnSeleccionarImagen, btnGuardar, btnCancelar;
-    private int dificultadSeleccionada = 0;
-    private JLabel[] estrellas = new JLabel[5];
     private byte[] imagenBytes = null;
-    private VistaRutas padre;
+    private VistaEventos padre;
+    private JComboBox<String> comboTipo;
 
-    public AgregarRuta(VistaRutas padre) {
-        super(padre, "Agregar Ruta", true);
+    public AgregarEvento(VistaEventos padre) {
+        super(padre, "Agregar Evento", true);
         this.padre = padre;
         setSize(700, 520);
         setLocationRelativeTo(padre);
@@ -36,14 +30,14 @@ public class AgregarRuta extends JDialog {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color bg = dark ? new Color(44, 62, 80) : Color.WHITE;
         Color fg = dark ? Color.WHITE : Color.BLACK;
-        Color fieldBg = dark ? new Color(44, 62, 80) : Color.WHITE;
+        Color borderColor = new Color(41, 128, 185, 120);
 
         JPanel mainPanel = new JPanel(new BorderLayout(0, 0));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
         mainPanel.setBackground(bg);
 
         JLabel lblTitulo = new JLabel("Agregar Evento");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(41, 128, 185));
         lblTitulo.setHorizontalAlignment(SwingConstants.LEFT);
         mainPanel.add(lblTitulo, BorderLayout.NORTH);
@@ -57,102 +51,115 @@ public class AgregarRuta extends JDialog {
         panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.Y_AXIS));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 
-        // Campo nombre
         txtNombre = new JTextField();
-        txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtNombre.setFont(new Font("Arial", Font.PLAIN, 16));
         txtNombre.setMaximumSize(new Dimension(500, 36));
-        txtNombre.setBackground(fieldBg);
+        txtNombre.setBackground(bg);
         txtNombre.setForeground(fg);
         txtNombre.setCaretColor(fg);
         txtNombre.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Nombre",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
-
-        // Campo descripción con borde fijo y scroll interno
-        JPanel panelDescripcion = new JPanel(new BorderLayout());
-        panelDescripcion.setOpaque(false);
-        panelDescripcion.setMaximumSize(new Dimension(500, 120));
-        panelDescripcion.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Descripción",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
+            BorderFactory.createLineBorder(borderColor, 2), "Nombre"));
 
         txtDescripcion = new JTextArea(6, 20);
-        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtDescripcion.setFont(new Font("Arial", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
-        txtDescripcion.setOpaque(true);
-        txtDescripcion.setBackground(fieldBg);
+        txtDescripcion.setBackground(bg);
         txtDescripcion.setForeground(fg);
         txtDescripcion.setCaretColor(fg);
         txtDescripcion.setBorder(null);
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(borderColor, 2), "Descripción"));
+        scrollDesc.setMaximumSize(new Dimension(500, 120));
+        scrollDesc.getViewport().setBackground(bg);
 
-        JScrollPane scrollDesc = new JScrollPane(txtDescripcion) {
-            @Override
-            public void setBorder(Border border) {
-                // No permitir cambiar el borde, lo mantiene el panel externo
-            }
-        };
-        scrollDesc.setBorder(null);
-        scrollDesc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollDesc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollDesc.setPreferredSize(new Dimension(400, 100));
-        scrollDesc.setMaximumSize(new Dimension(400, 120));
-        scrollDesc.getViewport().setOpaque(false);
-        scrollDesc.setOpaque(false);
-
-        panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
-
-        // Campo ubicación
         txtUbicacion = new JTextField();
-        txtUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
         txtUbicacion.setMaximumSize(new Dimension(500, 36));
-        txtUbicacion.setBackground(fieldBg);
+        txtUbicacion.setBackground(bg);
         txtUbicacion.setForeground(fg);
         txtUbicacion.setCaretColor(fg);
         txtUbicacion.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Ubicación",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
+            BorderFactory.createLineBorder(borderColor, 2), "Ubicación"));
 
-        // Campo tipo
-        txtTipo = new JTextField();
-        txtTipo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtTipo.setMaximumSize(new Dimension(500, 36));
-        txtTipo.setBackground(fieldBg);
-        txtTipo.setForeground(fg);
-        txtTipo.setCaretColor(fg);
-        txtTipo.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Tipo",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
+        // ComboBox para Tipo
+        comboTipo = new JComboBox<>(new String[] { "Ocio", "Religioso", "Cultural", "Otro" });
+        comboTipo.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        comboTipo.setMaximumSize(new Dimension(260, 32));
+        comboTipo.setBackground(bg);
+        comboTipo.setForeground(fg);
+        comboTipo.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(borderColor, 2, true),
+            "Tipo",
+            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+        comboTipo.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                c.setBackground(isSelected ? new Color(41, 128, 185) : bg);
+                c.setForeground(fg);
+                if (c instanceof JComponent) {
+                    ((JComponent) c).setOpaque(true);
+                }
+                return c;
+            }
+        });
 
-        // Campo precio
+        // Panel para el campo "Otro"
+        JPanel panelTipoOtro = new JPanel();
+        panelTipoOtro.setOpaque(false);
+        panelTipoOtro.setLayout(new BoxLayout(panelTipoOtro, BoxLayout.Y_AXIS));
+        panelTipoOtro.setMaximumSize(new Dimension(260, 40));
+
+        txtTipoOtro = new JTextField();
+        txtTipoOtro.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        txtTipoOtro.setMaximumSize(new Dimension(260, 45));
+        txtTipoOtro.setBackground(bg);
+        txtTipoOtro.setForeground(fg);
+        txtTipoOtro.setCaretColor(fg);
+        txtTipoOtro.setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(borderColor, 2, true),
+            "Especifique cuál",
+            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+        txtTipoOtro.setVisible(false);
+
+        panelTipoOtro.add(txtTipoOtro);
+
+        // Mostrar/ocultar campo "otro"
+        comboTipo.addActionListener(e -> {
+            boolean esOtro = "Otro".equals(comboTipo.getSelectedItem());
+            txtTipoOtro.setVisible(esOtro);
+            if (esOtro) {
+                txtTipoOtro.requestFocus();
+            }
+            panelTipoOtro.revalidate();
+            panelTipoOtro.repaint();
+        });
+
         txtPrecio = new JTextField();
-        txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        txtPrecio.setFont(new Font("Arial", Font.PLAIN, 16));
         txtPrecio.setMaximumSize(new Dimension(500, 36));
-        txtPrecio.setBackground(fieldBg);
+        txtPrecio.setBackground(bg);
         txtPrecio.setForeground(fg);
         txtPrecio.setCaretColor(fg);
         txtPrecio.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Precio (€)",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
+            BorderFactory.createLineBorder(borderColor, 2), "Precio (€)"));
 
         panelCampos.add(Box.createVerticalStrut(8));
         panelCampos.add(txtNombre);
         panelCampos.add(Box.createVerticalStrut(10));
-        panelCampos.add(panelDescripcion);
+        panelCampos.add(scrollDesc);
         panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(txtUbicacion);
         panelCampos.add(Box.createVerticalStrut(10));
-        panelCampos.add(txtTipo);
+        panelCampos.add(comboTipo);
+        panelCampos.add(panelTipoOtro);
         panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(txtPrecio);
         panelCampos.add(Box.createVerticalGlue());
 
-        // Panel derecho: imagen y botón
         JPanel panelImagen = new JPanel();
         panelImagen.setOpaque(false);
         panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
@@ -168,6 +175,8 @@ public class AgregarRuta extends JDialog {
         lblImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblImagen.setHorizontalAlignment(SwingConstants.CENTER);
         lblImagen.setForeground(new Color(120, 120, 120));
+        lblImagen.setBackground(bg);
+        lblImagen.setOpaque(true);
 
         btnSeleccionarImagen = new JButton("Seleccionar Imagen");
         btnSeleccionarImagen.setFont(new Font("Segoe UI", Font.BOLD, 15));
@@ -177,15 +186,6 @@ public class AgregarRuta extends JDialog {
         btnSeleccionarImagen.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnSeleccionarImagen.setPreferredSize(new Dimension(160, 36));
         btnSeleccionarImagen.setAlignmentX(Component.CENTER_ALIGNMENT);
-        btnSeleccionarImagen.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                btnSeleccionarImagen.setBackground(new Color(31, 97, 141));
-            }
-
-            public void mouseExited(MouseEvent e) {
-                btnSeleccionarImagen.setBackground(new Color(41, 128, 185));
-            }
-        });
         btnSeleccionarImagen.addActionListener(e -> seleccionarImagen());
 
         panelImagen.add(Box.createVerticalGlue());
@@ -194,13 +194,11 @@ public class AgregarRuta extends JDialog {
         panelImagen.add(btnSeleccionarImagen);
         panelImagen.add(Box.createVerticalGlue());
 
-        // Añadir ambos paneles al centro
         panelCentro.add(panelCampos);
         panelCentro.add(panelImagen);
 
         mainPanel.add(panelCentro, BorderLayout.CENTER);
 
-        // Panel de botones abajo centrado
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
         panelBotones.setOpaque(false);
 
@@ -211,17 +209,7 @@ public class AgregarRuta extends JDialog {
         btnGuardar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnGuardar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnGuardar.setPreferredSize(new Dimension(150, 40));
-        btnGuardar.setBorder(BorderFactory.createEmptyBorder());
-        btnGuardar.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                btnGuardar.setBackground(new Color(41, 128, 185));
-            }
-
-            public void mouseExited(MouseEvent e) {
-                btnGuardar.setBackground(new Color(52, 152, 219));
-            }
-        });
-        btnGuardar.addActionListener(e -> guardarRuta());
+        btnGuardar.addActionListener(e -> guardarEvento());
 
         btnCancelar = new JButton("Cancelar");
         btnCancelar.setBackground(new Color(231, 76, 60));
@@ -230,16 +218,6 @@ public class AgregarRuta extends JDialog {
         btnCancelar.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnCancelar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnCancelar.setPreferredSize(new Dimension(120, 40));
-        btnCancelar.setBorder(BorderFactory.createEmptyBorder());
-        btnCancelar.addMouseListener(new MouseAdapter() {
-            public void mouseEntered(MouseEvent e) {
-                btnCancelar.setBackground(new Color(192, 57, 43));
-            }
-
-            public void mouseExited(MouseEvent e) {
-                btnCancelar.setBackground(new Color(231, 76, 60));
-            }
-        });
         btnCancelar.addActionListener(e -> dispose());
 
         panelBotones.add(btnGuardar);
@@ -250,23 +228,17 @@ public class AgregarRuta extends JDialog {
         setContentPane(mainPanel);
     }
 
-    private void actualizarEstrellas() {
-        for (int i = 0; i < 5; i++) {
-            estrellas[i].setText(i < dificultadSeleccionada ? "★" : "☆");
-            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 26));
-        }
-    }
-
     private void seleccionarImagen() {
         JFileChooser fc = new JFileChooser();
         if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             try {
                 imagenBytes = Files.readAllBytes(file.toPath());
-                ImageIcon icon = getCircularImageIcon(imagenBytes, 140);
+                ImageIcon icon = new ImageIcon(new ImageIcon(imagenBytes).getImage().getScaledInstance(140, 140, Image.SCALE_SMOOTH));
                 lblImagen.setText("");
                 lblImagen.setIcon(icon);
             } catch (Exception ex) {
+                imagenBytes = null;
                 lblImagen.setText("Sin imagen");
                 lblImagen.setIcon(null);
                 JOptionPane.showMessageDialog(this, "No se pudo cargar la imagen.");
@@ -274,28 +246,19 @@ public class AgregarRuta extends JDialog {
         }
     }
 
-    private ImageIcon getCircularImageIcon(byte[] imgBytes, int size) {
-        try {
-            java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(imgBytes);
-            java.awt.image.BufferedImage original = javax.imageio.ImageIO.read(bais);
-            Image img = original.getScaledInstance(size, size, Image.SCALE_SMOOTH);
-            BufferedImage circleBuffer = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2 = circleBuffer.createGraphics();
-            g2.setClip(new java.awt.geom.Ellipse2D.Float(0, 0, size, size));
-            g2.drawImage(img, 0, 0, size, size, null);
-            g2.dispose();
-            return new ImageIcon(circleBuffer);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private void guardarRuta() {
+    private void guardarEvento() {
         String nombre = txtNombre.getText().trim();
         String descripcion = txtDescripcion.getText().trim();
+        String ubicacion = txtUbicacion.getText().trim();
+        String tipo;
+        if ("Otro".equals(comboTipo.getSelectedItem())) {
+            tipo = txtTipoOtro.getText().trim();
+        } else {
+            tipo = (String) comboTipo.getSelectedItem();
+        }
         String precioStr = txtPrecio.getText().trim();
-        if (nombre.isEmpty() || descripcion.isEmpty() || precioStr.isEmpty() || dificultadSeleccionada == 0) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos y seleccione dificultad.");
+        if (nombre.isEmpty() || descripcion.isEmpty() || ubicacion.isEmpty() || tipo.isEmpty() || precioStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Complete todos los campos.");
             return;
         }
         double precio;
@@ -305,13 +268,13 @@ public class AgregarRuta extends JDialog {
             JOptionPane.showMessageDialog(this, "Precio inválido.");
             return;
         }
-        Ruta ruta = new Ruta(0, nombre, descripcion, imagenBytes, precio, dificultadSeleccionada);
+        Evento evento = new Evento(0, nombre, descripcion, ubicacion, tipo, precio, imagenBytes);
         try {
-            TurismoService.getInstance().agregarRuta(ruta);
-            padre.cargarRutas();
+            TurismoService.getInstance().agregarEvento(evento);
+            padre.cargarEventos();
             dispose();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al guardar ruta.");
+            JOptionPane.showMessageDialog(this, "Error al guardar evento.");
         }
     }
 }

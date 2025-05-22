@@ -17,9 +17,9 @@ public class MenuPrincipal extends JFrame {
     private static MenuPrincipal instance;
 
     private JPanel panelFondo;
-    private JPanel panelRutas, panelReservas, panelRestaurantes, panelSoporte, panelValoraciones;
+    private JPanel panelRutas, panelReservas, panelRestaurantes, panelSoporte, panelValoraciones, panelEventos;
     private JLabel lblImagenPerfil;
-    private JLabel lblRutas, lblReservas, lblRestaurantes, lblSoporte, lblValoraciones;
+    private JLabel lblRutas, lblReservas, lblRestaurantes, lblSoporte, lblValoraciones, lblEventos;
     private JButton btnTema;
     private Usuario usuario;
 
@@ -146,12 +146,15 @@ public class MenuPrincipal extends JFrame {
         panelValoraciones = crearPanel(0, 0, I18n.t("titulo.valoraciones"), "assets/valoracion.png");
         lblValoraciones = getPanelLabel(panelValoraciones);
 
+        panelEventos = crearPanel(0, 0, I18n.t("titulo.eventos"), "assets/evento.png");
+        lblEventos = getPanelLabel(panelEventos);
+
         panelFondo.add(panelRutas);
         panelFondo.add(panelReservas);
         panelFondo.add(panelRestaurantes);
         panelFondo.add(panelSoporte);
         panelFondo.add(panelValoraciones);
-
+        panelFondo.add(panelEventos);
         agregarEventos();
 
         getContentPane().add(panelFondo, BorderLayout.CENTER);
@@ -203,7 +206,7 @@ public class MenuPrincipal extends JFrame {
         ImageIcon icon = new ImageIcon(rutaImagen);
         JLabel lblImagen = null;
         if (icon.getIconWidth() != -1) {
-            if (texto.equals(I18n.t("titulo.valoraciones"))) {
+            if (texto.equals(I18n.t("titulo.valoraciones")) || texto.equals(I18n.t("titulo.eventos"))) {
                 // Redimensionar la imagen de valoraciones a 48x48
                 Image imgEscalada = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
                 lblImagen = new JLabel(new ImageIcon(imgEscalada));
@@ -297,6 +300,14 @@ public class MenuPrincipal extends JFrame {
                 new VistaValoraciones(usuario).setVisible(true);
             }
         });
+
+        panelEventos.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dispose();
+                new VistaEventos(usuario).setVisible(true);
+            }
+        });
     }
 
     private void ajustarComponentes() {
@@ -309,15 +320,14 @@ public class MenuPrincipal extends JFrame {
         int sepY = 40;
         int top = h / 5;
 
-        // Primera fila
+        // Columna izquierda
         panelRutas.setBounds(sepX, top, panelWidth, panelHeight);
-        panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
-
-        // Segunda fila
         panelRestaurantes.setBounds(sepX, top + panelHeight + sepY, panelWidth, panelHeight);
-        panelSoporte.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
+        panelEventos.setBounds(sepX, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
-        // Tercera fila (valoraciones alineado abajo a la derecha)
+        // Columna derecha
+        panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
+        panelSoporte.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
         panelValoraciones.setBounds(2 * sepX + panelWidth, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
         for (Component c : panelFondo.getComponents()) {

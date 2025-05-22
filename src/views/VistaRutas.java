@@ -128,21 +128,30 @@ public class VistaRutas extends JFrame {
      * @param ruta Ruta a mostrar
      * @return JPanel con la información de la ruta
      */
-    private JPanel crearTarjetaRuta(Ruta ruta) {
+        private JPanel crearTarjetaRuta(Ruta ruta) {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color borderColor = new Color(52, 152, 219);
         Color bgTarjeta = dark ? new Color(52, 73, 94) : Color.WHITE;
         Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
-
-        JPanel tarjeta = new JPanel();
-        tarjeta.setPreferredSize(new Dimension(370, 140));
+    
+        JPanel tarjeta = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(new Color(52, 152, 219, 30));
+                g2.fillRoundRect(8, 8, getWidth() - 16, getHeight() - 16, 28, 28);
+            }
+        };
+        tarjeta.setPreferredSize(new Dimension(430, 180));
         tarjeta.setBackground(bgTarjeta);
         tarjeta.setBorder(BorderFactory.createCompoundBorder(
                 new ThemeManager.RoundedBorder(borderColor, 2, 24),
                 BorderFactory.createEmptyBorder(16, 16, 16, 16)));
-        tarjeta.setLayout(new BorderLayout(16, 0));
+        tarjeta.setLayout(new BorderLayout(18, 0));
         tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
+    
         // Imagen de la ruta (círculo)
         JLabel lblImagen = new JLabel();
         lblImagen.setPreferredSize(new Dimension(100, 100));
@@ -165,69 +174,90 @@ public class VistaRutas extends JFrame {
             lblImagen.setIcon(crearIconoSinImagen(dark));
         }
         tarjeta.add(lblImagen, BorderLayout.WEST);
-
-        // Info principal alineada a la izquierda (sin descripción)
+    
+        // Info principal alineada a la izquierda
         JPanel panelInfo = new JPanel();
         panelInfo.setOpaque(false);
         panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
         panelInfo.setAlignmentY(Component.TOP_ALIGNMENT);
         panelInfo.setAlignmentX(Component.LEFT_ALIGNMENT);
-
+    
         JLabel lblNombre = new JLabel(ruta.getNombre());
-        lblNombre.setFont(new Font("Arial", Font.BOLD, 20));
-        lblNombre.setForeground(fgPanel);
+        lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblNombre.setForeground(new Color(41, 128, 185));
         lblNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblPrecio = new JLabel("Precio: " + ruta.getPrecio() + " €");
-        lblPrecio.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblPrecio.setForeground(dark ? Color.LIGHT_GRAY : new Color(100, 100, 100));
+    
+        JLabel lblPrecio = new JLabel("Precio: ");
+        lblPrecio.setFont(new Font("Arial", Font.BOLD, 15));
+        lblPrecio.setForeground(new Color(52, 152, 219));
         lblPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        // Panel horizontal para dificultad y estrellas (alineados verticalmente)
+    
+        JLabel lblPrecioValor = new JLabel(String.format("%.2f €", ruta.getPrecio()));
+        lblPrecioValor.setFont(new Font("Arial", Font.BOLD, 15));
+        lblPrecioValor.setForeground(new Color(230, 126, 34));
+        lblPrecioValor.setAlignmentX(Component.LEFT_ALIGNMENT);
+    
+        JPanel panelPrecio = new JPanel();
+        panelPrecio.setOpaque(false);
+        panelPrecio.setLayout(new BoxLayout(panelPrecio, BoxLayout.X_AXIS));
+        panelPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panelPrecio.add(lblPrecio);
+        panelPrecio.add(lblPrecioValor);
+    
+        // Dificultad (estrellas)
         JPanel panelDificultad = new JPanel();
         panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.X_AXIS));
         panelDificultad.setOpaque(false);
         panelDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JLabel lblDificultad = new JLabel("Dificultad:");
-        lblDificultad.setFont(new Font("Arial", Font.PLAIN, 15));
-        lblDificultad.setForeground(new Color(52, 152, 219));
+    
+        JLabel lblDificultad = new JLabel("Dificultad: ");
+        lblDificultad.setFont(new Font("Arial", Font.BOLD, 15));
+        lblDificultad.setForeground(new Color(39, 174, 96));
         lblDificultad.setAlignmentY(Component.CENTER_ALIGNMENT);
-
+    
         JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         panelEstrellas.setOpaque(false);
         panelEstrellas.setAlignmentY(Component.CENTER_ALIGNMENT);
-        panelEstrellas.setMaximumSize(new Dimension(110, 24));
         for (int i = 0; i < 5; i++) {
             JLabel estrella = new JLabel(i < ruta.getDificultad() ? "★" : "☆");
-            estrella.setFont(new Font("Segoe UI Symbol", Font.BOLD, 16));
+            estrella.setFont(new Font("Segoe UI Symbol", Font.BOLD, 18));
             estrella.setForeground(new Color(241, 196, 15));
             estrella.setAlignmentY(Component.CENTER_ALIGNMENT);
             panelEstrellas.add(estrella);
         }
-
-        // Usar un Box para alinear perfectamente
-        Box boxDificultad = Box.createHorizontalBox();
-        boxDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
-        boxDificultad.add(lblDificultad);
-        boxDificultad.add(Box.createHorizontalStrut(6));
-        boxDificultad.add(panelEstrellas);
-
+        panelDificultad.add(lblDificultad);
+        panelDificultad.add(panelEstrellas);
+    
+        // Descripción
+        JLabel lblDescripcion = new JLabel(
+                "<html><div style='width:270px;'>" + ruta.getDescripcion() + "</div></html>");
+        lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblDescripcion.setForeground(dark ? new Color(200, 200, 200) : new Color(120, 120, 120));
+        lblDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblDescripcion.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
+    
         panelInfo.add(lblNombre);
         panelInfo.add(Box.createVerticalStrut(6));
-        panelInfo.add(lblPrecio);
-        panelInfo.add(boxDificultad);
-
-        tarjeta.add(panelInfo, BorderLayout.CENTER);
-
-        // Mostrar detalles al hacer clic (toda la info, descripción, editar, eliminar)
+        panelInfo.add(panelPrecio);
+        panelInfo.add(Box.createVerticalStrut(6));
+        panelInfo.add(panelDificultad);
+        panelInfo.add(lblDescripcion);
+    
+        // Alinear todo arriba a la izquierda
+        JPanel panelInfoWrap = new JPanel();
+        panelInfoWrap.setOpaque(false);
+        panelInfoWrap.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        panelInfoWrap.add(panelInfo);
+    
+        tarjeta.add(panelInfoWrap, BorderLayout.CENTER);
+    
         tarjeta.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 mostrarDetallesRuta(ruta);
             }
         });
-
+    
         return tarjeta;
     }
 

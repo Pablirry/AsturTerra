@@ -15,6 +15,7 @@ public class AgregarRestaurante extends JDialog {
     private JTextField txtNombre, txtUbicacion, txtEspecialidadOtra;
     private JComboBox<String> comboEspecialidad;
     private JLabel lblImagen;
+    private JTextArea txtDescripcion;
     private JButton btnSeleccionarImagen, btnGuardar, btnCancelar;
     private byte[] imagenBytes = null;
     private VistaRestaurantes padre;
@@ -22,7 +23,7 @@ public class AgregarRestaurante extends JDialog {
     public AgregarRestaurante(VistaRestaurantes padre) {
         super(padre, "Agregar Restaurante", true);
         this.padre = padre;
-        setSize(520, 400);
+        setSize(520, 450);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -53,6 +54,35 @@ public class AgregarRestaurante extends JDialog {
         panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.Y_AXIS));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 18));
 
+        JPanel panelDescripcion = new JPanel(new BorderLayout());
+        panelDescripcion.setOpaque(false);
+        panelDescripcion.setMaximumSize(new Dimension(260, 80));
+        panelDescripcion.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Descripción",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+
+        txtDescripcion = new JTextArea(3, 20);
+        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        txtDescripcion.setLineWrap(true);
+        txtDescripcion.setWrapStyleWord(true);
+        txtDescripcion.setOpaque(true);
+        txtDescripcion.setBackground(fieldBg);
+        txtDescripcion.setForeground(fg);
+        txtDescripcion.setCaretColor(fg);
+        txtDescripcion.setBorder(null);
+
+        JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
+        scrollDesc.setBorder(null);
+        scrollDesc.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollDesc.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollDesc.setPreferredSize(new Dimension(240, 60));
+        scrollDesc.setMaximumSize(new Dimension(240, 60));
+        scrollDesc.getViewport().setOpaque(false);
+        scrollDesc.setOpaque(false);
+
+        panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
+
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         txtNombre.setMaximumSize(new Dimension(260, 32));
@@ -75,22 +105,23 @@ public class AgregarRestaurante extends JDialog {
                 "Ubicación",
                 0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
 
-        comboEspecialidad = new JComboBox<>(new String[]{
-            "Asturiano", "Americano", "Español", "Italiano", "Mexicano", "Otro"
+        comboEspecialidad = new JComboBox<>(new String[] {
+                "Asturiano", "Americano", "Español", "Italiano", "Mexicano", "Otro"
         });
         comboEspecialidad.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         comboEspecialidad.setMaximumSize(new Dimension(260, 32));
         comboEspecialidad.setBackground(fieldBg);
         comboEspecialidad.setForeground(fg);
         comboEspecialidad.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-            "Especialidad",
-            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
+                "Especialidad",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
 
         // Renderer para fondo personalizado
         comboEspecialidad.setRenderer(new DefaultListCellRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
                 Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 c.setBackground(isSelected ? new Color(41, 128, 185) : fieldBg);
                 c.setForeground(fg);
@@ -129,7 +160,10 @@ public class AgregarRestaurante extends JDialog {
         panelCampos.add(txtUbicacion);
         panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(comboEspecialidad);
-        panelCampos.add(txtEspecialidadOtra); // Justo después del combo
+        panelCampos.add(txtEspecialidadOtra);
+        panelCampos.add(Box.createVerticalGlue());
+        panelCampos.add(Box.createVerticalStrut(10));
+        panelCampos.add(panelDescripcion);
         panelCampos.add(Box.createVerticalGlue());
 
         JPanel panelImagen = new JPanel();
@@ -160,6 +194,7 @@ public class AgregarRestaurante extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 btnSeleccionarImagen.setBackground(new Color(31, 97, 141));
             }
+
             public void mouseExited(MouseEvent e) {
                 btnSeleccionarImagen.setBackground(new Color(41, 128, 185));
             }
@@ -192,6 +227,7 @@ public class AgregarRestaurante extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 btnGuardar.setBackground(new Color(41, 128, 185));
             }
+
             public void mouseExited(MouseEvent e) {
                 btnGuardar.setBackground(new Color(52, 152, 219));
             }
@@ -210,6 +246,7 @@ public class AgregarRestaurante extends JDialog {
             public void mouseEntered(MouseEvent e) {
                 btnCancelar.setBackground(new Color(192, 57, 43));
             }
+
             public void mouseExited(MouseEvent e) {
                 btnCancelar.setBackground(new Color(231, 76, 60));
             }
@@ -260,14 +297,16 @@ public class AgregarRestaurante extends JDialog {
         String nombre = txtNombre.getText().trim();
         String ubicacion = txtUbicacion.getText().trim();
         String especialidad = (String) comboEspecialidad.getSelectedItem();
-        if (nombre.isEmpty() || ubicacion.isEmpty() || especialidad == null) {
+        String descripcion = txtDescripcion.getText().trim(); // <-- Añade esto
+
+        if (nombre.isEmpty() || ubicacion.isEmpty() || especialidad == null || descripcion.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Complete todos los campos.");
             return;
         }
         if ("Otro".equals(especialidad)) {
             especialidad = txtEspecialidadOtra.getText().trim();
         }
-        Restaurante restaurante = new Restaurante(0, nombre, ubicacion, imagenBytes, especialidad);
+        Restaurante restaurante = new Restaurante(0, nombre, ubicacion, imagenBytes, especialidad, descripcion);
         try {
             TurismoService.getInstance().agregarRestaurante(restaurante);
             padre.cargarRestaurantes();

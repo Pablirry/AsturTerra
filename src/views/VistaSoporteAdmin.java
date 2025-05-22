@@ -175,6 +175,7 @@ public class VistaSoporteAdmin extends JFrame {
 
     /**
      * Carga los mensajes de soporte y los agrupa por usuario.
+     * Ahora intenta obtener el nombre real del usuario por su id si viene vacío.
      */
     private void cargarMensajes() {
         modeloUsuarios.clear();
@@ -185,6 +186,13 @@ public class VistaSoporteAdmin extends JFrame {
             for (Mensaje m : mensajes) {
                 int idUsuario = m.getIdUsuario();
                 String nombreUsuario = m.getUsuarioNombre();
+                if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
+                    try {
+                        nombreUsuario = TurismoService.getInstance().obtenerUsuarioPorId(idUsuario).getNombre();
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (nombreUsuario == null || nombreUsuario.trim().isEmpty()) {
                     nombreUsuario = "Desconocido";
                 }

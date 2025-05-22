@@ -81,4 +81,27 @@ CREATE TABLE mensajes (
     respuesta TEXT,
     fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
+    FOREIGN KEY (usuarioNombre) REFERENCES usuarios(nombre)
 );
+
+-- Tabla de eventos
+CREATE TABLE eventos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion TEXT,
+    ubicacion VARCHAR(255),
+    tipo VARCHAR(50),
+    precio DECIMAL(10,2),
+    imagen LONGBLOB
+);
+
+-- Tabla de valoraciones de eventos
+CREATE TABLE valoraciones_eventos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_usuario INT,
+    id_evento INT,
+    puntuacion INT CHECK(puntuacion BETWEEN 1 AND 5),
+    comentario TEXT,
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
+    FOREIGN KEY (id_evento) REFERENCES eventos(id)
+);  
