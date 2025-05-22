@@ -137,4 +137,28 @@ public class MensajeDAO {
         }
         return mensajes;
     }
+
+    public List<Mensaje> obtenerMensajesPorUsuario(Integer idUsuario) {
+        List<Mensaje> mensajes = new ArrayList<>();
+        String sql = "SELECT * FROM mensajes WHERE id_usuario = ? ORDER BY fecha DESC";
+        try (Connection con = ConexionDB.getConection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idUsuario);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                mensajes.add(new Mensaje(
+                        rs.getInt("id"),
+                        rs.getInt("id_usuario"),
+                        rs.getString("usuarioNombre"),
+                        rs.getString("mensaje"),
+                        rs.getString("respuesta"),
+                        rs.getTimestamp("fecha")));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error obtenerMensajesPorUsuario: " + e.getMessage());
+        } catch (ClassNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        return mensajes;
+    }
 }

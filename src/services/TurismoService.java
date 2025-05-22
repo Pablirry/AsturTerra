@@ -191,4 +191,13 @@ public class TurismoService {
         return eventoDAO.actualizarEvento(evento);
     }
 
+    public List<Mensaje> obtenerMensajesSoporteUsuario(Integer idUsuario) {
+        try {
+            return mensajeDAO.obtenerMensajesPorUsuario(idUsuario);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
+    }
+
 }

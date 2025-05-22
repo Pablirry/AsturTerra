@@ -395,6 +395,7 @@ public class MenuPrincipal extends JFrame {
         lblRestaurantes.setText(I18n.t("titulo.restaurantes"));
         lblSoporte.setText(I18n.t("boton.soporte"));
         lblValoraciones.setText(I18n.t("titulo.valoraciones"));
+        lblEventos.setText(I18n.t("titulo.eventos"));
         repaint();
     }
 }

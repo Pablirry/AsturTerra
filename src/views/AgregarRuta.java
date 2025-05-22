@@ -42,7 +42,7 @@ public class AgregarRuta extends JDialog {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(18, 18, 18, 18));
         mainPanel.setBackground(bg);
 
-        JLabel lblTitulo = new JLabel("Agregar Evento");
+        JLabel lblTitulo = new JLabel("Agregar Ruta");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(41, 128, 185));
         lblTitulo.setHorizontalAlignment(SwingConstants.LEFT);
@@ -104,30 +104,6 @@ public class AgregarRuta extends JDialog {
 
         panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
 
-        // Campo ubicación
-        txtUbicacion = new JTextField();
-        txtUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtUbicacion.setMaximumSize(new Dimension(500, 36));
-        txtUbicacion.setBackground(fieldBg);
-        txtUbicacion.setForeground(fg);
-        txtUbicacion.setCaretColor(fg);
-        txtUbicacion.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Ubicación",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
-
-        // Campo tipo
-        txtTipo = new JTextField();
-        txtTipo.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        txtTipo.setMaximumSize(new Dimension(500, 36));
-        txtTipo.setBackground(fieldBg);
-        txtTipo.setForeground(fg);
-        txtTipo.setCaretColor(fg);
-        txtTipo.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
-                "Tipo",
-                0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
-
         // Campo precio
         txtPrecio = new JTextField();
         txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -140,19 +116,44 @@ public class AgregarRuta extends JDialog {
                 "Precio (€)",
                 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
+        JPanel panelDificultad = new JPanel();
+        panelDificultad.setOpaque(false);
+        panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.X_AXIS));
+        panelDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panelDificultad.add(new JLabel("Dificultad: "));
+        panelDificultad.add(Box.createHorizontalStrut(8));
+
+        for (int i = 0; i < 5; i++) {
+            final int idx = i + 1;
+            estrellas[i] = new JLabel("☆");
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 26));
+            estrellas[i].setForeground(new Color(241, 196, 15));
+            estrellas[i].setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            estrellas[i].addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    dificultadSeleccionada = idx;
+                    actualizarEstrellas();
+                }
+                public void mouseEntered(MouseEvent e) {
+                    colorearEstrellas(idx);
+                }
+                public void mouseExited(MouseEvent e) {
+                    actualizarEstrellas();
+                }
+            });
+            panelDificultad.add(estrellas[i]);
+        }
+
         panelCampos.add(Box.createVerticalStrut(8));
         panelCampos.add(txtNombre);
         panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(panelDescripcion);
         panelCampos.add(Box.createVerticalStrut(10));
-        panelCampos.add(txtUbicacion);
-        panelCampos.add(Box.createVerticalStrut(10));
-        panelCampos.add(txtTipo);
-        panelCampos.add(Box.createVerticalStrut(10));
         panelCampos.add(txtPrecio);
+        panelCampos.add(Box.createVerticalStrut(10));
+        panelCampos.add(panelDificultad);
         panelCampos.add(Box.createVerticalGlue());
 
-        // Panel derecho: imagen y botón
         JPanel panelImagen = new JPanel();
         panelImagen.setOpaque(false);
         panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
@@ -250,9 +251,16 @@ public class AgregarRuta extends JDialog {
         setContentPane(mainPanel);
     }
 
-    private void actualizarEstrellas() {
+   private void actualizarEstrellas() {
         for (int i = 0; i < 5; i++) {
             estrellas[i].setText(i < dificultadSeleccionada ? "★" : "☆");
+            estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 26));
+        }
+    }
+
+    private void colorearEstrellas(int hasta) {
+        for (int i = 0; i < 5; i++) {
+            estrellas[i].setText(i < hasta ? "★" : "☆");
             estrellas[i].setFont(new Font("Segoe UI Symbol", Font.BOLD, 26));
         }
     }

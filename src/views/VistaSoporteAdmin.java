@@ -15,6 +15,8 @@ import java.util.ArrayList;
 /**
  * Vista de soporte para el administrador con diseño moderno, claro y
  * profesional tipo chat.
+ * Optimizada para mayor fluidez: solo recarga mensajes del usuario seleccionado,
+ * scroll más rápido y menos repintados.
  */
 public class VistaSoporteAdmin extends JFrame {
 
@@ -33,6 +35,9 @@ public class VistaSoporteAdmin extends JFrame {
     private JPanel panelRespuesta;
 
     private static VistaSoporteAdmin instance;
+
+    // Timer para recarga periódica optimizada
+    private javax.swing.Timer timer;
 
     public static VistaSoporteAdmin getInstance() {
         if (instance == null) {
@@ -91,7 +96,7 @@ public class VistaSoporteAdmin extends JFrame {
         panelMensajes.setBackground(grisFondo);
         scrollMensajes = new JScrollPane(panelMensajes);
         scrollMensajes.setBorder(null);
-        scrollMensajes.getVerticalScrollBar().setUnitIncrement(16);
+        scrollMensajes.getVerticalScrollBar().setUnitIncrement(40); // scroll más rápido
         scrollMensajes.getViewport().setBackground(grisFondo);
 
         // Panel de respuesta
@@ -150,14 +155,24 @@ public class VistaSoporteAdmin extends JFrame {
 
         cargarMensajes();
 
-        // Actualización periódica para simular tiempo real
-        new javax.swing.Timer(1500, e -> {
-            int selected = listaUsuarios.getSelectedIndex();
-            cargarMensajes();
-            if (selected >= 0 && selected < modeloUsuarios.size()) {
-                listaUsuarios.setSelectedIndex(selected);
+        // Timer optimizado: solo recarga mensajes del usuario seleccionado
+        timer = new javax.swing.Timer(2000, e -> recargarMensajesUsuarioSeleccionado());
+        timer.start();
+    }
+
+    private void recargarMensajesUsuarioSeleccionado() {
+        Integer idUsuario = listaUsuarios.getSelectedValue();
+        if (idUsuario != null) {
+            // Solo recarga los mensajes de ese usuario
+            List<Mensaje> nuevos = TurismoService.getInstance().obtenerMensajesSoporteUsuario(idUsuario);
+            if (nuevos != null) {
+                mensajesPorUsuario.put(idUsuario, nuevos);
+                mostrarConversacion(idUsuario);
             }
-        }).start();
+        } else {
+            // Si no hay usuario seleccionado, recarga la lista de usuarios
+            cargarMensajes();
+        }
     }
 
     public void actualizarTema() {
@@ -169,6 +184,7 @@ public class VistaSoporteAdmin extends JFrame {
 
     @Override
     public void dispose() {
+        if (timer != null) timer.stop();
         instance = null;
         super.dispose();
     }
@@ -220,7 +236,10 @@ public class VistaSoporteAdmin extends JFrame {
         if (conversacion == null)
             return;
 
-        for (Mensaje mensaje : conversacion) {
+        // Limita a los últimos 100 mensajes para mayor fluidez
+        int start = Math.max(0, conversacion.size() - 100);
+        for (int i = start; i < conversacion.size(); i++) {
+            Mensaje mensaje = conversacion.get(i);
             panelMensajes.add(crearBurbujaChat(
                     mensaje.getMensaje(),
                     false,
@@ -247,9 +266,6 @@ public class VistaSoporteAdmin extends JFrame {
         int max = bar.getMaximum();
 
         boolean estabaAbajo = (value + extent + 20 >= max);
-
-        panelMensajes.revalidate();
-        panelMensajes.repaint();
 
         SwingUtilities.invokeLater(() -> {
             if (estabaAbajo) {
@@ -290,7 +306,7 @@ public class VistaSoporteAdmin extends JFrame {
 
         boolean ok = TurismoService.getInstance().responderMensajeSoporte(mensajeSinResponder.getId(), respuesta);
         if (ok) {
-            cargarMensajes();
+            recargarMensajesUsuarioSeleccionado();
             listaUsuarios.setSelectedValue(idUsuario, true);
             txtRespuesta.setText("");
         } else {

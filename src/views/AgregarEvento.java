@@ -37,7 +37,7 @@ public class AgregarEvento extends JDialog {
         mainPanel.setBackground(bg);
 
         JLabel lblTitulo = new JLabel("Agregar Evento");
-        lblTitulo.setFont(new Font("Arial", Font.BOLD, 26));
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(41, 128, 185));
         lblTitulo.setHorizontalAlignment(SwingConstants.LEFT);
         mainPanel.add(lblTitulo, BorderLayout.NORTH);
@@ -52,36 +52,43 @@ public class AgregarEvento extends JDialog {
         panelCampos.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 
         txtNombre = new JTextField();
-        txtNombre.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtNombre.setMaximumSize(new Dimension(500, 36));
         txtNombre.setBackground(bg);
         txtNombre.setForeground(fg);
         txtNombre.setCaretColor(fg);
         txtNombre.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2), "Nombre"));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Nombre", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
         txtDescripcion = new JTextArea(6, 20);
-        txtDescripcion.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
         txtDescripcion.setBackground(bg);
         txtDescripcion.setForeground(fg);
         txtDescripcion.setCaretColor(fg);
         txtDescripcion.setBorder(null);
+
         JScrollPane scrollDesc = new JScrollPane(txtDescripcion);
         scrollDesc.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2), "Descripción"));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Descripción", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
         scrollDesc.setMaximumSize(new Dimension(500, 120));
         scrollDesc.getViewport().setBackground(bg);
+        scrollDesc.setBackground(bg);
+        scrollDesc.getVerticalScrollBar().setBackground(bg);
+        scrollDesc.getHorizontalScrollBar().setBackground(bg);
 
         txtUbicacion = new JTextField();
-        txtUbicacion.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtUbicacion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtUbicacion.setMaximumSize(new Dimension(500, 36));
         txtUbicacion.setBackground(bg);
         txtUbicacion.setForeground(fg);
         txtUbicacion.setCaretColor(fg);
         txtUbicacion.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2), "Ubicación"));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Ubicación", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
         // ComboBox para Tipo
         comboTipo = new JComboBox<>(new String[] { "Ocio", "Religioso", "Cultural", "Otro" });
@@ -90,9 +97,9 @@ public class AgregarEvento extends JDialog {
         comboTipo.setBackground(bg);
         comboTipo.setForeground(fg);
         comboTipo.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2, true),
-            "Tipo",
-            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Tipo",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
         comboTipo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -120,9 +127,9 @@ public class AgregarEvento extends JDialog {
         txtTipoOtro.setForeground(fg);
         txtTipoOtro.setCaretColor(fg);
         txtTipoOtro.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2, true),
-            "Especifique cuál",
-            0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Especifique cuál",
+                0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
         txtTipoOtro.setVisible(false);
 
         panelTipoOtro.add(txtTipoOtro);
@@ -139,13 +146,14 @@ public class AgregarEvento extends JDialog {
         });
 
         txtPrecio = new JTextField();
-        txtPrecio.setFont(new Font("Arial", Font.PLAIN, 16));
+        txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtPrecio.setMaximumSize(new Dimension(500, 36));
         txtPrecio.setBackground(bg);
         txtPrecio.setForeground(fg);
         txtPrecio.setCaretColor(fg);
         txtPrecio.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(borderColor, 2), "Precio (€)"));
+                BorderFactory.createLineBorder(borderColor, 2, true),
+                "Precio (€)", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
         panelCampos.add(Box.createVerticalStrut(8));
         panelCampos.add(txtNombre);
