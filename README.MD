@@ -11,10 +11,10 @@
 ---
 
 ## 📌 **Características Principales**
-- Registro e inicio de sesión de usuarios (Clientes / Administradores)
+- Registro e inicio de sesión de usuarios (Clientes (Movil))
 - Gestión CRUD de **Rutas** con imágenes, precios y dificultad
 - Gestión CRUD de **Restaurantes** y **Eventos** con valoraciones y reservas
-- Reservas y cancelaciones de rutas y eventos
+- Confirmaciones y cancelaciones de reservas de rutas y eventos
 - Sistema de **Valoraciones** de rutas, restaurantes y eventos
 - Chat en tiempo real entre usuarios y administradores (soporte)
 - Registro de **Historial de actividades** de los usuarios
