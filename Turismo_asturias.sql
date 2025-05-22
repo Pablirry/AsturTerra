@@ -104,4 +104,13 @@ CREATE TABLE valoraciones_eventos (
     comentario TEXT,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id),
     FOREIGN KEY (id_evento) REFERENCES eventos(id)
-);  
+);
+
+-- Tabla reservas eventos
+CREATE TABLE reservas_evento (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    id_evento INT NOT NULL,
+    fecha TIMESTAMP NOT NULL,
+    confirmada BOOLEAN DEFAULT FALSE
+);
