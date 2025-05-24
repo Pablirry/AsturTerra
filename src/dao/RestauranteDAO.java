@@ -10,7 +10,18 @@ import java.util.List;
 import config.ConexionDB;
 import model.Restaurante;
 
+/**
+ * @author Pablo
+ */
+
+
 public class RestauranteDAO {
+
+    /**
+     * Método para listar todos los restaurantes
+     * @return : list<Restaurante>
+     * @throws ClassNotFoundException
+     */
 
     public List<Restaurante> listarRestaurantes() throws ClassNotFoundException {
         List<Restaurante> restaurantes = new ArrayList<>();
@@ -34,6 +45,13 @@ public class RestauranteDAO {
         return restaurantes;
     }
 
+    /**
+     * Método para agregar un restaurante
+     * @param restaurante : Restaurante
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean agregarRestaurante(Restaurante restaurante) throws ClassNotFoundException {
         String sql = "INSERT INTO restaurantes (nombre, ubicacion, especialidad, descripcion, imagen) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -50,6 +68,13 @@ public class RestauranteDAO {
         }
     }
 
+    /**
+     * Método para eliminar un restaurante
+     * @param idRestaurante : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarRestaurante(int idRestaurante) throws ClassNotFoundException {
         String sql = "DELETE FROM restaurantes WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -61,6 +86,13 @@ public class RestauranteDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener un restaurante por su id
+     * @param id : entero
+     * @return : Restaurante
+     * @throws ClassNotFoundException
+     */
 
     public Restaurante obtenerRestaurantePorId(int id) throws ClassNotFoundException {
         String sql = "SELECT * FROM restaurantes WHERE id = ?";
@@ -84,6 +116,13 @@ public class RestauranteDAO {
         return null;
     }
 
+    /**
+     * Método para obtener un restaurante por su nombre
+     * @param nombre : String
+     * @return : Restaurante
+     * @throws ClassNotFoundException
+     */
+
     public Restaurante obtenerRestaurantePorNombre(String nombre) throws ClassNotFoundException {
         Restaurante restaurante = null;
         String sql = "SELECT * FROM restaurantes WHERE nombre = ?";
@@ -106,6 +145,13 @@ public class RestauranteDAO {
         }
         return restaurante;
     }
+
+    /**
+     * Método para actualizar un restaurante
+     * @param restaurante : Restaurante
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean actualizarRestaurante(Restaurante restaurante) throws ClassNotFoundException {
         String sql = "UPDATE restaurantes SET nombre = ?, ubicacion = ?, especialidad = ?, descripcion = ?, imagen = ? WHERE id = ?";

@@ -1,0 +1,1 @@
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"m":"Turismo","l":"config"},{"m":"Turismo","l":"dao"},{"m":"Turismo","l":"Interface"},{"m":"Turismo","l":"model"},{"m":"Turismo","l":"services"},{"m":"Turismo","l":"utils"},{"m":"Turismo","l":"views"}];updateSearchResults();

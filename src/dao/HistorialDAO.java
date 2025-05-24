@@ -12,7 +12,19 @@ import config.ConexionDB;
 import model.Historial;
 import utils.UIUtils;
 
+/**
+ * @author Pablo
+ */
+
+
 public class HistorialDAO {
+
+    /**
+     * Método para registrar una actividad en el historial
+     * @param historial : Historial
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean registrarActividad(Historial historial) throws ClassNotFoundException {
         String sql = "INSERT INTO historial (id_usuario, accion, fecha) VALUES (?, ?, ?)";
@@ -27,6 +39,13 @@ public class HistorialDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener el historial de un usuario
+     * @param idUsuario : entero
+     * @return : list<Historial>
+     * @throws ClassNotFoundException
+     */
 
     public List<Historial> obtenerHistorialUsuario(int idUsuario) throws ClassNotFoundException {
         List<Historial> historial = new ArrayList<>();

@@ -41,25 +41,21 @@ public class EditarRuta extends JDialog {
         mainPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         mainPanel.setBackground(bg);
 
-        // Título arriba
         JLabel lblTitulo = new JLabel("Editar Ruta");
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 26));
         lblTitulo.setForeground(new Color(41, 128, 185));
         lblTitulo.setHorizontalAlignment(SwingConstants.LEFT);
         mainPanel.add(lblTitulo, BorderLayout.NORTH);
 
-        // Panel central con dos columnas
         JPanel panelCentro = new JPanel();
         panelCentro.setOpaque(false);
         panelCentro.setLayout(new BoxLayout(panelCentro, BoxLayout.X_AXIS));
 
-        // Panel izquierdo: campos
         JPanel panelCampos = new JPanel();
         panelCampos.setOpaque(false);
         panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.Y_AXIS));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 
-        // Campo nombre
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtNombre.setMaximumSize(new Dimension(520, 36));
@@ -72,7 +68,6 @@ public class EditarRuta extends JDialog {
             0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)
         ));
 
-        // Campo descripción con borde fijo y scroll interno
         JPanel panelDescripcion = new JPanel(new BorderLayout());
         panelDescripcion.setOpaque(false);
         panelDescripcion.setMaximumSize(new Dimension(520, 120));
@@ -82,7 +77,7 @@ public class EditarRuta extends JDialog {
             0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)
         ));
 
-        txtDescripcion = new JTextArea(6, 20);
+        txtDescripcion = new JTextArea(4, 20);
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -103,7 +98,6 @@ public class EditarRuta extends JDialog {
 
         panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
 
-        // Campo precio
         txtPrecio = new JTextField();
         txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtPrecio.setMaximumSize(new Dimension(520, 36));
@@ -116,18 +110,16 @@ public class EditarRuta extends JDialog {
             0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)
         ));
 
-        // Panel horizontal para dificultad y estrellas alineados
         JPanel panelDificultad = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));
         panelDificultad.setOpaque(false);
         panelDificultad.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panelDificultad.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0)); // Más a la izquierda
+        panelDificultad.setBorder(BorderFactory.createEmptyBorder(0, 4, 0, 0));
 
         JLabel lblDificultad = new JLabel("Dificultad:");
         lblDificultad.setFont(new Font("Segoe UI", Font.BOLD, 16));
         lblDificultad.setForeground(new Color(52, 152, 219));
         lblDificultad.setAlignmentY(Component.CENTER_ALIGNMENT);
 
-        // Estrellas
         JPanel panelEstrellas = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         panelEstrellas.setOpaque(false);
         panelEstrellas.setAlignmentY(Component.CENTER_ALIGNMENT);
@@ -160,7 +152,6 @@ public class EditarRuta extends JDialog {
         panelDificultad.add(lblDificultad);
         panelDificultad.add(panelEstrellas);
 
-        // Añadir al panel de campos
         panelCampos.add(Box.createVerticalStrut(8));
         panelCampos.add(txtNombre);
         panelCampos.add(Box.createVerticalStrut(10));
@@ -171,7 +162,6 @@ public class EditarRuta extends JDialog {
         panelCampos.add(panelDificultad);
         panelCampos.add(Box.createVerticalGlue());
 
-        // Panel derecho: imagen y botón
         JPanel panelImagen = new JPanel();
         panelImagen.setOpaque(false);
         panelImagen.setLayout(new BoxLayout(panelImagen, BoxLayout.Y_AXIS));
@@ -212,13 +202,11 @@ public class EditarRuta extends JDialog {
         panelImagen.add(btnSeleccionarImagen);
         panelImagen.add(Box.createVerticalGlue());
 
-        // Añadir ambos paneles al centro
         panelCentro.add(panelCampos);
         panelCentro.add(panelImagen);
 
         mainPanel.add(panelCentro, BorderLayout.CENTER);
 
-        // Panel de botones abajo centrado
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
         panelBotones.setOpaque(false);
 

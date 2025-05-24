@@ -12,7 +12,20 @@ import model.ValoracionRuta;
 import model.ValoracionEvento;
 import model.ValoracionRestaurante;
 
+/**
+ * @author Pablo
+ */
+
+
 public class ValoracionDAO {
+
+    /**
+     * Método para registrar una valoración de una ruta
+     * 
+     * @param valoracion : ValoracionRuta
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean registrarValoracionRuta(ValoracionRuta valoracion) throws ClassNotFoundException {
         String sql = "INSERT INTO valoraciones_rutas (id_usuario, id_ruta, puntuacion, comentario) VALUES (?, ?, ?, ?)";
@@ -29,6 +42,14 @@ public class ValoracionDAO {
         }
     }
 
+    /**
+     * Método para registrar una valoración de un restaurante
+     * 
+     * @param valoracion : ValoracionRestaurante
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean registrarValoracionRestaurante(ValoracionRestaurante valoracion) throws ClassNotFoundException {
         String sql = "INSERT INTO valoraciones_restaurantes (id_usuario, id_restaurante, puntuacion, comentario) VALUES (?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -43,6 +64,13 @@ public class ValoracionDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener todas las valoraciones de restaurantes
+     * 
+     * @return : list<ValoracionRestaurante>
+     * @throws ClassNotFoundException
+     */
 
     public List<ValoracionRestaurante> obtenerTodasValoracionesRestaurante() throws ClassNotFoundException {
         List<ValoracionRestaurante> lista = new ArrayList<>();
@@ -64,6 +92,13 @@ public class ValoracionDAO {
         return lista;
     }
 
+    /**
+     * Método para obtener todas las valoraciones de rutas
+     * 
+     * @return : list<ValoracionRuta>
+     * @throws ClassNotFoundException
+     */
+
     public List<ValoracionRuta> obtenerTodasValoracionesRuta() throws ClassNotFoundException {
         List<ValoracionRuta> lista = new ArrayList<>();
         String sql = "SELECT * FROM valoraciones_rutas";
@@ -84,6 +119,14 @@ public class ValoracionDAO {
         return lista;
     }
 
+    /**
+     * Método para eliminar una valoración de un restaurante
+     * 
+     * @param id : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarValoracionRestaurante(int id) throws ClassNotFoundException {
         String sql = "DELETE FROM valoraciones_restaurantes WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -96,6 +139,14 @@ public class ValoracionDAO {
         }
     }
 
+    /**
+     * Método para eliminar una valoración de una ruta
+     * 
+     * @param id : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarValoracionRuta(int id) throws ClassNotFoundException {
         String sql = "DELETE FROM valoraciones_rutas WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -107,6 +158,14 @@ public class ValoracionDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener la valoración media de una ruta
+     * 
+     * @param idRuta : entero
+     * @return : double
+     * @throws ClassNotFoundException
+     */
 
     public double obtenerValoracionMediaRuta(int idRuta) throws ClassNotFoundException {
         String sql = "SELECT AVG(puntuacion) AS media FROM valoraciones_rutas WHERE id_ruta = ?";
@@ -123,6 +182,14 @@ public class ValoracionDAO {
         return 0.0;
     }
 
+    /**
+     * Método para obtener la valoración media de un restaurante
+     * 
+     * @param idRestaurante : entero
+     * @return : double
+     * @throws ClassNotFoundException
+     */
+
     public double obtenerValoracionMediaRestaurante(int idRestaurante) throws ClassNotFoundException {
         String sql = "SELECT AVG(puntuacion) AS media FROM valoraciones_restaurantes WHERE id_restaurante = ?";
         try (Connection con = ConexionDB.getConection();
@@ -138,6 +205,14 @@ public class ValoracionDAO {
         return 0.0;
     }
 
+    /**
+     * Método para registrar una valoración de un evento
+     * 
+     * @param valoracion : ValoracionEvento
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean registrarValoracionEvento(ValoracionEvento valoracion) throws ClassNotFoundException {
         String sql = "INSERT INTO valoraciones_eventos (id_usuario, id_evento, puntuacion, comentario) VALUES (?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -152,6 +227,13 @@ public class ValoracionDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener todas las valoraciones de eventos
+     * 
+     * @return : list<ValoracionEvento>
+     * @throws ClassNotFoundException
+     */
 
     public java.util.List<ValoracionEvento> obtenerTodasValoracionesEvento() throws ClassNotFoundException {
         List<ValoracionEvento> lista = new ArrayList<>();
@@ -173,6 +255,14 @@ public class ValoracionDAO {
         return lista;
     }
 
+    /**
+     * Método para eliminar una valoración de un evento
+     * 
+     * @param id : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarValoracionEvento(int id) throws ClassNotFoundException {
         String sql = "DELETE FROM valoraciones_eventos WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -184,6 +274,14 @@ public class ValoracionDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener la valoración media de un evento
+     * 
+     * @param idEvento : entero
+     * @return : double
+     * @throws ClassNotFoundException
+     */
 
     public double obtenerValoracionMediaEvento(int idEvento) throws ClassNotFoundException {
         String sql = "SELECT AVG(puntuacion) AS media FROM valoraciones_eventos WHERE id_evento = ?";

@@ -31,7 +31,6 @@ public class MenuPrincipal extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Fondo con degradado
         panelFondo = new JPanel(null) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -123,14 +122,12 @@ public class MenuPrincipal extends JFrame {
         lblLogo.setVisible(true);
         panelFondo.add(lblLogo);
 
-        // Imagen de perfil (solo decorativa, no editable)
         lblImagenPerfil = new JLabel();
         lblImagenPerfil.setBounds(600, 10, 80, 80);
         lblImagenPerfil.setBorder(BorderFactory.createEmptyBorder());
         cargarImagenPerfil();
         panelFondo.add(lblImagenPerfil);
 
-        // Paneles de menú y labels internos
         panelRutas = crearPanel(0, 0, I18n.t("titulo.rutas"), "assets/rutas.png");
         lblRutas = getPanelLabel(panelRutas);
 
@@ -207,7 +204,6 @@ public class MenuPrincipal extends JFrame {
         JLabel lblImagen = null;
         if (icon.getIconWidth() != -1) {
             if (texto.equals(I18n.t("titulo.valoraciones")) || texto.equals(I18n.t("titulo.eventos"))) {
-                // Redimensionar la imagen de valoraciones a 48x48
                 Image imgEscalada = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
                 lblImagen = new JLabel(new ImageIcon(imgEscalada));
                 lblImagen.setBounds(100, 10, 48, 48);
@@ -251,7 +247,6 @@ public class MenuPrincipal extends JFrame {
         return panel;
     }
 
-    // Devuelve el JLabel de texto principal de un panel
     private JLabel getPanelLabel(JPanel panel) {
         for (Component c : panel.getComponents()) {
             if (c instanceof JLabel && ((JLabel) c).getFont().getSize() == 18) {
@@ -320,12 +315,10 @@ public class MenuPrincipal extends JFrame {
         int sepY = 40;
         int top = h / 5;
 
-        // Columna izquierda
         panelRutas.setBounds(sepX, top, panelWidth, panelHeight);
         panelRestaurantes.setBounds(sepX, top + panelHeight + sepY, panelWidth, panelHeight);
         panelEventos.setBounds(sepX, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);
 
-        // Columna derecha
         panelReservas.setBounds(2 * sepX + panelWidth, top, panelWidth, panelHeight);
         panelSoporte.setBounds(2 * sepX + panelWidth, top + panelHeight + sepY, panelWidth, panelHeight);
         panelValoraciones.setBounds(2 * sepX + panelWidth, top + 2 * (panelHeight + sepY), panelWidth, panelHeight);

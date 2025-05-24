@@ -20,7 +20,7 @@ public class AgregarEvento extends JDialog {
     public AgregarEvento(VistaEventos padre) {
         super(padre, "Agregar Evento", true);
         this.padre = padre;
-        setSize(700, 520);
+        setSize(700, 620);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -61,7 +61,7 @@ public class AgregarEvento extends JDialog {
                 BorderFactory.createLineBorder(borderColor, 2, true),
                 "Nombre", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
-        txtDescripcion = new JTextArea(6, 20);
+        txtDescripcion = new JTextArea(4, 20);
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -90,7 +90,6 @@ public class AgregarEvento extends JDialog {
                 BorderFactory.createLineBorder(borderColor, 2, true),
                 "Ubicación", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
-        // ComboBox para Tipo
         comboTipo = new JComboBox<>(new String[] { "Ocio", "Religioso", "Cultural", "Otro" });
         comboTipo.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         comboTipo.setMaximumSize(new Dimension(260, 32));
@@ -114,7 +113,6 @@ public class AgregarEvento extends JDialog {
             }
         });
 
-        // Panel para el campo "Otro"
         JPanel panelTipoOtro = new JPanel();
         panelTipoOtro.setOpaque(false);
         panelTipoOtro.setLayout(new BoxLayout(panelTipoOtro, BoxLayout.Y_AXIS));
@@ -134,7 +132,6 @@ public class AgregarEvento extends JDialog {
 
         panelTipoOtro.add(txtTipoOtro);
 
-        // Mostrar/ocultar campo "otro"
         comboTipo.addActionListener(e -> {
             boolean esOtro = "Otro".equals(comboTipo.getSelectedItem());
             txtTipoOtro.setVisible(esOtro);

@@ -6,7 +6,18 @@ import config.ConexionDB;
 import model.Reserva;
 import model.ReservaEvento;
 
+/**
+ * @author Pablo
+ */
+
 public class ReservarDAO {
+
+    /**
+     * Método para listar todas las reservas
+     * 
+     * @return : list<Reserva>
+     * @throws ClassNotFoundException
+     */
 
     public List<Reserva> listarReservas() throws ClassNotFoundException {
         List<Reserva> reservas = new ArrayList<>();
@@ -28,6 +39,14 @@ public class ReservarDAO {
         return reservas;
     }
 
+    /**
+     * Método para eliminar una reserva
+     * 
+     * @param idReserva : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarReserva(int idReserva) throws ClassNotFoundException {
         String sql = "DELETE FROM reservas WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -39,6 +58,14 @@ public class ReservarDAO {
             return false;
         }
     }
+
+    /**
+     * Método para confirmar una reserva
+     * 
+     * @param idReserva : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean confirmarReserva(int idReserva) throws ClassNotFoundException {
         String sql = "UPDATE reservas SET confirmada = TRUE WHERE id = ?";
@@ -52,6 +79,14 @@ public class ReservarDAO {
         }
     }
 
+    /**
+     * Método para agregar una reserva
+     * 
+     * @param reserva : Reserva
+     * @return : boolean
+     * @throws Exception
+     */
+
     public boolean agregarReserva(Reserva reserva) throws Exception {
         String sql = "INSERT INTO reservas (id_usuario, id_ruta, fecha, confirmada) VALUES (?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -63,6 +98,13 @@ public class ReservarDAO {
             return ps.executeUpdate() > 0;
         }
     }
+
+    /**
+     * Método para listar todas las reservas de eventos
+     * 
+     * @return : list<ReservaEvento>
+     * @throws ClassNotFoundException
+     */
 
     public List<ReservaEvento> listarReservasEvento() throws ClassNotFoundException {
         List<ReservaEvento> reservas = new ArrayList<>();
@@ -84,6 +126,14 @@ public class ReservarDAO {
         return reservas;
     }
 
+    /**
+     * Método para agregar una reserva de evento
+     * 
+     * @param reserva : ReservaEvento
+     * @return : boolean
+     * @throws Exception
+     */
+
     public boolean agregarReservaEvento(ReservaEvento reserva) throws Exception {
         String sql = "INSERT INTO reservas_eventos (usuario_id, evento_id, fecha_reserva, confirmada) VALUES (?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -96,6 +146,14 @@ public class ReservarDAO {
         }
     }
 
+    /**
+     * Método para eliminar una reserva de evento
+     * 
+     * @param idReserva : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarReservaEvento(int idReserva) throws ClassNotFoundException {
         String sql = "DELETE FROM reservas_eventos WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -107,6 +165,14 @@ public class ReservarDAO {
             return false;
         }
     }
+
+    /**
+     * Método para confirmar una reserva de evento
+     * 
+     * @param idReserva : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean confirmarReservaEvento(int idReserva) throws ClassNotFoundException {
         String sql = "UPDATE reservas_eventos SET confirmada = TRUE WHERE id = ?";

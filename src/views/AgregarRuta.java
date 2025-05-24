@@ -10,11 +10,8 @@ import java.nio.file.Files;
 import model.Ruta;
 import services.TurismoService;
 
-/**
- * Diálogo para agregar una nueva ruta turística.
- */
 public class AgregarRuta extends JDialog {
-    private JTextField txtNombre, txtPrecio, txtUbicacion, txtTipo;
+    private JTextField txtNombre, txtPrecio;
     private JTextArea txtDescripcion;
     private JLabel lblImagen;
     private JButton btnSeleccionarImagen, btnGuardar, btnCancelar;
@@ -26,7 +23,7 @@ public class AgregarRuta extends JDialog {
     public AgregarRuta(VistaRutas padre) {
         super(padre, "Agregar Ruta", true);
         this.padre = padre;
-        setSize(700, 520);
+        setSize(700, 550);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -57,7 +54,6 @@ public class AgregarRuta extends JDialog {
         panelCampos.setLayout(new BoxLayout(panelCampos, BoxLayout.Y_AXIS));
         panelCampos.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 24));
 
-        // Campo nombre
         txtNombre = new JTextField();
         txtNombre.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtNombre.setMaximumSize(new Dimension(500, 36));
@@ -69,7 +65,6 @@ public class AgregarRuta extends JDialog {
                 "Nombre",
                 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
-        // Campo descripción con borde fijo y scroll interno
         JPanel panelDescripcion = new JPanel(new BorderLayout());
         panelDescripcion.setOpaque(false);
         panelDescripcion.setMaximumSize(new Dimension(500, 120));
@@ -78,7 +73,7 @@ public class AgregarRuta extends JDialog {
                 "Descripción",
                 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
-        txtDescripcion = new JTextArea(6, 20);
+        txtDescripcion = new JTextArea(4, 20);
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -91,7 +86,6 @@ public class AgregarRuta extends JDialog {
         JScrollPane scrollDesc = new JScrollPane(txtDescripcion) {
             @Override
             public void setBorder(Border border) {
-                // No permitir cambiar el borde, lo mantiene el panel externo
             }
         };
         scrollDesc.setBorder(null);
@@ -104,7 +98,6 @@ public class AgregarRuta extends JDialog {
 
         panelDescripcion.add(scrollDesc, BorderLayout.CENTER);
 
-        // Campo precio
         txtPrecio = new JTextField();
         txtPrecio.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtPrecio.setMaximumSize(new Dimension(500, 36));
@@ -195,13 +188,11 @@ public class AgregarRuta extends JDialog {
         panelImagen.add(btnSeleccionarImagen);
         panelImagen.add(Box.createVerticalGlue());
 
-        // Añadir ambos paneles al centro
         panelCentro.add(panelCampos);
         panelCentro.add(panelImagen);
 
         mainPanel.add(panelCentro, BorderLayout.CENTER);
 
-        // Panel de botones abajo centrado
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
         panelBotones.setOpaque(false);
 

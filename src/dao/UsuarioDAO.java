@@ -9,7 +9,20 @@ import config.ConexionDB;
 import model.Usuario;
 import utils.PasswordUtils;
 
+/**
+ * @author Pablo
+ */
+
 public class UsuarioDAO {
+
+    /**
+     * Método para iniciar sesión
+     * 
+     * @param correo     : String
+     * @param contrasena : String
+     * @return : Usuario si se inicia sesión correctamente, null si no
+     * @throws ClassNotFoundException
+     */
 
     public Usuario iniciarSesion(String correo, String contrasena) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
@@ -17,30 +30,37 @@ public class UsuarioDAO {
             PreparedStatement ps = con.prepareStatement(sql);
             ps.setString(1, correo);
             ResultSet rs = ps.executeQuery();
-    
+
             if (rs.next()) {
                 String hashAlmacenado = rs.getString("contrasena");
                 String hashIngresado = PasswordUtils.hash(contrasena);
-            if (hashAlmacenado.equals(hashIngresado)){
-                return new Usuario(
-                        rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getString("correo"),
-                        rs.getString("contrasena"),
-                        rs.getString("tipo"),
-                        rs.getBytes("imagen_perfil")
-                );
-            } else {
-                System.out.println("Contraseña incorrecta");
-            }
+                if (hashAlmacenado.equals(hashIngresado)) {
+                    return new Usuario(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("correo"),
+                            rs.getString("contrasena"),
+                            rs.getString("tipo"),
+                            rs.getBytes("imagen_perfil"));
+                } else {
+                    System.out.println("Contraseña incorrecta");
+                }
             } else {
                 System.out.println("Usuario no encontrado");
-        }
+            }
         } catch (SQLException e) {
             System.err.println("Error iniciarSesion: " + e.getMessage());
         }
         return null;
     }
+
+    /**
+     * Método para registrar un usuario
+     * 
+     * @param usuario : Usuario
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean registrarUsuario(Usuario usuario) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
@@ -57,6 +77,14 @@ public class UsuarioDAO {
             return false;
         }
     }
+
+    /**
+     * Método para actualizar un usuario
+     * 
+     * @param usuario : Usuario
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean actualizarUsuario(Usuario usuario) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
@@ -75,6 +103,14 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Método para obtener un usuario por su id
+     * 
+     * @param id : entero
+     * @return : Usuario
+     * @throws ClassNotFoundException
+     */
+
     public Usuario obtenerUsuarioPorId(int id) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
             String sql = "SELECT * FROM usuarios WHERE id = ?";
@@ -89,8 +125,7 @@ public class UsuarioDAO {
                         rs.getString("correo"),
                         rs.getString("contrasena"),
                         rs.getString("tipo"),
-                        rs.getBytes("imagen_perfil")
-                );
+                        rs.getBytes("imagen_perfil"));
             }
         } catch (SQLException e) {
             System.err.println("Error obtenerUsuarioPorId: " + e.getMessage());
@@ -98,7 +133,15 @@ public class UsuarioDAO {
         return null;
     }
 
-    public Usuario obtenerUsuarioPorCorreo(String correo) throws ClassNotFoundException{
+    /**
+     * Método para obtener un usuario por su correo
+     *
+     * @param correo : String
+     * @return : Usuario
+     * @throws ClassNotFoundException
+     */
+
+    public Usuario obtenerUsuarioPorCorreo(String correo) throws ClassNotFoundException {
         try (Connection con = ConexionDB.getConection()) {
             String sql = "SELECT * FROM usuarios WHERE correo = ?";
             PreparedStatement ps = con.prepareStatement(sql);
@@ -107,13 +150,12 @@ public class UsuarioDAO {
 
             if (rs.next()) {
                 return new Usuario(
-                    rs.getInt("id"),
-                    rs.getString("nombre"),
-                    rs.getString("correo"),
-                    rs.getString("contrasena"),
-                    rs.getString("tipo"),
-                    rs.getBytes("imagen_perfil")
-                );
+                        rs.getInt("id"),
+                        rs.getString("nombre"),
+                        rs.getString("correo"),
+                        rs.getString("contrasena"),
+                        rs.getString("tipo"),
+                        rs.getBytes("imagen_perfil"));
             }
         } catch (SQLException ex) {
             System.err.println("Error al obtener usuario por correo " + ex.getMessage());
@@ -121,10 +163,18 @@ public class UsuarioDAO {
         return null;
     }
 
-        public boolean eliminarUsuarioPorCorreo(String correo) throws Exception {
+    /**
+     * Método para eliminar un usuario por su correo
+     * 
+     * @param correo : String
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
+    public boolean eliminarUsuarioPorCorreo(String correo) throws Exception {
         String sql = "DELETE FROM usuarios WHERE correo = ?";
         try (Connection con = ConexionDB.getConection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+                PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, correo);
             return ps.executeUpdate() > 0;
         }

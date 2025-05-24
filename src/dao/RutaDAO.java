@@ -5,7 +5,18 @@ import java.util.*;
 import config.ConexionDB;
 import model.Ruta;
 
+/**
+ * @author Pablo
+ */
+
+
 public class RutaDAO {
+
+    /**
+     * Método para listar todas las rutas
+     * @return : list<Ruta>
+     * @throws ClassNotFoundException
+     */
 
     public List<Ruta> listarRutas() throws ClassNotFoundException {
         List<Ruta> rutas = new ArrayList<>();
@@ -29,6 +40,13 @@ public class RutaDAO {
         return rutas;
     }
 
+    /**
+     * Método para agregar una ruta
+     * @param ruta : Ruta
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean agregarRuta(Ruta ruta) throws ClassNotFoundException {
         String sql = "INSERT INTO rutas (nombre, descripcion, imagen, precio, dificultad) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexionDB.getConection();
@@ -45,6 +63,13 @@ public class RutaDAO {
         }
     }
 
+    /**
+     * Método para eliminar una ruta
+     * @param idRuta : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean eliminarRuta(int idRuta) throws ClassNotFoundException {
         String sql = "DELETE FROM rutas WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -56,6 +81,13 @@ public class RutaDAO {
             return false;
         }
     }
+
+    /**
+     * Método para obtener una ruta por su id
+     * @param idRuta : entero
+     * @return : Ruta
+     * @throws ClassNotFoundException
+     */
 
     public Ruta obtenerRutaPorId(int idRuta) throws ClassNotFoundException {
         String sql = "SELECT * FROM rutas WHERE id = ?";
@@ -79,6 +111,13 @@ public class RutaDAO {
         }
         return null;
     }
+
+    /**
+     * Método para actualizar una ruta
+     * @param ruta : Ruta
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean actualizarRuta(Ruta ruta) throws ClassNotFoundException {
         String sql = "UPDATE rutas SET nombre=?, descripcion=?, imagen=?, precio=?, dificultad=? WHERE id=?";

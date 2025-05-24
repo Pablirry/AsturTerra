@@ -9,7 +9,16 @@ import java.util.List;
 import config.ConexionDB;
 import model.Evento;
 
+/**
+ * @author Pablo
+ */
+
 public class EventoDAO {
+
+    /**
+     * Método para listar todos los eventos
+     * @return : list<Evento>
+     */
 
     public List<Evento> listarEventos() {
 
@@ -36,6 +45,12 @@ public class EventoDAO {
         return eventos;
     }
 
+    /**
+     * Método para agregar un evento
+     * @param evento : Evento
+     * @return : boolean
+     */
+
     public boolean agregarEvento(Evento evento) {
         String sql = "INSERT INTO eventos (nombre, descripcion, ubicacion, tipo, precio, imagen) VALUES (?, ?, ?, ?, ?, ?)";
 
@@ -54,6 +69,12 @@ public class EventoDAO {
         }
     }
 
+    /**
+     * Método para eliminar un evento
+     * @param idEvento : Entero
+     * @return : boolean
+     */
+
     public boolean eliminarEvento(int idEvento) {
         String sql = "DELETE FROM eventos WHERE id = ?";
 
@@ -67,6 +88,12 @@ public class EventoDAO {
         }
 
     }
+
+    /**
+     * Método para actualizar un evento
+     * @param evento : Evento
+     * @return : boolean
+     */
 
     public boolean actualizarEvento(Evento evento) {
         String sql = "UPDATE eventos SET nombre = ?, descripcion = ?, ubicacion = ?, tipo = ?, precio = ?, imagen = ? WHERE id = ?";

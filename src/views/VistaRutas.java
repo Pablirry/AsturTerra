@@ -22,7 +22,7 @@ public class VistaRutas extends JFrame {
 
     /**
      * Crea la ventana principal de rutas para el usuario dado.
-     * @param usuario Usuario autenticado
+     * @param usuario Usuario
      */
     public VistaRutas(Usuario usuario) {
         this.usuario = usuario;
@@ -35,7 +35,6 @@ public class VistaRutas extends JFrame {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color bg = dark ? new Color(44, 62, 80) : new Color(236, 240, 241);
 
-        // Panel superior con título y botón menú principal a la derecha
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.setBackground(new Color(44, 62, 80));
 
@@ -65,7 +64,6 @@ public class VistaRutas extends JFrame {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel tarjetas con WrapLayout centrado
         panelTarjetas = new JPanel(new WrapLayout(FlowLayout.CENTER, 24, 24));
         panelTarjetas.setBackground(bg);
 
@@ -77,7 +75,6 @@ public class VistaRutas extends JFrame {
         scroll.getViewport().setBackground(bg);
         add(scroll, BorderLayout.CENTER);
 
-        // Panel inferior con botón agregar siempre visible y moderno
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 30, 15));
         panelInferior.setBackground(bg);
 
@@ -132,7 +129,6 @@ public class VistaRutas extends JFrame {
         boolean dark = ThemeManager.getCurrentTheme() == ThemeManager.Theme.DARK;
         Color borderColor = new Color(52, 152, 219);
         Color bgTarjeta = dark ? new Color(52, 73, 94) : Color.WHITE;
-        Color fgPanel = dark ? Color.WHITE : new Color(44, 62, 80);
     
         JPanel tarjeta = new JPanel() {
             @Override
@@ -152,7 +148,6 @@ public class VistaRutas extends JFrame {
         tarjeta.setLayout(new BorderLayout(18, 0));
         tarjeta.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     
-        // Imagen de la ruta (círculo)
         JLabel lblImagen = new JLabel();
         lblImagen.setPreferredSize(new Dimension(100, 100));
         lblImagen.setHorizontalAlignment(SwingConstants.LEFT);
@@ -175,7 +170,6 @@ public class VistaRutas extends JFrame {
         }
         tarjeta.add(lblImagen, BorderLayout.WEST);
     
-        // Info principal alineada a la izquierda
         JPanel panelInfo = new JPanel();
         panelInfo.setOpaque(false);
         panelInfo.setLayout(new BoxLayout(panelInfo, BoxLayout.Y_AXIS));
@@ -204,7 +198,6 @@ public class VistaRutas extends JFrame {
         panelPrecio.add(lblPrecio);
         panelPrecio.add(lblPrecioValor);
     
-        // Dificultad (estrellas)
         JPanel panelDificultad = new JPanel();
         panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.X_AXIS));
         panelDificultad.setOpaque(false);
@@ -228,7 +221,6 @@ public class VistaRutas extends JFrame {
         panelDificultad.add(lblDificultad);
         panelDificultad.add(panelEstrellas);
     
-        // Descripción
         JLabel lblDescripcion = new JLabel(
                 "<html><div style='width:270px;'>" + ruta.getDescripcion() + "</div></html>");
         lblDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 14));
@@ -243,7 +235,6 @@ public class VistaRutas extends JFrame {
         panelInfo.add(panelDificultad);
         panelInfo.add(lblDescripcion);
     
-        // Alinear todo arriba a la izquierda
         JPanel panelInfoWrap = new JPanel();
         panelInfoWrap.setOpaque(false);
         panelInfoWrap.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -272,7 +263,6 @@ public class VistaRutas extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setLayout(new BorderLayout());
 
-        // Panel principal con fondo y borde redondeado
         JPanel panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -287,32 +277,27 @@ public class VistaRutas extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(28, 32, 28, 32));
 
-        // Nombre con icono y sombra
         JLabel lblNombre = new JLabel("  " + ruta.getNombre());
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblNombre.setForeground(new Color(41, 128, 185));
         lblNombre.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblNombre.setIcon(UIManager.getIcon("FileView.directoryIcon"));
 
-        // Línea decorativa
         JSeparator separator = new JSeparator();
         separator.setMaximumSize(new Dimension(400, 2));
         separator.setForeground(new Color(41, 128, 185, 80));
         separator.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Precio destacado
         JLabel lblPrecio = new JLabel("Precio: " + ruta.getPrecio() + " €");
         lblPrecio.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblPrecio.setForeground(new Color(39, 174, 96));
         lblPrecio.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Panel dificultad perfectamente alineado y centrado
         JPanel panelDificultad = new JPanel();
         panelDificultad.setLayout(new BoxLayout(panelDificultad, BoxLayout.Y_AXIS));
         panelDificultad.setOpaque(false);
         panelDificultad.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        // Panel horizontal para etiqueta y estrellas, centrado y alineado verticalmente
         JPanel panelDificultadContenido = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         panelDificultadContenido.setOpaque(false);
 
@@ -343,7 +328,7 @@ public class VistaRutas extends JFrame {
         panel.add(Box.createVerticalStrut(12));
         panel.add(lblPrecio);
         panel.add(Box.createVerticalStrut(10));
-        panel.add(panelDificultad); // Dificultad centrada
+        panel.add(panelDificultad);
         panel.add(Box.createVerticalStrut(18));
 
         JLabel lblImagen = new JLabel();
@@ -393,7 +378,6 @@ public class VistaRutas extends JFrame {
         panel.add(scrollDesc);
         panel.add(Box.createVerticalStrut(18));
 
-        // Botones modernos con iconos y colores
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 24, 10));
         panelBotones.setOpaque(false);
 
@@ -424,7 +408,6 @@ public class VistaRutas extends JFrame {
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
 
-        // Botón cerrar
         JButton btnCerrar = new JButton("Cerrar");
         btnCerrar.setBackground(new Color(189, 195, 199));
         btnCerrar.setForeground(Color.DARK_GRAY);

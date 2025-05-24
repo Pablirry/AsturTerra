@@ -16,7 +16,7 @@ import utils.WrapLayout;
 public class VistaReservas extends JFrame {
     private final Usuario usuario;
     private JPanel panelTarjetas;
-    private boolean mostrandoRutas = true; // true = rutas, false = eventos
+    private boolean mostrandoRutas = true;
 
     public VistaReservas(Usuario usuario) {
         this.usuario = usuario;
@@ -59,7 +59,6 @@ public class VistaReservas extends JFrame {
 
         add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel de tarjetas de reservas
         panelTarjetas = new JPanel(new WrapLayout(FlowLayout.CENTER, 24, 24));
         panelTarjetas.setBackground(bg);
 
@@ -71,7 +70,6 @@ public class VistaReservas extends JFrame {
         scroll.getViewport().setBackground(bg);
         add(scroll, BorderLayout.CENTER);
 
-        // Panel inferior con los dos botones grandes ocupando toda la barra
         JPanel panelInferior = new JPanel(new GridLayout(1, 2, 0, 0));
         panelInferior.setBackground(bg);
 
@@ -286,7 +284,6 @@ public class VistaReservas extends JFrame {
 
         try {
             Usuario usuarioReserva = TurismoService.getInstance().obtenerUsuarioPorId(reserva.getUsuarioId());
-            // Puedes obtener el evento si tienes el modelo Evento y su DAO
 
             JLabel lblUsuario = new JLabel(I18n.t("columna.usuario") + ": " + (usuarioReserva != null ? usuarioReserva.getNombre() : "Desconocido"));
             lblUsuario.setFont(new Font("Arial", Font.BOLD, 18));
@@ -358,7 +355,6 @@ public class VistaReservas extends JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de cancelar la reserva? Esta acción la bloqueará.", "Confirmar", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                // Aquí puedes marcar la reserva como bloqueada (por ejemplo, confirmada=false y no editable)
                 TurismoService.getInstance().eliminarReserva(reserva.getId());
                 cargarReservas();
             } catch (Exception e) {

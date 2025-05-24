@@ -4,6 +4,12 @@ import java.security.MessageDigest;
 
 public class PasswordUtils {
 
+    /**
+     * Metodo para hashear una contraseña usando SHA-256
+     * @param password : String
+     * @return : String
+     */
+
     public static String hash(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");

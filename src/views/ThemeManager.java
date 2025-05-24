@@ -282,6 +282,15 @@ public class ThemeManager {
         }
     }
 
+    public static void applyThemeToTree(Component comp, Theme theme) {
+    setComponentTheme(comp, theme);
+    if (comp instanceof Container) {
+        for (Component child : ((Container) comp).getComponents()) {
+            applyThemeToTree(child, theme);
+        }
+    }
+}
+
     public static Theme getCurrentTheme() {
         return currentTheme;
     }

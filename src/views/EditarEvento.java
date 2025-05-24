@@ -13,7 +13,7 @@ public class EditarEvento extends JDialog {
     private JTextField txtNombre, txtUbicacion, txtPrecio, txtTipoOtro;
     private JTextArea txtDescripcion;
     private JLabel lblImagen;
-    private JButton btnSeleccionarImagen, btnGuardar, btnEliminar, btnCancelar;
+    private JButton btnSeleccionarImagen, btnGuardar, btnCancelar;
     private byte[] imagenBytes = null;
     private int idEvento;
     private VistaEventos padre;
@@ -24,7 +24,7 @@ public class EditarEvento extends JDialog {
         super(padre, "Editar Evento", true);
         this.padre = padre;
         this.idEvento = evento.getId();
-        setSize(700, 650);
+        setSize(700, 680);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -66,7 +66,7 @@ public class EditarEvento extends JDialog {
                 BorderFactory.createLineBorder(borderColor, 2, true),
                 "Nombre", 0, 0, new Font("Segoe UI", Font.BOLD, 14), new Color(41, 128, 185)));
 
-        txtDescripcion = new JTextArea(6, 20);
+        txtDescripcion = new JTextArea(4, 20);
         txtDescripcion.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txtDescripcion.setLineWrap(true);
         txtDescripcion.setWrapStyleWord(true);
@@ -105,7 +105,6 @@ public class EditarEvento extends JDialog {
                 "Tipo",
                 0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
 
-        // Renderer para fondo personalizado
         comboTipo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -120,7 +119,6 @@ public class EditarEvento extends JDialog {
             }
         });
 
-        // Panel para el campo "Otro"
         JPanel panelTipoOtro = new JPanel();
         panelTipoOtro.setOpaque(false);
         panelTipoOtro.setLayout(new BoxLayout(panelTipoOtro, BoxLayout.Y_AXIS));
@@ -140,7 +138,6 @@ public class EditarEvento extends JDialog {
 
         panelTipoOtro.add(txtTipoOtro);
 
-        // Mostrar/ocultar campo "otro"
         comboTipo.addActionListener(e -> {
             boolean esOtro = "Otro".equals(comboTipo.getSelectedItem());
             txtTipoOtro.setVisible(esOtro);
@@ -280,7 +277,6 @@ public class EditarEvento extends JDialog {
         txtNombre.setText(evento.getNombre());
         txtDescripcion.setText(evento.getDescripcion());
         txtUbicacion.setText(evento.getUbicacion());
-        // Selección de tipo
         String tipo = evento.getTipo();
         if ("Ocio".equalsIgnoreCase(tipo)) {
             comboTipo.setSelectedItem("Ocio");

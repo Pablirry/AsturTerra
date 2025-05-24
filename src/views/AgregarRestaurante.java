@@ -23,7 +23,7 @@ public class AgregarRestaurante extends JDialog {
     public AgregarRestaurante(VistaRestaurantes padre) {
         super(padre, "Agregar Restaurante", true);
         this.padre = padre;
-        setSize(520, 450);
+        setSize(520, 480);
         setLocationRelativeTo(padre);
         setResizable(false);
         inicializarComponentes();
@@ -110,20 +110,19 @@ public class AgregarRestaurante extends JDialog {
         });
         comboEspecialidad.setFont(new Font("Segoe UI", Font.PLAIN, 15));
         comboEspecialidad.setMaximumSize(new Dimension(260, 32));
-        comboEspecialidad.setBackground(fieldBg);
+        comboEspecialidad.setBackground(bg);
         comboEspecialidad.setForeground(fg);
         comboEspecialidad.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(41, 128, 185, 120), 2, true),
                 "Especialidad",
                 0, 0, new Font("Segoe UI", Font.BOLD, 13), new Color(41, 128, 185)));
 
-        // Renderer para fondo personalizado
         comboEspecialidad.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                     boolean cellHasFocus) {
                 Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                c.setBackground(isSelected ? new Color(41, 128, 185) : fieldBg);
+                c.setBackground(isSelected ? new Color(41, 128, 185) : bg);
                 c.setForeground(fg);
                 if (c instanceof JComponent) {
                     ((JComponent) c).setOpaque(true);

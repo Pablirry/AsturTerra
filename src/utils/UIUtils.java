@@ -9,7 +9,12 @@ import java.util.regex.Pattern;
 
 public class UIUtils {
 
-    // Crear botón estilizado (rectangular, sin fondo)
+    /**
+     * Crear un botón con texto y color personalizado
+     * @param texto : String
+     * @param color : Color
+     * @return : JButton
+     */
     public static JButton crearBoton(String texto, Color color) {
         JButton btn = new JButton(texto);
         btn.putClientProperty("colorBase", color);
@@ -23,7 +28,13 @@ public class UIUtils {
         return btn;
     }
 
-    // Crear botón redondeado y colorido, sin esquinas
+    /**
+     * Crear un botón redondeado con texto, color y radio de borde
+     * @param texto : String
+     * @param color : Color
+     * @param radio : int
+     * @return : JButton
+     */
     public static JButton crearBotonRedondeado(String texto, Color color, int radio) {
         ThemeManager.RoundedButton btn = new ThemeManager.RoundedButton(texto, radio);
         btn.setBackground(color);
@@ -34,7 +45,11 @@ public class UIUtils {
         return btn;
     }
 
-    // Validar email
+    /**
+     * Validar email
+     * @param email : String
+     * @return : boolean
+     */
     public static boolean validarEmail(String email) {
         return Pattern.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$", email);
     }
@@ -47,19 +62,31 @@ public class UIUtils {
      * ! .{8,} mínimo 8 caracteres
      */
 
-    // Validar contraseña segura
+    /**
+     * Validar contraseña segura
+     * @param password : String
+     * @return : boolean
+     */
     public static boolean validarPasswordSegura(String password) {
         // Al menos 8 caracteres, 1 mayúscula, 1 minúscula, 2 números, 1 especial
         return password
                 .matches("^(?=.*[a-z])(?=.*[A-Z])(?=(?:.*\\d){2,})(?=.*[!@#$%^&*()_+\\-={}:;\"'|<>,.?/~`]).{8,}$");
     }
 
-    // Mostrar mensaje de error
+    /**
+     * Mostrar mensaje de error
+     * @param parent : Component
+     * @param mensaje : String
+     */
     public static void mostrarError(Component parent, String mensaje) {
         JOptionPane.showMessageDialog(parent, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    // Mostrar mensaje de información
+    /**
+     * Mostrar mensaje de información
+     * @param parent : Component
+     * @param mensaje : String
+     */
     public static void mostrarInfo(Component parent, String mensaje) {
         JOptionPane.showMessageDialog(parent, mensaje, "Información", JOptionPane.INFORMATION_MESSAGE);
     }

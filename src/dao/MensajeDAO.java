@@ -8,7 +8,20 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Pablo
+ */
+
+
 public class MensajeDAO {
+
+    /**
+     * Envia un mensaje a un usuario.
+     * @param idUsuario : entero
+     * @param mensaje : Mensaje
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
 
     public boolean enviarMensaje(int idUsuario, Mensaje mensaje) throws ClassNotFoundException {
         String sql = "INSERT INTO mensajes (id_usuario, mensaje, respuesta, fecha) VALUES (?, ?, ?, ?)";
@@ -24,6 +37,13 @@ public class MensajeDAO {
             return false;
         }
     }
+
+    /**
+     * Obtiene los mensajes de un usuario.
+     * @param idUsuario : entero
+     * @return : List<Mensaje>
+     * @throws ClassNotFoundException
+     */
 
     public List<Mensaje> obtenerMensajesUsuario(int idUsuario) throws ClassNotFoundException {
         List<Mensaje> mensajes = new ArrayList<>();
@@ -47,6 +67,13 @@ public class MensajeDAO {
         return mensajes;
     }
 
+    /**
+     * Obtiene la conversación entre dos usuarios.
+     * @param idEmisor : entero
+     * @param idReceptor : entero
+     * @return : List<Mensaje>
+     * @throws ClassNotFoundException
+     */
 
     public List<Mensaje> obtenerConversacion(int idEmisor, int idReceptor) throws ClassNotFoundException {
         List<Mensaje> conversacion = new ArrayList<>();
@@ -71,6 +98,13 @@ public class MensajeDAO {
         return conversacion;
     }
 
+    /**
+     * Marca un mensaje como leído.
+     * @param idMensaje : entero
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean marcarMensajeComoLeido(int idMensaje) throws ClassNotFoundException {
         String sql = "UPDATE mensajes SET respuesta = 'LEÍDO' WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -82,6 +116,12 @@ public class MensajeDAO {
             return false;
         }
     }
+
+    /**
+     * Obtiene los mensajes sin respuesta.
+     * @return : list<Mensaje>
+     * @throws ClassNotFoundException
+     */
 
     public List<Mensaje> obtenerMensajesSinRespuesta() throws ClassNotFoundException {
         List<Mensaje> mensajes = new ArrayList<>();
@@ -104,6 +144,14 @@ public class MensajeDAO {
         return mensajes;
     }
 
+    /**
+     * Responde a un mensaje.
+     * @param idMensaje : entero
+     * @param respuesta : String
+     * @return : boolean
+     * @throws ClassNotFoundException
+     */
+
     public boolean responderMensaje(int idMensaje, String respuesta) throws ClassNotFoundException {
         String sql = "UPDATE mensajes SET respuesta = ? WHERE id = ?";
         try (Connection con = ConexionDB.getConection();
@@ -116,6 +164,12 @@ public class MensajeDAO {
             return false;
         }
     }
+
+    /**
+     * Obtiene todos los mensajes.
+     * @return : list<Mensaje>
+     * @throws ClassNotFoundException
+     */
 
     public List<Mensaje> obtenerTodosMensajes() throws ClassNotFoundException {
         List<Mensaje> mensajes = new ArrayList<>();
@@ -137,6 +191,13 @@ public class MensajeDAO {
         }
         return mensajes;
     }
+
+    /**
+     * Obtiene los mensajes de un usuario específico.
+     * @param idUsuario : entero
+     * @return : List<Mensaje>
+     * @throws ClassNotFoundException
+     */
 
     public List<Mensaje> obtenerMensajesPorUsuario(Integer idUsuario) {
         List<Mensaje> mensajes = new ArrayList<>();
