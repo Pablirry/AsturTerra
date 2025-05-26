@@ -131,9 +131,6 @@ git clone https://github.com/Pablirry/TurismoApp.git
 ### Diagrama de Clases
 ![Diagrama de Clases](/assets/DiagramaDeClases.png)
 
-### Diagrama de Casos de Uso
-![Diagrama de Casos](/assets/diagramaCasosDeUso.png)
-
 ### Diagrama ER
 ![Diagrama de Entidad-Relacion](/assets/DiagramaER.png)
 
